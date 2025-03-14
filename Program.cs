@@ -5,23 +5,18 @@ namespace C_Sharp_GL;
 
 internal class Program
 {
-    private static IWindow _window;
-
-    private static void Main()
+    private static unsafe void Main()
     {
-        // Window options
         var options = WindowOptions.Default with
         {
             Size = new Vector2D<int>(800, 600),
-            Title = "C# GL"
+            Title = "C# GL",
+            API = GraphicsAPI.Default
         };
 
-        _window = Window.Create(options);
-
-        // Initialize core functionalities
-        WindowManager.Initialize(_window);
-
-        // Run the application
-        _window.Run();
+        var window = Window.Create(options);
+        WindowManager.Initialize(window);
+        window.Run();
+        
     }
 }

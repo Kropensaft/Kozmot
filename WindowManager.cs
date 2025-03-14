@@ -13,7 +13,6 @@ internal static class WindowManager
         // Register event handlers
         _window.Load += Renderer.OnLoad;
         _window.Update += Renderer.OnUpdate;
-        _window.Render += Renderer.OnRender;
     }
 
     public static IWindow GetWindow() => _window;

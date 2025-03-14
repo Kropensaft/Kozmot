@@ -25,6 +25,12 @@ internal static class InputHandler
             WindowManager.GetWindow().Close();
         }
 
-        Console.WriteLine($"Key {key} pressed");
+        if (key == Key.Space)
+        {
+            Console.WriteLine("Stoppping simulation...");
+            Renderer.Pause();
+        }
+
+        
     }
 }
