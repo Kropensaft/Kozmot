@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 
 namespace OpenGL;
@@ -11,12 +12,32 @@ internal class Program
     {
         var windowSettings = GameWindowSettings.Default;
         var nativeWindowSettings = NativeWindowSettings.Default;
-        nativeWindowSettings.ClientSize = new Vector2i(800, 600);
-        nativeWindowSettings.Title = "C# GL - FPS: 0";
+        
+        
+        //Program settings 
+        nativeWindowSettings.Size = new Vector2i(800, 600);
+        nativeWindowSettings.Title = "C# GL";
+        nativeWindowSettings.StartFocused = true;
+        nativeWindowSettings.Vsync = VSyncMode.Off;
+        
+        
         var window = new GameWindow(windowSettings, nativeWindowSettings);
         
-        WindowManager.Initialize(window);
-        window.Run();
+        //Mouse cursor settings
+        window.Cursor = MouseCursor.Crosshair;
         
+        
+        // Initialize camera
+        var camera = new Objects.Camera(new Vector3(0, 0, 0));
+        
+        //Pass references
+        InputHandler.InitializeInputs(window, camera);
+        Renderer._camera = camera;
+        
+        
+        WindowManager.Initialize(window);
+        
+
+        window.Run();
     }
 }
