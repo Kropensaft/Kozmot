@@ -1,45 +1,45 @@
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 using System;
 
-namespace C_Sharp_GL;
+namespace OpenGL;
 
 internal static class Shader
 {
-    private const string vertexShaderPath = "Program/../Shaders/Shader.vert";
-    private const string fragmentShaderPath = "Program/../Shaders/Shader.frag";
+    private const string vertexShaderPath = "Shaders/Shader.vert";
+    private const string fragmentShaderPath = "Shaders/Shader.frag";
 
-    public static uint CreateShaderProgram(GL gl)
+    public static int CreateShaderProgram()
     {
-        string VertexShaderCode = File.ReadAllText(vertexShaderPath);
-        string FragmentShaderCode = File.ReadAllText(fragmentShaderPath);
+        string vertexShaderCode = File.ReadAllText(vertexShaderPath);
+        string fragmentShaderCode = File.ReadAllText(fragmentShaderPath);
         
-        uint vertexShader = CompileShader(gl, ShaderType.VertexShader, VertexShaderCode);
-        uint fragmentShader = CompileShader(gl, ShaderType.FragmentShader, FragmentShaderCode);
+        int vertexShader = CompileShader(ShaderType.VertexShader, vertexShaderCode);
+        int fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentShaderCode);
 
-        uint program = gl.CreateProgram();
-        gl.AttachShader(program, vertexShader);
-        gl.AttachShader(program, fragmentShader);
-        gl.LinkProgram(program);
+        int program = GL.CreateProgram();
+        GL.AttachShader(program, vertexShader);
+        GL.AttachShader(program, fragmentShader);
+        GL.LinkProgram(program);
 
-        gl.GetProgram(program, ProgramPropertyARB.LinkStatus, out int linkStatus);
-        if (linkStatus != (int)GLEnum.True)
-            throw new Exception("Program linking failed: " + gl.GetProgramInfoLog(program));
+        GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int linkStatus);
+        if (linkStatus == (int)All.False)
+            throw new Exception("Program linking failed: " + GL.GetProgramInfoLog(program));
 
-        gl.DeleteShader(vertexShader);
-        gl.DeleteShader(fragmentShader);
+        GL.DeleteShader(vertexShader);
+        GL.DeleteShader(fragmentShader);
 
         return program;
     }
 
-    private static uint CompileShader(GL gl, ShaderType type, string source)
+    private static int CompileShader(ShaderType type, string source)
     {
-        uint shader = gl.CreateShader(type);
-        gl.ShaderSource(shader, source);
-        gl.CompileShader(shader);
+        int shader = GL.CreateShader(type);
+        GL.ShaderSource(shader, source);
+        GL.CompileShader(shader);
 
-        gl.GetShader(shader, ShaderParameterName.CompileStatus, out int status);
-        if (status != (int)GLEnum.True)
-            throw new Exception($"{type} shader compilation failed: " + gl.GetShaderInfoLog(shader));
+        GL.GetShader(shader, ShaderParameter.CompileStatus, out int status);
+        if (status == (int)All.False)
+            throw new Exception($"{type} shader compilation failed: " + GL.GetShaderInfoLog(shader));
 
         return shader;
     }

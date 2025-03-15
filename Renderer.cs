@@ -1,17 +1,16 @@
 using System.Drawing;
-using Silk.NET.OpenGL;
-using Silk.NET.Windowing;
-using Silk.NET.Maths;
-using System.Runtime.InteropServices;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 
-namespace C_Sharp_GL;
+namespace OpenGL;
 
 internal static class Renderer
 {
-    private static GL _gl = null!;
-    private static uint _vao, _vbo, _ebo, _shaderProgram;
-    private static IWindow _window = WindowManager.GetWindow();
-    private static Matrix4X4<float> _projection, _view, _model;
+    private static int _vao, _vbo, _ebo, _shaderProgram;
+    private static GameWindow _window = WindowManager.GetWindow();
+    private static Matrix4 _projection, _view, _model;
     private static int _modelLoc, _viewLoc, _projLoc;
     private static float _rotationTime;
     
@@ -20,15 +19,16 @@ internal static class Renderer
     public static void Pause() => _isPaused = !_isPaused;
 
     private static readonly float[] Vertices = {
-        // Positions          // Colors
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.5f, 0.5f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.5f, 0.5f
+        // Positions          // Colors (grayscale)
+        -0.5f, -0.5f, -0.5f,  0.5f, 0.5f, 0.5f, // Gray
+        0.5f, -0.5f, -0.5f,  0.7f, 0.7f, 0.7f, // Light Gray
+        0.5f,  0.5f, -0.5f,  0.9f, 0.9f, 0.9f, // Very Light Gray
+        -0.5f,  0.5f, -0.5f,  0.3f, 0.3f, 0.3f, // Dark Gray
+
+        -0.5f, -0.5f,  0.5f,  0.5f, 0.5f, 0.5f, // Gray
+        0.5f, -0.5f,  0.5f,  0.7f, 0.7f, 0.7f, // Light Gray
+        0.5f,  0.5f,  0.5f,  0.9f, 0.9f, 0.9f, // Very Light Gray
+        -0.5f,  0.5f,  0.5f,  0.3f, 0.3f, 0.3f  // Dark Gray
     };
 
     private static readonly uint[] Indices = {
@@ -40,104 +40,96 @@ internal static class Renderer
         4, 5, 1, 1, 0, 4     // Bottom face
     };
 
-    public static unsafe void OnLoad()
+    public static void OnLoad()
     {
-        _gl = WindowManager.GetWindow().CreateOpenGL();
-        _gl.ClearColor(Color.Black);
-        _gl.Enable(GLEnum.DepthTest);
+        GL.ClearColor(Color.Black);
+        GL.Enable(EnableCap.DepthTest);
 
-        InputHandler.InitializeInputs();
+        InputHandler.InitializeInputs(_window);
 
         // Initialize matrices
-        _projection = Matrix4X4.CreatePerspectiveFieldOfView<float>(
-            Scalar.DegreesToRadians(45f),
+        _projection = Matrix4.CreatePerspectiveFieldOfView(
+            MathHelper.DegreesToRadians(45f),
             _window.Size.X / (float)_window.Size.Y,
             0.1f,
             100f
         );
 
-        _view = Matrix4X4.CreateLookAt<float>(
-            new Vector3D<float>(0, 0, 3),
-            Vector3D<float>.Zero,
-            Vector3D<float>.UnitY
+        _view = Matrix4.LookAt(
+            new Vector3(0, 0, 3),
+            Vector3.Zero,
+            Vector3.UnitY
         );
 
         // VAO/VBO setup
-        _vao = _gl.GenVertexArray();
-        _gl.BindVertexArray(_vao);
+        _vao = GL.GenVertexArray();
+        GL.BindVertexArray(_vao);
 
-        _vbo = _gl.GenBuffer();
-        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
-        fixed (float* buf = Vertices)
-        {
-            _gl.BufferData(
-                BufferTargetARB.ArrayBuffer,
-                (nuint)(Vertices.Length * sizeof(float)),
-                buf,
-                BufferUsageARB.StaticDraw
-            );
-        }
+        _vbo = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, Vertices.Length * sizeof(float), Vertices, BufferUsageHint.StaticDraw);
 
-        _ebo = _gl.GenBuffer();
-        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ebo);
-        fixed (uint* buf = Indices)
-        {
-            _gl.BufferData(
-                BufferTargetARB.ElementArrayBuffer,
-                (nuint)(Indices.Length * sizeof(uint)),
-                buf,
-                BufferUsageARB.StaticDraw
-            );
-        }
+        _ebo = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, Indices.Length * sizeof(uint), Indices, BufferUsageHint.StaticDraw);
 
         // Shader setup
-        _shaderProgram = Shader.CreateShaderProgram(_gl);
-        _gl.UseProgram(_shaderProgram);
+        _shaderProgram = Shader.CreateShaderProgram();
+        GL.UseProgram(_shaderProgram);
 
         // Attribute pointers
-        _gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), (void*)0);
-        _gl.EnableVertexAttribArray(0);
-        _gl.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-        _gl.EnableVertexAttribArray(1);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+        GL.EnableVertexAttribArray(1);
 
         // Get uniform locations
-        _modelLoc = _gl.GetUniformLocation(_shaderProgram, "model_matrix");
-        _viewLoc = _gl.GetUniformLocation(_shaderProgram, "view_matrix");
-        _projLoc = _gl.GetUniformLocation(_shaderProgram, "projection_matrix");
+        _modelLoc = GL.GetUniformLocation(_shaderProgram, "model_matrix");
+        _viewLoc = GL.GetUniformLocation(_shaderProgram, "view_matrix");
+        _projLoc = GL.GetUniformLocation(_shaderProgram, "projection_matrix");
 
         // Set projection and view matrices
-        SetMatrixUniform(_projLoc, _projection);
-        SetMatrixUniform(_viewLoc, _view);
+        GL.UniformMatrix4(_projLoc, false, ref _projection);
+        GL.UniformMatrix4(_viewLoc, false, ref _view);
     }
 
-    private static unsafe void SetMatrixUniform(int location, Matrix4X4<float> matrix)
+    private static double _fpsTimer = 0;
+    private static int _fpsFrameCount = 0;
+    private static int _currentFPS = 0;
+    
+    public static void OnUpdate(FrameEventArgs args)
     {
-        Span<float> matrixSpan = MemoryMarshal.Cast<Matrix4X4<float>, float>(
-            MemoryMarshal.CreateSpan(ref matrix, 1)
-        );
-        _gl.UniformMatrix4(location, 1, false, ref matrixSpan[0]);
-    }
-
-    public static unsafe void OnUpdate(double deltaTime)
-    {
+        WindowManager.CheckGLErrors();
+        
         if (!_isPaused)
         {
-            _rotationTime += (float)deltaTime;
+            _rotationTime += (float)args.Time;
+        }
+        
+        _fpsTimer += args.Time;
+        _fpsFrameCount++;
+        
+        if (_fpsTimer >= 1.0)
+        {
+            _currentFPS = _fpsFrameCount;
+            _fpsFrameCount = 0;
+            _fpsTimer -= 1.0;
+            
+            // Update window title
+            _window.Title = $"C# GL - FPS: {_currentFPS}";
         }
         
         // Update model matrix
-        _model = Matrix4X4.CreateRotationY<float>(_rotationTime) * 
-                Matrix4X4.CreateRotationX<float>(_rotationTime * 0.5f);
+        _model = Matrix4.CreateRotationY(_rotationTime) * 
+                Matrix4.CreateRotationX(_rotationTime * 0.5f);
 
         // Clear and draw
-        _gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        _gl.UseProgram(_shaderProgram);
-        _gl.BindVertexArray(_vao);
-        SetMatrixUniform(_modelLoc, _model);
-        _gl.DrawElements(GLEnum.Triangles, (uint)Indices.Length, GLEnum.UnsignedInt, (void*)0);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+        GL.UseProgram(_shaderProgram);
+        GL.BindVertexArray(_vao);
+        GL.UniformMatrix4(_modelLoc, false, ref _model);
+        GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
         _window.SwapBuffers();
     }
     
-    
-    public static GL GetGL() => _gl;
 }

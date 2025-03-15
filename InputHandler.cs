@@ -1,36 +1,27 @@
-using System;
-using Silk.NET.Input;
-using Silk.NET.Windowing;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 
-namespace C_Sharp_GL;
+namespace OpenGL;
 
 internal static class InputHandler
 {
-    public static void InitializeInputs()
+    public static void InitializeInputs(GameWindow window)
     {
-        var window = WindowManager.GetWindow();
-        var input = window.CreateInput(); 
-
-        for (int i = 0; i < input.Keyboards.Count; i++)
-        {
-            input.Keyboards[i].KeyDown += KeyDown;
-        }
+        window.KeyDown += KeyDown;
     }
 
-    private static void KeyDown(IKeyboard keyboard, Key key, int keyCode)
+    private static void KeyDown(KeyboardKeyEventArgs e)
     {
-        if (key == Key.Escape)
+        if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape)
         {
             Console.WriteLine("Closing window...");
             WindowManager.GetWindow().Close();
         }
 
-        if (key == Key.Space)
+        if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.Space)
         {
-            Console.WriteLine("Stoppping simulation...");
+            Console.WriteLine("Toggling simulation...");
             Renderer.Pause();
         }
-
-        
     }
 }

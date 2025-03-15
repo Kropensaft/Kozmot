@@ -1,20 +1,20 @@
-﻿using Silk.NET.Windowing;
-using Silk.NET.Maths;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 
-namespace C_Sharp_GL;
+namespace OpenGL;
 
 internal class Program
 {
     private static unsafe void Main()
     {
-        var options = WindowOptions.Default with
-        {
-            Size = new Vector2D<int>(800, 600),
-            Title = "C# GL",
-            API = GraphicsAPI.Default
-        };
-
-        var window = Window.Create(options);
+        var windowSettings = GameWindowSettings.Default;
+        var nativeWindowSettings = NativeWindowSettings.Default;
+        nativeWindowSettings.ClientSize = new Vector2i(800, 600);
+        nativeWindowSettings.Title = "C# GL - FPS: 0";
+        var window = new GameWindow(windowSettings, nativeWindowSettings);
+        
         WindowManager.Initialize(window);
         window.Run();
         

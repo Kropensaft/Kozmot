@@ -1,19 +1,30 @@
-using Silk.NET.Windowing;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Windowing.Desktop;
+using ErrorCode = OpenTK.Graphics.OpenGL.ErrorCode;
 
-namespace C_Sharp_GL;
+namespace OpenGL;
 
 internal static class WindowManager
 {
-    private static IWindow _window;
+    private static GameWindow _window;
 
-    public static void Initialize(IWindow window)
+    public static void Initialize(GameWindow window)
     {
         _window = window;
 
         // Register event handlers
         _window.Load += Renderer.OnLoad;
-        _window.Update += Renderer.OnUpdate;
+        _window.UpdateFrame += Renderer.OnUpdate;
     }
 
-    public static IWindow GetWindow() => _window;
+    public static void CheckGLErrors()
+    {
+        ErrorCode error = GL.GetError();
+        if (error != ErrorCode.NoError)
+        {
+            Console.WriteLine($"OpenGL Error: {error}");
+        }
+    }
+
+    public static GameWindow GetWindow() => _window;
 }
