@@ -14,6 +14,8 @@ public class Object
         Position = position;
         Rotation = rotation;
         Scale = scale;
+       
+        
     }
 
     public virtual Matrix4 GetModelMatrix()
@@ -49,7 +51,7 @@ public class Sphere(Vector3 position, Vector3 rotation, Vector3 scale) : Object(
                 float x = xy * MathF.Cos(sectorAngle);
                 float y = xy * MathF.Sin(sectorAngle);
 
-                
+                //used for coloring vertices
                 var random = new Random();
                 
                 // Vertex position
