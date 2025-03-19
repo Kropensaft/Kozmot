@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Numerics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -43,22 +44,26 @@ internal static class InputHandler
         {
             Console.WriteLine("Adding a sphere");
             
+            
+            var lastSphereAdded = Renderer._spheres.LastOrDefault();
+            
             Random random = new Random();
             
             float x = (float)(random.NextDouble() * 2 - 1);
             float y = (float)(random.NextDouble() * 2 - 1);
-            float z = (float)(random.NextDouble() * 2 - 1);
+            float z = 0;
             
             Vector3 pos = new Vector3(x,y,z);
             
-            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One));
+            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, radius: lastSphereAdded.Radius+0.3f , speed: 0.1f));
 
         }
 
         if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.C)
         {
             Console.WriteLine("Removing last object added");
-            Renderer.RemoveObject();
+            if (Renderer._spheres.Count > 1 )
+                Renderer.RemoveObject();
         }
     }
 

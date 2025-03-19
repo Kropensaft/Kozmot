@@ -12,19 +12,43 @@ internal static class Renderer
     private static int _vao, _vbo, _ebo, _shaderProgram;
     private static GameWindow? _window;
     private static Matrix4 _projection, _view;
-    private static List<Object> _objects = new List<Object>();
+    public static List<Sphere> _spheres = new List<Sphere>();
     private static float[] _vertices;
     private static uint[] _indices;
     
+    
+    //Initalize grid
+    private static Grid _grid;
     //Initialize camera
     public static Camera _camera;
 
+    public static void ResourceCleanup()
+    {
+        int elapsedtime = DateTime.Now.Millisecond;
+        Console.WriteLine("Starting Resource Cleanup...");
+        // Delete VAO, VBO, and EBO
+        GL.DeleteVertexArray(_vao);
+        GL.DeleteBuffer(_vbo);
+        GL.DeleteBuffer(_ebo);
+
+        // Delete shader program
+        GL.DeleteProgram(_shaderProgram);
+
+        // Clear the list of spheres
+        _spheres.Clear();
+        
+        Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond-elapsedtime} ms.");
+    }
+    
     public static void OnLoad()
     {
         GL.ClearColor(Color.Black);
         GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.Blend);
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         
         _window = WindowManager.GetWindow();
+        
         // Initialize matrices
         _projection = Matrix4.CreatePerspectiveFieldOfView(
             MathHelper.DegreesToRadians(45f),
@@ -34,7 +58,11 @@ internal static class Renderer
         );
 
         _view = _camera.GetViewMatrix();
-
+        
+        //new grid instance
+        _grid = new Grid(size: 200, step: 1.0f);
+        
+        
         // Generate sphere vertices and indices (or cube, etc.)
         var sphereData = Sphere.GenerateSphere(.2f, 36, 18);
         _vertices = sphereData.Vertices;
@@ -46,11 +74,13 @@ internal static class Renderer
 
         _vbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices,
+            BufferUsageHint.StaticDraw);
 
         _ebo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices,
+            BufferUsageHint.StaticDraw);
 
         // Shader setup
         _shaderProgram = Shader.CreateShaderProgram();
@@ -72,8 +102,8 @@ internal static class Renderer
         GL.UniformMatrix4(viewLoc, false, ref _view);
 
         // Add initial objects
-        _objects.Add(new Sphere(new Vector3(-1, 0, 0), Vector3.Zero, Vector3.One));
-        _objects.Add(new Cube(new Vector3(1, 0, 0), Vector3.Zero, Vector3.One));
+        _spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, radius: 3.0f, speed: 1.0f));
+        _spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, Vector3.One, radius: 2.0f, speed: 0.5f));
     }
 
     public static void OnUpdate(FrameEventArgs args)
@@ -86,20 +116,36 @@ internal static class Renderer
         Matrix4 view = _camera.GetViewMatrix();
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "view_matrix"), false, ref view);
 
+
+        foreach (var obj in _spheres)
+        {
+                obj.UpdateOrbit(args.Time);
+        }
+        
         // Render each object
-        foreach (var obj in _objects)
+        foreach (var obj in _spheres)
         {
             Matrix4 model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "model_matrix"), false, ref model);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
+        GL.DepthFunc(DepthFunction.Lequal);
+        _grid.Render(_shaderProgram, _camera.GetViewMatrix(), _projection);
+        GL.DepthFunc(DepthFunction.Less);
+
         _window.SwapBuffers();
     }
 
-    public static void AddObject(Object obj)
+    public static void AddObject(Sphere obj)
     {
-        _objects.Add(obj);
+        _spheres.Add(obj);
+
     }
-    
+
+    public static void RemoveObject()
+    {
+        _spheres.RemoveAt(_spheres.Count - 1);
+    }
+
 }

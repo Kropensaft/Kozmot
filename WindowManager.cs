@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Desktop;
 using ErrorCode = OpenTK.Graphics.OpenGL.ErrorCode;
@@ -15,15 +16,24 @@ internal static class WindowManager
         // Register event handlers
         _window.Load += Renderer.OnLoad;
         _window.UpdateFrame += Renderer.OnUpdate;
+        _window.Closing += OnWindowClosing;
     }
 
-    public static void CheckGLErrors()
+    private static void OnWindowClosing(CancelEventArgs e)
     {
+        Renderer.ResourceCleanup();
+    }
+    
+    public static void CheckGlErrors()
+    {
+        Console.WriteLine("Starting error checking sequence...");
         ErrorCode error = GL.GetError();
         if (error != ErrorCode.NoError)
         {
             Console.WriteLine($"OpenGL Error: {error}");
         }
+        else 
+            Console.WriteLine("No errors detected");
     }
 
     public static GameWindow GetWindow() => _window;

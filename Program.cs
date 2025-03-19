@@ -7,7 +7,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenGL;
 
-internal class Program
+internal static class Program
 {
     private static unsafe void Main()
     {
@@ -39,6 +39,7 @@ internal class Program
         
         WindowManager.Initialize(window);
         
+        WindowManager.CheckGlErrors();
 
         window.Run();
     }
