@@ -4,18 +4,19 @@
 
     namespace OpenGL.Objects;
 
-    public class Grid
+    public class Grid 
     {
-        private int _vao, _vbo, _ebo;
-        private float[]? _vertices;
-        private uint[]? _indices;
+        public static int _vao, _vbo, _ebo;
+        public static float[]? _vertices;
+        public static uint[]? _indices;
 
         public Grid(int size = 500, float step = 1.0f)
         {
             GenerateGridGeometry(size, step);
             InitializeBuffers();
         }
-
+        
+        
         private void GenerateGridGeometry(int size, float step)
         {
             List<float> vertices = new List<float>();
@@ -91,4 +92,5 @@
             // Render grid lines
             GL.DrawElements(PrimitiveType.Lines, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
+        
     }

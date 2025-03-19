@@ -1,5 +1,3 @@
-using System.Drawing;
-using System.Numerics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Vector2 = OpenTK.Mathematics.Vector2;
@@ -47,15 +45,15 @@ internal static class InputHandler
             
             var lastSphereAdded = Renderer.Spheres.LastOrDefault();
             
-            Random random = new Random();
+            var random = new Random();
             
             float x = (float)(random.NextDouble() * 2 - 1);
             float y = (float)(random.NextDouble() * 2 - 1);
             float z = 0;
             
-            Vector3 pos = new Vector3(x,y,z);
+            var pos = new Vector3(x,y,z);
             
-            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, radius: lastSphereAdded!.Radius+0.3f , speed: 0.1f));
+            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, orbitRadius: lastSphereAdded!.Radius+0.3f , speed: 0.1f));
 
         }
 
@@ -92,8 +90,8 @@ internal static class InputHandler
         
         if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R)) // reset position to Vec(0,0,0)
             _camera.Position = Vector3.Zero;
-            
         
-        //Console.WriteLine($"Camera X = {_camera.Position.X} Y = {_camera.Position.Y}");
+        //Console.WriteLine($"{_camera.Position.X},{_camera.Position.Y},{_camera.Position.Z}");
+        
     }
 }

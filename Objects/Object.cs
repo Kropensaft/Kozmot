@@ -1,4 +1,3 @@
-using System.Drawing;
 using OpenTK.Mathematics;
 
 namespace OpenGL;
@@ -30,17 +29,17 @@ public class Object
 
 public class Sphere(Vector3 position, Vector3 rotation, Vector3 scale) : Object(position, rotation, scale)
 {
-    public Vector3 Position { get; set; }
-    public float Radius { get; set; } // Orbital radius
-    public float Speed { get; set; }  // Orbital speed
+    private Vector3 Position { get; set; }
+    public float Radius { get; set; } // Orbital orbitRadius
+    private float Speed { get; set; }  // Orbital speed
     private float Angle { get; set; }  // Current angle in radians
 
-    public Sphere(Vector3 position, Vector3 rotation, Vector3 scale, float radius, float speed)
+    public Sphere(Vector3 position, Vector3 rotation, Vector3 scale, float orbitRadius, float speed)
         : this(position, rotation, scale)
     {
         Position = position;
-        Radius = radius;
         Speed = speed;
+        Radius = orbitRadius;
         Angle = 0; // Start at angle 0
     }
 
@@ -66,8 +65,14 @@ public class Sphere(Vector3 position, Vector3 rotation, Vector3 scale) : Object(
                Matrix4.CreateTranslation(Position);
     }
     
-    public static (float[] Vertices, uint[] Indices) GenerateSphere(float radius, int sectors, int stacks)
+    public static (float[] Vertices, uint[] Indices) GenerateSphere(float orbitRadius, int sectors, int stacks, Vector3 scale = new())
     {
+        //Default parameter and a failsafe if a Vec3.Zero is set as scale 
+        if (scale == Vector3.Zero)
+            scale = Vector3.One;
+        
+        
+        
         List<float> vertices = new List<float>();
         List<uint> indices = new List<uint>();
 
@@ -77,8 +82,8 @@ public class Sphere(Vector3 position, Vector3 rotation, Vector3 scale) : Object(
         for (int i = 0; i <= stacks; ++i)
         {
             float stackAngle = MathF.PI / 2 - i * stackStep;
-            float xy = radius * MathF.Cos(stackAngle);
-            float z = radius * MathF.Sin(stackAngle);
+            float xy = orbitRadius * MathF.Cos(stackAngle);
+            float z = orbitRadius * MathF.Sin(stackAngle);
 
             for (int j = 0; j <= sectors; ++j)
             {

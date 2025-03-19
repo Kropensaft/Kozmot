@@ -30,7 +30,7 @@ internal static class Program
         
         
         // Initialize camera
-        var camera = new Objects.Camera(new Vector3(0, 0, 5));
+        var camera = new Objects.Camera(new Vector3(-1, 3, 10));
         
         //Pass references
         InputHandler.InitializeInputs(window, camera);

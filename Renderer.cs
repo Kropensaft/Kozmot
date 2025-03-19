@@ -38,18 +38,31 @@ internal static class Renderer
     {
         
         int elapsedtime = DateTime.Now.Millisecond;
-        Console.WriteLine("Starting Resource Cleanup...");
+        Console.WriteLine("Starting Resource Cleanup...\n");
         
+        
+        Console.WriteLine("Deleting Primary buffers...");
         // Delete VAO, VBO, and EBO
         GL.DeleteVertexArray(_vao);
         GL.DeleteBuffer(_vbo);
         GL.DeleteBuffer(_ebo);
-
+        
+        
+        Console.WriteLine("Deleting Shader programs...");
         // Delete shader program
         GL.DeleteProgram(_shaderProgram);
-
+        
+        
+        Console.WriteLine("Deleting Grid buffers...");
+        //Delete buffers
+        GL.DeleteVertexArray(Objects.Grid._vao);
+        GL.DeleteBuffer(Objects.Grid._vbo);
+        GL.DeleteBuffer(Objects.Grid._ebo);
+        
+        Console.WriteLine("Deleting Objects...\n");
         // Clear the list of spheres
         Spheres.Clear();
+        
         
         Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond-elapsedtime} ms.");
     }
@@ -117,8 +130,8 @@ internal static class Renderer
         GL.UniformMatrix4(viewLoc, false, ref _view);
 
         // Add initial objects
-        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, radius: 3.0f, speed: 1.0f));
-        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, Vector3.One, radius: 2.0f, speed: 0.5f));
+        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, orbitRadius: 3.0f, speed: 1.0f));
+        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new(0.5f, 0.5f, 0.5f), orbitRadius: 2.0f, speed: 0.5f));
     }
 
     // ? Called each frame

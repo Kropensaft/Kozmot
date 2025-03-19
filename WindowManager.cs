@@ -8,7 +8,7 @@ namespace OpenGL;
 internal static class WindowManager
 {
     private static GameWindow? _window;
-
+    
     public static void Initialize(GameWindow window)
     {
         _window = window;
@@ -34,4 +34,5 @@ internal static class WindowManager
     
     //Function to return a reference to _window from other files
     public static GameWindow GetWindow() => _window!;
+    
 }
