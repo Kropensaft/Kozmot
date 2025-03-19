@@ -7,8 +7,8 @@
     public class Grid
     {
         private int _vao, _vbo, _ebo;
-        private float[] _vertices;
-        private uint[] _indices;
+        private float[]? _vertices;
+        private uint[]? _indices;
 
         public Grid(int size = 500, float step = 1.0f)
         {
@@ -62,11 +62,11 @@
 
             _vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices!.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
             _ebo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices!.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
             // Vertex attributes (position + RGBA color)
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
@@ -89,6 +89,6 @@
             GL.UniformMatrix4(GL.GetUniformLocation(shaderProgram, "projection_matrix"), false, ref projectionMatrix);
 
             // Render grid lines
-            GL.DrawElements(PrimitiveType.Lines, _indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Lines, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
     }

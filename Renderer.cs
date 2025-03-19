@@ -9,23 +9,37 @@ namespace OpenGL;
 
 internal static class Renderer
 {
+    
+    //virtual array object, virtual buffer object, element buffer object, ---//---
     private static int _vao, _vbo, _ebo, _shaderProgram;
+    
+    // ? window can be null during initialization
     private static GameWindow? _window;
+    
+    //View and projection matrices used for rendering and transformations
     private static Matrix4 _projection, _view;
-    public static List<Sphere> _spheres = new List<Sphere>();
-    private static float[] _vertices;
-    private static uint[] _indices;
+    
+    // ! To be renamed in the future and to be used with a new type  
+    public static List<Sphere> Spheres = new List<Sphere>();
+    
+    //vertex and index arrays
+    private static float[]?  _vertices;
+    private static uint[]? _indices;
     
     
     //Initalize grid
-    private static Grid _grid;
+    private static Grid? _grid;
     //Initialize camera
-    public static Camera _camera;
+    public static Camera? _camera;
 
+    
+    // ! After program ends delete all objects used by OpenGL and objects allocated at runtime
     public static void ResourceCleanup()
     {
+        
         int elapsedtime = DateTime.Now.Millisecond;
         Console.WriteLine("Starting Resource Cleanup...");
+        
         // Delete VAO, VBO, and EBO
         GL.DeleteVertexArray(_vao);
         GL.DeleteBuffer(_vbo);
@@ -35,7 +49,7 @@ internal static class Renderer
         GL.DeleteProgram(_shaderProgram);
 
         // Clear the list of spheres
-        _spheres.Clear();
+        Spheres.Clear();
         
         Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond-elapsedtime} ms.");
     }
@@ -57,7 +71,8 @@ internal static class Renderer
             100f
         );
 
-        _view = _camera.GetViewMatrix();
+        // ! We're aware that camera is declared as possibly null, however Camera class is never null when passing references
+        _view = _camera!.GetViewMatrix();
         
         //new grid instance
         _grid = new Grid(size: 200, step: 1.0f);
@@ -92,7 +107,7 @@ internal static class Renderer
         GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
         GL.EnableVertexAttribArray(1);
 
-        // Get uniform locations
+        // Get uniform locations of respective matrices
         int modelLoc = GL.GetUniformLocation(_shaderProgram, "model_matrix");
         int viewLoc = GL.GetUniformLocation(_shaderProgram, "view_matrix");
         int projLoc = GL.GetUniformLocation(_shaderProgram, "projection_matrix");
@@ -102,10 +117,11 @@ internal static class Renderer
         GL.UniformMatrix4(viewLoc, false, ref _view);
 
         // Add initial objects
-        _spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, radius: 3.0f, speed: 1.0f));
-        _spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, Vector3.One, radius: 2.0f, speed: 0.5f));
+        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, radius: 3.0f, speed: 1.0f));
+        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, Vector3.One, radius: 2.0f, speed: 0.5f));
     }
 
+    // ? Called each frame
     public static void OnUpdate(FrameEventArgs args)
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -113,39 +129,45 @@ internal static class Renderer
         GL.BindVertexArray(_vao);
 
         // Update the view matrix using the shared camera
-        Matrix4 view = _camera.GetViewMatrix();
+        Matrix4 view = _camera!.GetViewMatrix();
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "view_matrix"), false, ref view);
 
 
-        foreach (var obj in _spheres)
+        
+        // Recalculate position for each sphere spawned
+        foreach (var obj in Spheres)
         {
                 obj.UpdateOrbit(args.Time);
         }
         
         // Render each object
-        foreach (var obj in _spheres)
+        foreach (var obj in Spheres)
         {
             Matrix4 model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "model_matrix"), false, ref model);
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
 
+        
+        //render the spheres
         GL.DepthFunc(DepthFunction.Lequal);
-        _grid.Render(_shaderProgram, _camera.GetViewMatrix(), _projection);
+        _grid!.Render(_shaderProgram, _camera.GetViewMatrix(), _projection);
         GL.DepthFunc(DepthFunction.Less);
-
-        _window.SwapBuffers();
+        
+        
+        //swap the buffer for a new one 
+        _window!.SwapBuffers();
     }
 
     public static void AddObject(Sphere obj)
     {
-        _spheres.Add(obj);
+        Spheres.Add(obj);
 
     }
 
     public static void RemoveObject()
     {
-        _spheres.RemoveAt(_spheres.Count - 1);
+        Spheres.RemoveAt(Spheres.Count - 1);
     }
 
 }

@@ -27,7 +27,7 @@ internal static class InputHandler
         float deltaY = e.Y - _lastMousePosition.Y;
         _lastMousePosition = new Vector2(e.X, e.Y);
 
-        float sensitivity = _camera.Sensitivity;
+        float sensitivity = _camera!.Sensitivity;
         _camera.Yaw += deltaX * sensitivity;
         _camera.Pitch -= deltaY * sensitivity; // Inverted Y axis
     }
@@ -45,7 +45,7 @@ internal static class InputHandler
             Console.WriteLine("Adding a sphere");
             
             
-            var lastSphereAdded = Renderer._spheres.LastOrDefault();
+            var lastSphereAdded = Renderer.Spheres.LastOrDefault();
             
             Random random = new Random();
             
@@ -55,14 +55,14 @@ internal static class InputHandler
             
             Vector3 pos = new Vector3(x,y,z);
             
-            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, radius: lastSphereAdded.Radius+0.3f , speed: 0.1f));
+            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, radius: lastSphereAdded!.Radius+0.3f , speed: 0.1f));
 
         }
 
         if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.C)
         {
             Console.WriteLine("Removing last object added");
-            if (Renderer._spheres.Count > 1 )
+            if (Renderer.Spheres.Count > 1 )
                 Renderer.RemoveObject();
         }
     }
@@ -72,7 +72,7 @@ internal static class InputHandler
         var window = WindowManager.GetWindow();
         var input = window.KeyboardState;
 
-        float cameraSpeed = _camera.Speed * (float)args.Time;
+        float cameraSpeed = _camera!.Speed * (float)args.Time;
         
 
         if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.W)) // forward

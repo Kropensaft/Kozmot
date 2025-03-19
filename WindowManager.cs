@@ -7,7 +7,7 @@ namespace OpenGL;
 
 internal static class WindowManager
 {
-    private static GameWindow _window;
+    private static GameWindow? _window;
 
     public static void Initialize(GameWindow window)
     {
@@ -19,7 +19,7 @@ internal static class WindowManager
         _window.Closing += OnWindowClosing;
     }
 
-    private static void OnWindowClosing(CancelEventArgs e)
+    private static void OnWindowClosing(CancelEventArgs e) //CancelEventArgs is unused but is present simply so we can subscribe to the event
     {
         Renderer.ResourceCleanup();
     }
@@ -28,13 +28,10 @@ internal static class WindowManager
     {
         Console.WriteLine("Starting error checking sequence...");
         ErrorCode error = GL.GetError();
-        if (error != ErrorCode.NoError)
-        {
-            Console.WriteLine($"OpenGL Error: {error}");
-        }
-        else 
-            Console.WriteLine("No errors detected");
+        Console.WriteLine(error != ErrorCode.NoError ? $"OpenGL Error: {error}" : "No errors detected"); 
+            
     }
-
-    public static GameWindow GetWindow() => _window;
+    
+    //Function to return a reference to _window from other files
+    public static GameWindow GetWindow() => _window!;
 }

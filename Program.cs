@@ -16,11 +16,11 @@ internal static class Program
         
         
         //Program settings 
-        nativeWindowSettings.Size = new Vector2i(800, 600);
+        nativeWindowSettings.ClientSize = new Vector2i(800, 600);
         nativeWindowSettings.Title = "C# GL";
         nativeWindowSettings.StartFocused = true;
         nativeWindowSettings.Vsync = VSyncMode.Off;
-        nativeWindowSettings.WindowState = WindowState.Fullscreen;
+        //nativeWindowSettings.WindowState = WindowState.Fullscreen;
         
         
         var window = new GameWindow(windowSettings, nativeWindowSettings);
@@ -39,6 +39,8 @@ internal static class Program
         
         WindowManager.Initialize(window);
         
+        
+        //Check for GL errors during startup initialization 
         WindowManager.CheckGlErrors();
 
         window.Run();
