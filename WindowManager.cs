@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using OpenGL.GUI;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Desktop;
 using ErrorCode = OpenTK.Graphics.OpenGL.ErrorCode;
@@ -12,7 +13,6 @@ internal static class WindowManager
     public static void Initialize(GameWindow window)
     {
         _window = window;
-
         // Register event handlers
         _window.Load += Renderer.OnLoad;
         _window.UpdateFrame += Renderer.OnUpdate;
@@ -34,5 +34,6 @@ internal static class WindowManager
     
     //Function to return a reference to _window from other files
     public static GameWindow GetWindow() => _window!;
+    
     
 }

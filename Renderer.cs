@@ -1,4 +1,6 @@
 using System.Drawing;
+using ImGuiNET;
+using OpenGL.GUI;
 using OpenGL.Objects;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -26,6 +28,8 @@ internal static class Renderer
     private static float[]?  _vertices;
     private static uint[]? _indices;
     
+    //GUI 
+    private static ImGuiController? _controller;
     
     //Initalize grid
     private static Grid? _grid;
@@ -60,7 +64,7 @@ internal static class Renderer
         GL.DeleteBuffer(Objects.Grid._ebo);
         
         Console.WriteLine("Deleting Objects...\n");
-        // Clear the list of spheres
+        // Deallocate the objects
         Spheres.Clear();
         
         
@@ -75,6 +79,7 @@ internal static class Renderer
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         
         _window = WindowManager.GetWindow();
+        _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
         
         // Initialize matrices
         _projection = Matrix4.CreatePerspectiveFieldOfView(
@@ -128,15 +133,26 @@ internal static class Renderer
         // Set projection and view matrices
         GL.UniformMatrix4(projLoc, false, ref _projection);
         GL.UniformMatrix4(viewLoc, false, ref _view);
-
+        
         // Add initial objects
         Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, orbitRadius: 3.0f, speed: 1.0f));
         Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new(0.5f, 0.5f, 0.5f), orbitRadius: 2.0f, speed: 0.5f));
+        
+        // ! Check correct initialization
+        if (!_window.Exists)
+        {
+            _window.Close();
+            Console.WriteLine("Game Window not initialized.");
+        }
+        
     }
 
     // ? Called each frame
     public static void OnUpdate(FrameEventArgs args)
     {
+        
+        _controller!.Update(_window!, (float)args.Time);
+        
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         GL.UseProgram(_shaderProgram);
         GL.BindVertexArray(_vao);
@@ -167,7 +183,13 @@ internal static class Renderer
         _grid!.Render(_shaderProgram, _camera.GetViewMatrix(), _projection);
         GL.DepthFunc(DepthFunction.Less);
         
+        // ? Toggles fullscreen - ImGui.DockSpaceOverViewport();
         
+        ImGui.ShowMetricsWindow();
+        
+        _controller.Render();
+        
+        ImGuiController.CheckGLError("End of Frame");
         //swap the buffer for a new one 
         _window!.SwapBuffers();
     }

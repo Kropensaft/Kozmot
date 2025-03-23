@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using System.Diagnostics;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
@@ -20,7 +21,7 @@ internal static class Program
         nativeWindowSettings.Title = "C# GL";
         nativeWindowSettings.StartFocused = true;
         nativeWindowSettings.Vsync = VSyncMode.Off;
-        //nativeWindowSettings.WindowState = WindowState.Fullscreen;
+        nativeWindowSettings.WindowState = Debugger.IsAttached ? WindowState.Normal : WindowState.Fullscreen;
         
         
         var window = new GameWindow(windowSettings, nativeWindowSettings);
