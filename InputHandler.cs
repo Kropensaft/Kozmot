@@ -1,16 +1,24 @@
+using OpenGL.Objects;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Vector2 = OpenTK.Mathematics.Vector2;
 using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace OpenGL;
 
+/// <summary>
+/// Input register and handler, use it for mapping actions and logic to specific inputs
+/// </summary>
+
+
+// TODO : Modify the input for ImGui keyboard redirection
 internal static class InputHandler
 {
-    private static Objects.Camera? _camera;
+    private static Camera? _camera;
     private static Vector2 _lastMousePosition;
 
-    public static void InitializeInputs(GameWindow window, Objects.Camera camera)
+    public static void InitializeInputs(GameWindow window, Camera camera)
     {
         _camera = camera;
         window.KeyDown += OnKeyDown;
@@ -32,35 +40,34 @@ internal static class InputHandler
 
     private static void OnKeyDown(KeyboardKeyEventArgs e)
     {
-        if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape)
+        if (e.Key == Keys.Escape)
         {
             Console.WriteLine("Closing window...");
             WindowManager.GetWindow().Close();
         }
 
-        if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.G)
+        if (e.Key == Keys.G)
         {
             Console.WriteLine("Adding a sphere");
-            
-            
+
+
             var lastSphereAdded = Renderer.Spheres.LastOrDefault();
-            
+
             var random = new Random();
-            
+
             float x = (float)(random.NextDouble() * 2 - 1);
             float y = (float)(random.NextDouble() * 2 - 1);
             float z = 0;
-            
-            var pos = new Vector3(x,y,z);
-            
-            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, orbitRadius: lastSphereAdded!.Radius+0.3f , speed: 0.1f));
 
+            var pos = new Vector3(x, y, z);
+
+            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, lastSphereAdded!.Radius + 0.3f, 0.1f));
         }
 
-        if (e.Key == OpenTK.Windowing.GraphicsLibraryFramework.Keys.C)
+        if (e.Key == Keys.C)
         {
             Console.WriteLine("Removing last object added");
-            if (Renderer.Spheres.Count > 1 )
+            if (Renderer.Spheres.Count > 1)
                 Renderer.RemoveObject();
         }
     }
@@ -71,27 +78,26 @@ internal static class InputHandler
         var input = window.KeyboardState;
 
         float cameraSpeed = _camera!.Speed * (float)args.Time;
-        
 
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.W)) // forward
+
+        if (input.IsKeyDown(Keys.W)) // forward
             _camera.Position += _camera.Front * cameraSpeed;
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.S)) // backward
+        if (input.IsKeyDown(Keys.S)) // backward
             _camera.Position -= _camera.Front * cameraSpeed;
-        
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.A)) // left
+
+        if (input.IsKeyDown(Keys.A)) // left
             _camera.Position -= _camera.Right * cameraSpeed;
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.D)) // right
+        if (input.IsKeyDown(Keys.D)) // right
             _camera.Position += _camera.Right * cameraSpeed;
-        
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.E)) // Vertical Up
+
+        if (input.IsKeyDown(Keys.E)) // Vertical Up
             _camera.Position += _camera.Up * cameraSpeed;
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Q)) // Vertical Down
+        if (input.IsKeyDown(Keys.Q)) // Vertical Down
             _camera.Position -= _camera.Up * cameraSpeed;
-        
-        if (input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R)) // reset position to Vec(0,0,0)
+
+        if (input.IsKeyDown(Keys.R)) // reset position to Vec(0,0,0)
             _camera.Position = Vector3.Zero;
-        
+
         //Console.WriteLine($"{_camera.Position.X},{_camera.Position.Y},{_camera.Position.Z}");
-        
     }
 }

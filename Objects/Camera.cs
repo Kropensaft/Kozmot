@@ -1,26 +1,32 @@
 using OpenTK.Mathematics;
 
-
 namespace OpenGL.Objects;
-
+/// <summary>
+/// Camera implementation for omnidirectional movement among the scene
+/// </summary>
 public class Camera
 {
-    // Camera position
-    public Vector3 Position { get; set; }
-
     // Camera direction vectors (fields, not properties)
     private Vector3 _front = -Vector3.UnitZ;
-    private Vector3 _up = Vector3.UnitY;
-    private Vector3 _right = Vector3.UnitX;
-
-    // Properties to expose direction vectors
-    public Vector3 Front => _front;
-    public Vector3 Up => _up;
-    public Vector3 Right => _right;
 
     // Camera rotation
     private float _pitch; // Rotation around the X axis
     private float _yaw = -MathHelper.PiOver2; // Rotation around the Y axis (initialized to look forward)
+
+    public Camera(Vector3 position)
+    {
+        Position = position;
+        UpdateVectors();
+    }
+
+    // Camera position
+    public Vector3 Position { get; set; }
+
+    // Properties to expose direction vectors
+    public Vector3 Front => _front;
+    public Vector3 Up { get; private set; } = Vector3.UnitY;
+
+    public Vector3 Right { get; private set; } = Vector3.UnitX;
 
     public float Pitch
     {
@@ -47,15 +53,9 @@ public class Camera
     public float Speed { get; set; } = 2.5f;
     public float Sensitivity { get; set; } = 0.2f;
 
-    public Camera(Vector3 position)
-    {
-        Position = position;
-        UpdateVectors();
-    }
-
     public Matrix4 GetViewMatrix()
     {
-        return Matrix4.LookAt(Position, Position + _front, _up);
+        return Matrix4.LookAt(Position, Position + _front, Up);
     }
 
     private void UpdateVectors()
@@ -67,7 +67,7 @@ public class Camera
         _front = Vector3.Normalize(_front);
 
         // Recalculate the Right and Up vectors
-        _right = Vector3.Normalize(Vector3.Cross(_front, Vector3.UnitY));
-        _up = Vector3.Normalize(Vector3.Cross(_right, _front));
+        Right = Vector3.Normalize(Vector3.Cross(_front, Vector3.UnitY));
+        Up = Vector3.Normalize(Vector3.Cross(Right, _front));
     }
 }

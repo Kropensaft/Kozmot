@@ -9,78 +9,84 @@ using OpenTK.Windowing.Desktop;
 
 namespace OpenGL;
 
+/// <summary>
+///     Responsible for all of the 3D rendering, houses the main logic for OnNewFrameUpdate, ALL GL settings should be
+///     applied in OnLoad()
+/// </summary>
 internal static class Renderer
 {
-    
     //virtual array object, virtual buffer object, element buffer object, ---//---
     private static int _vao, _vbo, _ebo, _shaderProgram;
-    
+
     // ? window can be null during initialization
     private static GameWindow? _window;
-    
+
     //View and projection matrices used for rendering and transformations
     private static Matrix4 _projection, _view;
-    
+
     // ! To be renamed in the future and to be used with a new type  
-    public static List<Sphere> Spheres = new List<Sphere>();
-    
+    public static List<Sphere> Spheres = new();
+
     //vertex and index arrays
-    private static float[]?  _vertices;
+    private static float[]? _vertices;
     private static uint[]? _indices;
-    
+
     //GUI 
     private static ImGuiController? _controller;
-    
+
     //Initalize grid
     private static Grid? _grid;
+
     //Initialize camera
     public static Camera? _camera;
 
-    
+
     // ! After program ends delete all objects used by OpenGL and objects allocated at runtime
     public static void ResourceCleanup()
     {
-        
         int elapsedtime = DateTime.Now.Millisecond;
         Console.WriteLine("Starting Resource Cleanup...\n");
-        
-        
+
+
         Console.WriteLine("Deleting Primary buffers...");
         // Delete VAO, VBO, and EBO
         GL.DeleteVertexArray(_vao);
         GL.DeleteBuffer(_vbo);
         GL.DeleteBuffer(_ebo);
-        
-        
+
+
         Console.WriteLine("Deleting Shader programs...");
         // Delete shader program
         GL.DeleteProgram(_shaderProgram);
-        
-        
+
+
         Console.WriteLine("Deleting Grid buffers...");
         //Delete buffers
-        GL.DeleteVertexArray(Objects.Grid._vao);
-        GL.DeleteBuffer(Objects.Grid._vbo);
-        GL.DeleteBuffer(Objects.Grid._ebo);
-        
-        Console.WriteLine("Deleting Objects...\n");
+        GL.DeleteVertexArray(Grid._vao);
+        GL.DeleteBuffer(Grid._vbo);
+        GL.DeleteBuffer(Grid._ebo);
+
+        Console.WriteLine("Deleting Objects...");
         // Deallocate the objects
         Spheres.Clear();
-        
-        
-        Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond-elapsedtime} ms.");
+
+        // ? ImGui
+        Console.WriteLine("Deleting ImGui Buffers...\n");
+        ImGuiController.DestroyDeviceObjects();
+
+        Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond - elapsedtime} ms.");
     }
-    
+
     public static void OnLoad()
     {
         GL.ClearColor(Color.Black);
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-        
+
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
-        
+
         // Initialize matrices
         _projection = Matrix4.CreatePerspectiveFieldOfView(
             MathHelper.DegreesToRadians(45f),
@@ -91,13 +97,13 @@ internal static class Renderer
 
         // ! We're aware that camera is declared as possibly null, however Camera class is never null when passing references
         _view = _camera!.GetViewMatrix();
-        
+
         //new grid instance
-        _grid = new Grid(size: 200, step: 1.0f);
-        
-        
+        _grid = new Grid(200);
+
+
         // Generate sphere vertices and indices (or cube, etc.)
-        var sphereData = Sphere.GenerateSphere(.2f, 36, 18);
+        (float[] Vertices, uint[] Indices) sphereData = Sphere.GenerateSphere(.2f, 36, 18);
         _vertices = sphereData.Vertices;
         _indices = sphereData.Indices;
 
@@ -133,62 +139,56 @@ internal static class Renderer
         // Set projection and view matrices
         GL.UniformMatrix4(projLoc, false, ref _projection);
         GL.UniformMatrix4(viewLoc, false, ref _view);
-        
+
         // Add initial objects
-        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, orbitRadius: 3.0f, speed: 1.0f));
-        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new(0.5f, 0.5f, 0.5f), orbitRadius: 2.0f, speed: 0.5f));
-        
+        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, 3.0f, 1.0f));
+        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f), 2.0f, 0.5f));
+
         // ! Check correct initialization
         if (!_window.Exists)
         {
             _window.Close();
             Console.WriteLine("Game Window not initialized.");
         }
-        
     }
 
     // ? Called each frame
     public static void OnUpdate(FrameEventArgs args)
     {
-        
         _controller!.Update(_window!, (float)args.Time);
-        
+
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         GL.UseProgram(_shaderProgram);
         GL.BindVertexArray(_vao);
 
         // Update the view matrix using the shared camera
-        Matrix4 view = _camera!.GetViewMatrix();
+        var view = _camera!.GetViewMatrix();
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "view_matrix"), false, ref view);
 
 
-        
         // Recalculate position for each sphere spawned
-        foreach (var obj in Spheres)
-        {
-                obj.UpdateOrbit(args.Time);
-        }
-        
+        foreach (var obj in Spheres) obj.UpdateOrbit(args.Time);
+
         // Render each object
         foreach (var obj in Spheres)
         {
-            Matrix4 model = obj.GetModelMatrix();
+            var model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "model_matrix"), false, ref model);
             GL.DrawElements(PrimitiveType.Triangles, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        
+
         //render the spheres
         GL.DepthFunc(DepthFunction.Lequal);
         _grid!.Render(_shaderProgram, _camera.GetViewMatrix(), _projection);
         GL.DepthFunc(DepthFunction.Less);
-        
+
         // ? Toggles fullscreen - ImGui.DockSpaceOverViewport();
-        
+
         ImGui.ShowMetricsWindow();
-        
+        //ImGui.ShowAboutWindow();
         _controller.Render();
-        
+
         ImGuiController.CheckGLError("End of Frame");
         //swap the buffer for a new one 
         _window!.SwapBuffers();
@@ -197,12 +197,10 @@ internal static class Renderer
     public static void AddObject(Sphere obj)
     {
         Spheres.Add(obj);
-
     }
 
     public static void RemoveObject()
     {
         Spheres.RemoveAt(Spheres.Count - 1);
     }
-
 }

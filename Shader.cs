@@ -1,8 +1,10 @@
 using OpenTK.Graphics.OpenGL4;
-using System;
 
 namespace OpenGL;
 
+/// <summary>
+///     Main shader program manager, responsible for object shading not grid or other classes with their respective shaders
+/// </summary>
 internal static class Shader
 {
     private const string vertexShaderPath = "Shaders/Shader.vert";
@@ -10,17 +12,16 @@ internal static class Shader
 
     public static int CreateShaderProgram()
     {
-        
         //Create the shader.vert/frag codes from their respective files
         string vertexShaderCode = File.ReadAllText(vertexShaderPath);
         string fragmentShaderCode = File.ReadAllText(fragmentShaderPath);
-        
-        
+
+
         //Compile each shader respectively
         int vertexShader = CompileShader(ShaderType.VertexShader, vertexShaderCode);
         int fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentShaderCode);
-        
-        
+
+
         //create new shader program
         int program = GL.CreateProgram();
         //attach frag and vert to program
@@ -28,13 +29,13 @@ internal static class Shader
         GL.AttachShader(program, fragmentShader);
         //link program to GPU
         GL.LinkProgram(program);
-    
+
         //If shader program doesn't link throw an exception
         GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int linkStatus);
         if (linkStatus == (int)All.False)
             throw new Exception("Program linking failed: " + GL.GetProgramInfoLog(program));
-        
-        
+
+
         //since we've compiled and linked the program we can now delete the unneeded data from GPU memory
         GL.DeleteShader(vertexShader);
         GL.DeleteShader(fragmentShader);
