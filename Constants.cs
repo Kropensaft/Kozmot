@@ -1,3 +1,4 @@
+using System.Drawing;
 using OpenTK.Mathematics;
 #pragma warning disable IDE1006 // Simplify object initialization
 namespace OpenGL;
@@ -65,5 +66,15 @@ public static class Constants
     /// </summary>
     public static readonly int VERTEX_ATRIBB_STRIDE  = 7;
     public static readonly int VERTEX_ATRIBB_SIZE = 3;
-
+    
+    
+    /// <summary>
+    /// Bespoke GUI values
+    /// </summary>
+    public static readonly System.Numerics.Vector2 BESPOKE_WINDOW_SIZE = new System.Numerics.Vector2(SCREEN_WIDTH%4, SCREEN_HEIGHT%4); 
+    
+    
+    
+    
+    
 }

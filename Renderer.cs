@@ -188,9 +188,11 @@ internal static class Renderer
         GL.DepthFunc(DepthFunction.Less);
 
         // ? Toggles fullscreen - ImGui.DockSpaceOverViewport();
-
-        ImGui.ShowMetricsWindow();
-        //ImGui.ShowAboutWindow();
+        
+        
+        //? Call to our own bespoke UI        
+         ImGuiElementContainer.SubmitUI();
+         
         _controller.Render();
 
         ImGuiController.CheckGLError("End of Frame");
@@ -207,4 +209,7 @@ internal static class Renderer
     {
         Spheres.RemoveAt(Spheres.Count - 1);
     }
+    
+    public static ImGuiController GetController() => _controller!;
+        
 }

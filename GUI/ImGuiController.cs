@@ -93,6 +93,10 @@ public class ImGuiController : IDisposable
 
         GL.DeleteTexture(_fontTexture);
         GL.DeleteProgram(_shader);
+        
+        Console.WriteLine("Deleting GUI buffers");
+        
+        GC.SuppressFinalize(this);
     }
 
     public void WindowResized(int width, int height)
@@ -605,4 +609,5 @@ public class ImGuiController : IDisposable
             default: return ImGuiKey.None;
         }
     }
+    
 }
