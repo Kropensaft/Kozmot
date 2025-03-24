@@ -5,6 +5,9 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 
+
+// Constants located in Constants.cs
+
 namespace OpenGL;
 
 internal static class Program
@@ -20,7 +23,7 @@ internal static class Program
 
 
         //Program settings 
-        nativeWindowSettings.ClientSize = new Vector2i(800, 600);
+        nativeWindowSettings.ClientSize = new Vector2i(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
         nativeWindowSettings.Title = "C# GL";
         nativeWindowSettings.StartFocused = true;
         nativeWindowSettings.Vsync = VSyncMode.Off;
@@ -34,7 +37,7 @@ internal static class Program
 
 
         // Initialize camera
-        var camera = new Camera(new Vector3(-1, 3, 10));
+        var camera = new Camera(Constants.INITIAL_CAMERA_POS);
 
         //Pass references
         InputHandler.InitializeInputs(window, camera);

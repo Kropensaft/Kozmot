@@ -18,13 +18,14 @@ internal static class InputHandler
     private static Camera? _camera;
     private static Vector2 _lastMousePosition;
 
+    private static readonly float mousePosDiv = 2f; 
     public static void InitializeInputs(GameWindow window, Camera camera)
     {
         _camera = camera;
         window.KeyDown += OnKeyDown;
         window.UpdateFrame += OnUpdateFrame;
         window.MouseMove += OnMouseMove;
-        _lastMousePosition = new Vector2(window.Size.X / 2f, window.Size.Y / 2f);
+        _lastMousePosition = new Vector2(window.Size.X / mousePosDiv, window.Size.Y / mousePosDiv);
     }
 
     private static void OnMouseMove(MouseMoveEventArgs e)
@@ -55,13 +56,16 @@ internal static class InputHandler
 
             var random = new Random();
 
+            
+            //TODO : Change the sphere position generation
             float x = (float)(random.NextDouble() * 2 - 1);
             float y = (float)(random.NextDouble() * 2 - 1);
             float z = 0;
 
             var pos = new Vector3(x, y, z);
 
-            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One, lastSphereAdded!.Radius + 0.3f, 0.1f));
+            Renderer.AddObject(new Sphere(pos, Vector3.Zero, Vector3.One,
+                lastSphereAdded!.Radius + Constants.INITIAL_SPHERE_RADIUS, Constants.INITIAL_SPHERE_VELOCITY));
         }
 
         if (e.Key == Keys.C)

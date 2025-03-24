@@ -89,21 +89,23 @@ internal static class Renderer
 
         // Initialize matrices
         _projection = Matrix4.CreatePerspectiveFieldOfView(
-            MathHelper.DegreesToRadians(45f),
+            MathHelper.DegreesToRadians(Constants.PROJECTION_MATRIX_RADIAN_CONSTANT),
             _window.Size.X / (float)_window.Size.Y,
-            0.1f,
-            100f
+            Constants.NEAR_DEPTH_CONSTANT,
+            Constants.FAR_DEPTH_CONSTANT
         );
 
-        // ! We're aware that camera is declared as possibly null, however Camera class is never null when passing references
-        _view = _camera!.GetViewMatrix();
+        // ! We're aware that camera is declared as possibly null, however Camera class is never null when passing references_view = _camera!.GetViewMatrix();
 
         //new grid instance
-        _grid = new Grid(200);
+        _grid = new Grid(Constants.GRID_SIZE);
 
 
         // Generate sphere vertices and indices (or cube, etc.)
-        (float[] Vertices, uint[] Indices) sphereData = Sphere.GenerateSphere(.2f, 36, 18);
+        (float[] Vertices, uint[] Indices) sphereData = Sphere.GenerateSphere(
+            Constants.DEFAULT_ORBIT_RADIUS,
+            Constants.SPHERE_SECTOR_COUNT,
+            Constants.SPHERE_STACK_COUNT);
         _vertices = sphereData.Vertices;
         _indices = sphereData.Indices;
 
@@ -126,9 +128,11 @@ internal static class Renderer
         GL.UseProgram(_shaderProgram);
 
         // Attribute pointers
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+        GL.VertexAttribPointer(0, Constants.VERTEX_ATRIBB_SIZE,
+            VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+        GL.VertexAttribPointer(1, Constants.VERTEX_ATRIBB_SIZE,
+            VertexAttribPointerType.Float, false, 6 * sizeof(float), Constants.VERTEX_ATRIBB_SIZE * sizeof(float));
         GL.EnableVertexAttribArray(1);
 
         // Get uniform locations of respective matrices
@@ -140,7 +144,7 @@ internal static class Renderer
         GL.UniformMatrix4(projLoc, false, ref _projection);
         GL.UniformMatrix4(viewLoc, false, ref _view);
 
-        // Add initial objects
+        // Add initial objects TODO : Remove these and replace them with some more meaningfull
         Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, 3.0f, 1.0f));
         Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f), 2.0f, 0.5f));
 

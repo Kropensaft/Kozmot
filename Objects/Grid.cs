@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenGL;
 
 namespace OpenGL.Objects;
 
@@ -14,7 +15,8 @@ public class Grid
     public static float[]? _vertices;
     public static uint[]? _indices;
 
-    public Grid(int size = 500, float step = 1.0f)
+    
+    public Grid(int size = 200, float step = 1.0f)
     {
         GenerateGridGeometry(size, step);
         InitializeBuffers();
@@ -32,9 +34,9 @@ public class Grid
         for (float x = -halfSize; x <= halfSize; x += step)
         {
             // Determine color: red for X=0, gray otherwise
-            float r = Math.Abs(x) < 0.001f ? 1.0f : 0.5f; // Red for X=0, gray otherwise
-            float g = Math.Abs(x) < 0.001f ? 0.0f : 0.5f;
-            float b = Math.Abs(x) < 0.001f ? 0.0f : 0.5f;
+            float r = Math.Abs(x) < Constants.GRID_COMPARISON_FLOAT ? Constants.GRID_RED_VALUE : Constants.GRID_FALLBACK_FLOAT; // Red for X=0, gray otherwise
+            float g = Math.Abs(x) < Constants.GRID_COMPARISON_FLOAT ? Constants.FLOAT_ZERO : Constants.GRID_FALLBACK_FLOAT;
+            float b = Math.Abs(x) < Constants.GRID_COMPARISON_FLOAT ? Constants.FLOAT_ZERO : Constants.GRID_FALLBACK_FLOAT;
             float a = 0.3f; // Transparency
 
             vertices.AddRange(new[] { x, 0, -halfSize, r, g, b, a }); // Start point
@@ -46,9 +48,9 @@ public class Grid
         for (float z = -halfSize; z <= halfSize; z += step)
         {
             // Determine color: blue for Z=0, gray otherwise
-            float r = Math.Abs(z) < 0.001f ? 0.0f : 0.5f; // Blue for Z=0, gray otherwise
-            float g = Math.Abs(z) < 0.001f ? 0.0f : 0.5f;
-            float b = Math.Abs(z) < 0.001f ? 1.0f : 0.5f;
+            float r = Math.Abs(z) < Constants.GRID_COMPARISON_FLOAT ? Constants.FLOAT_ZERO : Constants.GRID_FALLBACK_FLOAT; // Blue for Z=0, gray otherwise
+            float g = Math.Abs(z) < Constants.GRID_COMPARISON_FLOAT ? Constants.FLOAT_ZERO : Constants.GRID_FALLBACK_FLOAT;
+            float b = Math.Abs(z) < Constants.GRID_COMPARISON_FLOAT ? Constants.GRID_RED_VALUE : Constants.GRID_FALLBACK_FLOAT;
             float a = 0.9f; // Transparency
 
             vertices.AddRange(new[] { -halfSize, 0, z, r, g, b, a }); // Start point
@@ -76,9 +78,14 @@ public class Grid
             BufferUsageHint.StaticDraw);
 
         // Vertex attributes (position + RGBA color)
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float,
+            false, Constants.VERTEX_ATRIBB_STRIDE * sizeof(float), 0);
+        
         GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 7 * sizeof(float), 3 * sizeof(float));
+        
+        GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float,
+            false, Constants.VERTEX_ATRIBB_STRIDE * sizeof(float), 3 * sizeof(float));
+        
         GL.EnableVertexAttribArray(1);
     }
 

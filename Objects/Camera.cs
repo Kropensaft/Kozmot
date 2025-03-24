@@ -33,7 +33,7 @@ public class Camera
         get => MathHelper.RadiansToDegrees(_pitch);
         set
         {
-            float angle = MathHelper.Clamp(value, -89f, 89f);
+            float angle = MathHelper.Clamp(value, -Constants.CAMERA_ANGLE_CLAMP, Constants.CAMERA_ANGLE_CLAMP);
             _pitch = MathHelper.DegreesToRadians(angle);
             UpdateVectors();
         }
@@ -50,8 +50,8 @@ public class Camera
     }
 
     // Camera movement speed and mouse sensitivity
-    public float Speed { get; set; } = 2.5f;
-    public float Sensitivity { get; set; } = 0.2f;
+    public float Speed { get; set; } = Constants.CAMERA_SPEED;
+    public float Sensitivity { get; set; } = Constants.CAMERA_SENSITIVITY;
 
     public Matrix4 GetViewMatrix()
     {

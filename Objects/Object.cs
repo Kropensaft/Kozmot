@@ -127,5 +127,3 @@ public class Sphere(Vector3 position, Vector3 rotation, Vector3 scale) : Object(
         return (vertices.ToArray(), indices.ToArray());
     }
 }
-
-public class Cube(Vector3 position, Vector3 rotation, Vector3 scale) : Object(position, rotation, scale);
