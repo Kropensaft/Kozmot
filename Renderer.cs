@@ -112,12 +112,16 @@ internal static class Renderer
 
         //? Generate a new sphere
         var sphere = new Sphere(
+            name: "Default Sphere",
             position: new Vector3(15, 0, 0),
             rotation: Vector3.Zero,
             scale: new Vector3(.1f, .1f, .1f),
-            color: System.Numerics.Vector3.One, // White color
+            color: System.Numerics.Vector3.One,
+            mass: 1.0f,
             orbitRadius: 5.0f,
-            speed: 1.0f
+            speed: 1.0f,
+            isEmissive: false,
+            parent: null
         );
         Spheres.Add(sphere);
         
@@ -162,10 +166,35 @@ internal static class Renderer
         GL.UniformMatrix4(projLoc, false, ref _projection);
         GL.UniformMatrix4(viewLoc, false, ref _view);
 
-        // Add initial objects TODO : Remove these and replace them with some more meaningful
-        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, System.Numerics.Vector3.Zero,3.0f, 1.0f));
-        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f), System.Numerics.Vector3.One,.0f, 0.5f));
+        
+        
+        Spheres.Add(new Sphere(
+            name: "Left Sphere",
+            position: new Vector3(-2, 0, 0),
+            rotation: Vector3.Zero,
+            scale: Vector3.One,
+            color: System.Numerics.Vector3.Zero,
+            mass: 3.0f,
+            orbitRadius: 2.0f,
+            speed: 1.0f,
+            isEmissive: false,
+            parent: null
+        ));
 
+        Spheres.Add(new Sphere(
+            name: "Right Sphere",
+            position: new Vector3(0, 0, 0),
+            rotation: Vector3.Zero,
+            scale: new Vector3(3f, 3f, 3f),
+            color: System.Numerics.Vector3.One,
+            mass: 1.0f,
+            orbitRadius: 2.0f,
+            speed: 0.5f,
+            isEmissive: false,
+            parent: null
+        ));
+        
+        
         // ! Check correct initialization
         if (!_window.Exists)
         {
