@@ -7,8 +7,6 @@ namespace OpenGL;
 /// </summary>
 internal static class Shader
 {
-    
-
     public static int CreateShaderProgram(string vertexShaderPath, string fragmentShaderPath)
     {
         //Create the shader.vert/frag codes from their respective files
@@ -41,7 +39,7 @@ internal static class Shader
 
         return program;
     }
-    
+
     private static int CompileShader(ShaderType type, string source)
     {
         int shader = GL.CreateShader(type);

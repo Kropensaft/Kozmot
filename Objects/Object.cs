@@ -1,21 +1,12 @@
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
+using OpenGL;  // Added for Renderer access
 
 namespace OpenGL;
 
 public class Object
 {
-    public Vector3 Position { get; protected set; }
-    public Vector3 Rotation { get; protected set; }
-    public Vector3 Scale { get; protected set; }
-    public System.Numerics.Vector3 Color { get; set; }
-    public string Name { get; set; }
-    public float Mass { get; set; }
-    public bool IsEmissive { get; set; }
-
-    public Object(string name, Vector3 position, Vector3 rotation, Vector3 scale, 
-                 System.Numerics.Vector3 color, float mass, bool isEmissive = false)
+    public Object(string name, Vector3 position, Vector3 rotation, Vector3 scale,
+        System.Numerics.Vector3 color, float mass, bool isEmissive = false)
     {
         Name = name;
         Position = position;
@@ -24,6 +15,25 @@ public class Object
         Color = color;
         Mass = mass;
         IsEmissive = isEmissive;
+        Velocity = Vector3.Zero;
+        Acceleration = Vector3.Zero;
+    }
+
+    public Vector3 Position { get; protected set; }
+    public Vector3 Rotation { get; protected set; }
+    public Vector3 Scale { get; protected set; }
+    public System.Numerics.Vector3 Color { get; set; }
+    public string Name { get; set; }
+    public float Mass { get; set; }
+    public bool IsEmissive { get; set; }
+    public Vector3 Velocity { get; set; }
+    public Vector3 Acceleration { get; set; }
+
+    public virtual void Update(double deltaTime)
+    {
+        Velocity += Acceleration * (float)deltaTime;
+        Position += Velocity * (float)deltaTime;
+        Acceleration = Vector3.Zero;
     }
 
     public virtual Matrix4 GetModelMatrix()
@@ -38,44 +48,56 @@ public class Object
 
 public class Sphere : Object
 {
-    public float OrbitRadius { get; set; }
-    public float Speed { get; private set; }
-    private float Angle { get; set; } = 0;
-    public Object Parent { get; set; } // For moons to reference their parent planet
-
     public Sphere(string name, Vector3 position, Vector3 rotation, Vector3 scale,
-                 System.Numerics.Vector3 color, float mass, float orbitRadius, 
-                 float speed, bool isEmissive = false, Object parent = null)
+        System.Numerics.Vector3 color, float mass, float orbitRadius,
+        float angularSpeed, bool isEmissive = false, Object? parent = null)
         : base(name, position, rotation, scale, color, mass, isEmissive)
     {
         OrbitRadius = orbitRadius;
-        Speed = speed;
+        AngularSpeed = angularSpeed;
         Parent = parent;
     }
 
-    public void UpdateOrbit(double deltaTime)
+    public float OrbitRadius { get; set; }
+    public float AngularSpeed { get; }
+    private float Angle { get; set; }
+    public Object? Parent { get; set; }
+
+    public override void Update(double deltaTime)
     {
-        Angle += Speed * (float)deltaTime;
-        var center = Parent?.Position ?? Vector3.Zero;
-        Position = new Vector3(
-            center.X + OrbitRadius * MathF.Cos(Angle),
-            center.Y,
-            center.Z + OrbitRadius * MathF.Sin(Angle)
-        );
+        base.Update(deltaTime);
+
+        foreach (var other in Renderer.Spheres)
+            if (other != this)
+                ApplyGravity(other, deltaTime);
+
+        if (Parent != null)
+        {
+            Angle += AngularSpeed * (float)deltaTime;
+            Position = Parent.Position + new Vector3(
+                OrbitRadius * MathF.Cos(Angle),
+                0,
+                OrbitRadius * MathF.Sin(Angle)
+            );
+        }
     }
 
-    public override Matrix4 GetModelMatrix()
+    private void ApplyGravity(Sphere other, double deltaTime)
     {
-        return Matrix4.CreateScale(Scale) *
-               Matrix4.CreateRotationX(Rotation.X) *
-               Matrix4.CreateRotationY(Rotation.Y) *
-               Matrix4.CreateRotationZ(Rotation.Z) *
-               Matrix4.CreateTranslation(Position);
+        var direction = other.Position - Position;
+        float distance = direction.Length;
+
+        if (distance < 0.1f) return;
+
+        direction = Vector3.Normalize(direction);
+        float forceMagnitude = Constants.GRAVITATIONAL_CONSTANT * (Mass * other.Mass) / (distance * distance);
+        var acceleration = direction * (forceMagnitude / Mass);
+        Acceleration += acceleration * (float)deltaTime;
     }
 
     public (float[] Vertices, uint[] Indices) GenerateSphere(int sectors, int stacks)
     {
-        Vector3 scale = Scale == Vector3.Zero ? Vector3.One*3 : Scale;
+        var scale = Scale == Vector3.Zero ? Vector3.One * 3 : Scale;
         float radius = Constants.INITIAL_SPHERE_RADIUS;
 
         List<float> vertices = new();

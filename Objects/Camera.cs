@@ -1,8 +1,9 @@
 using OpenTK.Mathematics;
 
 namespace OpenGL.Objects;
+
 /// <summary>
-/// Camera implementation for omnidirectional movement among the scene
+///     Camera implementation for omnidirectional movement among the scene
 /// </summary>
 public class Camera
 {

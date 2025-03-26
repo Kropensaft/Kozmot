@@ -23,10 +23,11 @@ internal static class WindowManager
         _window.UpdateFrame += Renderer.OnUpdate;
         _window.Closing += OnWindowClosing;
         _window.TextInput += OnTextInput;
-        
     }
 
-    private static void OnWindowClosing(CancelEventArgs e) //CancelEventArgs is unused but is present simply so we can subscribe to the event
+    private static void
+        OnWindowClosing(
+            CancelEventArgs e) //CancelEventArgs is unused but is present simply so we can subscribe to the event
     {
         Renderer.ResourceCleanup();
     }
@@ -36,7 +37,7 @@ internal static class WindowManager
         ImGuiController.PressChar((char)e.Unicode);
     }
 
-    
+
     public static void CheckGlErrors()
     {
         Console.WriteLine("Starting error checking sequence...");

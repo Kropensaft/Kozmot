@@ -1,5 +1,4 @@
 using ImGuiNET;
-using OpenGL.GUI;
 using OpenGL.Objects;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -13,7 +12,7 @@ internal static class InputHandler
 {
     private static Camera? _camera;
     private static Vector2 _lastMousePosition;
-    private static readonly float mousePosDiv = 2f; 
+    private static readonly float mousePosDiv = 2f;
     private static int _sphereCounter = 1;
 
     public static void InitializeInputs(GameWindow window, Camera camera)
@@ -38,11 +37,8 @@ internal static class InputHandler
 
     private static void OnKeyDown(KeyboardKeyEventArgs e)
     {
-        if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
-        {
-            return;
-        }
-        
+        if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow)) return;
+
         if (e.Key == Keys.Escape)
         {
             Console.WriteLine("Closing window...");
@@ -77,11 +73,9 @@ internal static class InputHandler
             rotation: Vector3.Zero,
             scale: Vector3.One,
             color: color,
-            mass: 1.0f,
+            mass: 1.0f, // Default mass
             orbitRadius: Constants.DEFAULT_ORBIT_RADIUS,
-            speed: Constants.INITIAL_SPHERE_VELOCITY,
-            isEmissive: false,
-            parent: null
+            angularSpeed: Constants.INITIAL_SPHERE_VELOCITY
         );
     }
 

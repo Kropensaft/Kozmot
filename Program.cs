@@ -18,7 +18,6 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        
         var windowSettings = GameWindowSettings.Default;
         var nativeWindowSettings = NativeWindowSettings.Default;
 
@@ -53,5 +52,4 @@ internal static class Program
 
         window.Run();
     }
-    
 }

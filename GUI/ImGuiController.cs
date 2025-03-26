@@ -35,17 +35,17 @@ public class ImGuiController : IDisposable
     private static bool KHRDebugAvailable;
 
     private static readonly List<char> PressedChars = new();
-    private bool _frameBegun;
 
     private readonly Vector2 _scaleFactor = Vector2.One;
+    private readonly bool CompatibilityProfile;
+
+    private readonly int GLVersion;
+    private bool _frameBegun;
     private int _shaderFontTextureLocation;
     private int _shaderProjectionMatrixLocation;
     private int _windowHeight;
 
     private int _windowWidth;
-    private readonly bool CompatibilityProfile;
-
-    private readonly int GLVersion;
 
     /// <summary>
     ///     Constructs a new ImGuiController.
@@ -64,7 +64,7 @@ public class ImGuiController : IDisposable
 
         CompatibilityProfile =
             (GL.GetInteger((GetPName)All.ContextProfileMask) & (int)All.ContextCompatibilityProfileBit) != 0;
-        
+
         IntPtr context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
         var io = ImGui.GetIO();
@@ -93,9 +93,9 @@ public class ImGuiController : IDisposable
 
         GL.DeleteTexture(_fontTexture);
         GL.DeleteProgram(_shader);
-        
+
         Console.WriteLine("Deleting GUI buffers");
-        
+
         GC.SuppressFinalize(this);
     }
 
@@ -609,5 +609,4 @@ public class ImGuiController : IDisposable
             default: return ImGuiKey.None;
         }
     }
-    
 }
