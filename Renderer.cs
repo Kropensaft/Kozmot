@@ -112,7 +112,7 @@ internal static class Renderer
 
         //? Generate a new sphere
         var sphere = new Sphere(
-            position: new Vector3(0, 0, 0),
+            position: new Vector3(15, 0, 0),
             rotation: Vector3.Zero,
             scale: new Vector3(.1f, .1f, .1f),
             color: System.Numerics.Vector3.One, // White color

@@ -39,8 +39,8 @@ public class Grid
             float b = Math.Abs(x) < Constants.GRID_COMPARISON_FLOAT ? Constants.FLOAT_ZERO : Constants.GRID_FALLBACK_FLOAT;
             float a = 0.3f; // Transparency
 
-            vertices.AddRange(new[] { x, 0, -halfSize, r, g, b, a }); // Start point
-            vertices.AddRange(new[] { x, 0, halfSize, r, g, b, a }); // End point
+            vertices.AddRange(new[] { x, Constants.GRID_YPOS_FLOAT, -halfSize, r, g, b, a }); // Start point
+            vertices.AddRange(new[] { x, Constants.GRID_YPOS_FLOAT, halfSize, r, g, b, a }); // End point
             indices.AddRange(new[] { index++, index++ });
         }
 
@@ -53,8 +53,8 @@ public class Grid
             float b = Math.Abs(z) < Constants.GRID_COMPARISON_FLOAT ? Constants.GRID_RED_VALUE : Constants.GRID_FALLBACK_FLOAT;
             float a = 0.9f; // Transparency
 
-            vertices.AddRange(new[] { -halfSize, 0, z, r, g, b, a }); // Start point
-            vertices.AddRange(new[] { halfSize, 0, z, r, g, b, a }); // End point
+            vertices.AddRange(new[] { -halfSize, Constants.GRID_YPOS_FLOAT, z, r, g, b, a }); // Start point
+            vertices.AddRange(new[] { halfSize, Constants.GRID_YPOS_FLOAT, z, r, g, b, a }); // End point
             indices.AddRange(new[] { index++, index++ });
         }
 

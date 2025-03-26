@@ -47,6 +47,7 @@ public static class Constants
     public static readonly float GRID_ALPHA_VALUE = .3f;
     public static readonly float GRID_FALLBACK_FLOAT = .5f;
     public static readonly float GRID_COMPARISON_FLOAT = .001f;
+    public static readonly float GRID_YPOS_FLOAT = -1f;
 
     /// <summary>
     /// Miscellaneous
@@ -74,10 +75,26 @@ public static class Constants
     public static readonly System.Numerics.Vector2 BESPOKE_WINDOW_SIZE = new System.Numerics.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT); 
     public static readonly System.Numerics.Vector2 BESPOKE_BUTTON_SIZE = new System.Numerics.Vector2(50, 20);
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
+    public static readonly uint BESPOKE_TEXTEDIT_WIDE_WIDTH = 120;
     
     public static readonly string BESPOKE_TEXT_DEFAULT = "0.0";
     
     
+    public static readonly string[] planetTypes = new[] { "Ocean planet", "Star", "Gas Giant","Moon", "Desert planet","Ice Giant"};
+
+    ///<summary>
+    /// Physika
+    /// </summary>
+    
+    
+    /// <summary>
+    /// Calculate the approximate gravitational force between two simulated celestial bodies
+    /// </summary>
+    /// <param name="mass1"> Mass of the first celestial body</param>
+    /// <param name="mass2"> Mass of the second celestial body</param>
+    /// <param name="distance"> Distance between said objects</param>
+    /// <returns></returns>
+    public static float G_FORCE(float mass1, float mass2, float distance) { return (mass1*mass2) / (float.Pow(distance, 2)); }
     
     /// <summary>
     /// FilePaths

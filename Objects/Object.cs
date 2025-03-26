@@ -6,6 +6,7 @@ namespace OpenGL;
 
 public class Object
 {
+     
     protected Object(Vector3 position, Vector3 rotation, Vector3 scale, System.Numerics.Vector3 color)
     {
         Position = position;
