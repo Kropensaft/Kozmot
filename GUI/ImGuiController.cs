@@ -34,7 +34,7 @@ public class ImGuiController : IDisposable
 
     private static bool KHRDebugAvailable;
 
-    private readonly List<char> PressedChars = new();
+    private static readonly List<char> PressedChars = new();
     private bool _frameBegun;
 
     private readonly Vector2 _scaleFactor = Vector2.One;
@@ -64,7 +64,7 @@ public class ImGuiController : IDisposable
 
         CompatibilityProfile =
             (GL.GetInteger((GetPName)All.ContextProfileMask) & (int)All.ContextCompatibilityProfileBit) != 0;
-
+        
         IntPtr context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
         var io = ImGui.GetIO();
@@ -279,12 +279,12 @@ public class ImGuiController : IDisposable
         io.KeySuper = KeyboardState.IsKeyDown(Keys.LeftSuper) || KeyboardState.IsKeyDown(Keys.RightSuper);
     }
 
-    internal void PressChar(char keyChar)
+    public static void PressChar(char keyChar)
     {
         PressedChars.Add(keyChar);
     }
 
-    internal void MouseScroll(OpenTK.Mathematics.Vector2 offset)
+    public static void MouseScroll(OpenTK.Mathematics.Vector2 offset)
     {
         var io = ImGui.GetIO();
 
@@ -543,7 +543,7 @@ public class ImGuiController : IDisposable
         while ((error = GL.GetError()) != ErrorCode.NoError) Debug.Print($"{title} ({i++}): {error}");
     }
 
-    private static ImGuiKey TranslateKey(Keys key)
+    public static ImGuiKey TranslateKey(Keys key)
     {
         if (key >= Keys.D0 && key <= Keys.D9)
             return key - Keys.D0 + ImGuiKey._0;

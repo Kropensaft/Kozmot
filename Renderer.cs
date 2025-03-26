@@ -16,8 +16,11 @@ namespace OpenGL;
 internal static class Renderer
 {
     //virtual array object, virtual buffer object, element buffer object, ---//---
-    private static int _vao, _vbo, _ebo, _shaderProgram;
-
+    private static int _vao, _vbo, _ebo;
+    
+    
+    private static Dictionary<string, int> _shaderPrograms = new();
+    
     // ? window can be null during initialization
     private static GameWindow? _window;
 
@@ -57,7 +60,9 @@ internal static class Renderer
 
         Console.WriteLine("Deleting Shader programs...");
         // Delete shader program
-        GL.DeleteProgram(_shaderProgram);
+        foreach (var shader in _shaderPrograms.Values)
+            GL.DeleteProgram(shader);
+        
 
 
         Console.WriteLine("Deleting Grid buffers...");
@@ -73,8 +78,9 @@ internal static class Renderer
         // ? ImGui
         Console.WriteLine("Deleting ImGui Buffers...\n");
         ImGuiController.DestroyDeviceObjects();
-
+        
         Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond - elapsedtime} ms.");
+        
     }
 
     public static void OnLoad()
@@ -83,7 +89,8 @@ internal static class Renderer
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
+        
+        
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
 
@@ -97,15 +104,26 @@ internal static class Renderer
 
         // ! We're aware that camera is declared as possibly null, however Camera class is never null when passing references_view = _camera!.GetViewMatrix();
 
+        _shaderPrograms["grid"] = Shader.CreateShaderProgram(Constants.gridVertexShaderPath, Constants.gridFragmentShaderPath);
+        _shaderPrograms["default"] = Shader.CreateShaderProgram(Constants.vertexShaderPath, Constants.fragmentShaderPath);
         //new grid instance
         _grid = new Grid(Constants.GRID_SIZE);
 
 
-        // Generate sphere vertices and indices (or cube, etc.)
-        (float[] Vertices, uint[] Indices) sphereData = Sphere.GenerateSphere(
-            Constants.DEFAULT_ORBIT_RADIUS,
-            Constants.SPHERE_SECTOR_COUNT,
-            Constants.SPHERE_STACK_COUNT);
+        //? Generate a new sphere
+        var sphere = new Sphere(
+            position: new Vector3(0, 0, 0),
+            rotation: Vector3.Zero,
+            scale: new Vector3(.1f, .1f, .1f),
+            color: System.Numerics.Vector3.One, // White color
+            orbitRadius: 5.0f,
+            speed: 1.0f
+        );
+        Spheres.Add(sphere);
+        
+        var sphereData = Spheres.ElementAt(Spheres.Count-1).GenerateSphere(Constants.SPHERE_SECTOR_COUNT, Constants.SPHERE_STACK_COUNT);
+        
+        
         _vertices = sphereData.Vertices;
         _indices = sphereData.Indices;
 
@@ -122,10 +140,7 @@ internal static class Renderer
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices,
             BufferUsageHint.StaticDraw);
-
-        // Shader setup
-        _shaderProgram = Shader.CreateShaderProgram();
-        GL.UseProgram(_shaderProgram);
+        
 
         // Attribute pointers
         GL.VertexAttribPointer(0, Constants.VERTEX_ATRIBB_SIZE,
@@ -136,17 +151,20 @@ internal static class Renderer
         GL.EnableVertexAttribArray(1);
 
         // Get uniform locations of respective matrices
-        int modelLoc = GL.GetUniformLocation(_shaderProgram, "model_matrix");
-        int viewLoc = GL.GetUniformLocation(_shaderProgram, "view_matrix");
-        int projLoc = GL.GetUniformLocation(_shaderProgram, "projection_matrix");
-
+        int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
+        int modelLoc = GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix");
+        int viewLoc = GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix");
+        int projLoc = GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix");
+        
+        GL.UseProgram(_shaderPrograms["default"]);
+        
         // Set projection and view matrices
         GL.UniformMatrix4(projLoc, false, ref _projection);
         GL.UniformMatrix4(viewLoc, false, ref _view);
 
-        // Add initial objects TODO : Remove these and replace them with some more meaningfull
-        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, 3.0f, 1.0f));
-        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f), 2.0f, 0.5f));
+        // Add initial objects TODO : Remove these and replace them with some more meaningful
+        Spheres.Add(new Sphere(new Vector3(-2, 0, 0), Vector3.Zero, Vector3.One, System.Numerics.Vector3.Zero,3.0f, 1.0f));
+        Spheres.Add(new Sphere(new Vector3(2, 0, 0), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f), System.Numerics.Vector3.One,.0f, 0.5f));
 
         // ! Check correct initialization
         if (!_window.Exists)
@@ -162,12 +180,12 @@ internal static class Renderer
         _controller!.Update(_window!, (float)args.Time);
 
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        GL.UseProgram(_shaderProgram);
+        GL.UseProgram(_shaderPrograms["default"]);
         GL.BindVertexArray(_vao);
 
         // Update the view matrix using the shared camera
         var view = _camera!.GetViewMatrix();
-        GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "view_matrix"), false, ref view);
+        GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix"), false, ref view);
 
 
         // Recalculate position for each sphere spawned
@@ -177,14 +195,19 @@ internal static class Renderer
         foreach (var obj in Spheres)
         {
             var model = obj.GetModelMatrix();
-            GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "model_matrix"), false, ref model);
+            GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix"), false, ref model);
+            
+            int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
+            GL.Uniform3(colorLoc, obj.Color.X, obj.Color.Y, obj.Color.Z);
+            
             GL.DrawElements(PrimitiveType.Triangles, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
 
 
         //render the spheres
         GL.DepthFunc(DepthFunction.Lequal);
-        _grid!.Render(_shaderProgram, _camera.GetViewMatrix(), _projection);
+        GL.UseProgram(_shaderPrograms["grid"]);
+        _grid!.Render(_shaderPrograms["grid"], _camera.GetViewMatrix(), _projection);
         GL.DepthFunc(DepthFunction.Less);
 
         // ? Toggles fullscreen - ImGui.DockSpaceOverViewport();
@@ -192,6 +215,7 @@ internal static class Renderer
         
         //? Call to our own bespoke UI        
          ImGuiElementContainer.SubmitUI();
+         
          
         _controller.Render();
 

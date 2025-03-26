@@ -18,6 +18,7 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
+        
         var windowSettings = GameWindowSettings.Default;
         var nativeWindowSettings = NativeWindowSettings.Default;
 
@@ -27,7 +28,7 @@ internal static class Program
         nativeWindowSettings.Title = "C# GL";
         nativeWindowSettings.StartFocused = true;
         nativeWindowSettings.Vsync = VSyncMode.Off;
-        nativeWindowSettings.WindowState = Debugger.IsAttached ? WindowState.Normal : WindowState.Fullscreen;
+        nativeWindowSettings.WindowState = Debugger.IsAttached ? WindowState.Fullscreen : WindowState.Fullscreen;
 
 
         var window = new GameWindow(windowSettings, nativeWindowSettings);
@@ -52,4 +53,5 @@ internal static class Program
 
         window.Run();
     }
+    
 }

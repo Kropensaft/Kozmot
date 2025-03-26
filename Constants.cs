@@ -71,10 +71,25 @@ public static class Constants
     /// <summary>
     /// Bespoke GUI values
     /// </summary>
-    public static readonly System.Numerics.Vector2 BESPOKE_WINDOW_SIZE = new System.Numerics.Vector2(SCREEN_WIDTH%4, SCREEN_HEIGHT%4); 
+    public static readonly System.Numerics.Vector2 BESPOKE_WINDOW_SIZE = new System.Numerics.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT); 
+    public static readonly System.Numerics.Vector2 BESPOKE_BUTTON_SIZE = new System.Numerics.Vector2(50, 20);
+    public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
+    
+    public static readonly string BESPOKE_TEXT_DEFAULT = "0.0";
     
     
     
+    /// <summary>
+    /// FilePaths
+    /// </summary>
+    public static readonly string vertexShaderPath = "Shaders/Shader.vert";
+    public static readonly string fragmentShaderPath = "Shaders/Shader.frag";
     
+    public static readonly string gridVertexShaderPath = "Shaders/Grid.vert";
+    public static readonly string gridFragmentShaderPath = "Shaders/Grid.frag";
     
+
+
+
+
 }

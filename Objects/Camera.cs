@@ -7,11 +7,11 @@ namespace OpenGL.Objects;
 public class Camera
 {
     // Camera direction vectors (fields, not properties)
-    private Vector3 _front = -Vector3.UnitZ;
+    public Vector3 _front = -Vector3.UnitZ;
 
     // Camera rotation
-    private float _pitch; // Rotation around the X axis
-    private float _yaw = -MathHelper.PiOver2; // Rotation around the Y axis (initialized to look forward)
+    public float _pitch; // Rotation around the X axis
+    public float _yaw = -MathHelper.PiOver2; // Rotation around the Y axis (initialized to look forward)
 
     public Camera(Vector3 position)
     {
