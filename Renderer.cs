@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Drawing;
 using ImGuiNET;
 using OpenGL.GUI;
@@ -113,15 +114,15 @@ internal static class Renderer
         //? Generate a new sphere
         Spheres.Add(new Sphere(
             name: "Test Sphere 2",
-            position: new Vector3(2, 0, 0),
+            position: new Vector3(4, 0, 0),
             rotation: Vector3.Zero,
             scale: new Vector3(0.5f, 0.5f, 0.5f),
-            color: System.Numerics.Vector3.One,
+            color: new System.Numerics.Vector3(0f, 0.5f, 0.5f),
             mass: 1.0f,
             orbitRadius: 2.0f,
             angularSpeed: 0.5f
         ));
-
+        
         var sphereData = Spheres.ElementAt(Spheres.Count - 1)
             .GenerateSphere(Constants.SPHERE_SECTOR_COUNT, Constants.SPHERE_STACK_COUNT);
 
@@ -153,8 +154,8 @@ internal static class Renderer
         GL.EnableVertexAttribArray(1);
 
         // Get uniform locations of respective matrices
-        int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
-        int modelLoc = GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix");
+        //int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
+        //int modelLoc = GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix");
         int viewLoc = GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix");
         int projLoc = GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix");
 
@@ -163,9 +164,9 @@ internal static class Renderer
         // Set projection and view matrices
         GL.UniformMatrix4(projLoc, false, ref _projection);
         GL.UniformMatrix4(viewLoc, false, ref _view);
-
-
         
+        
+        /*
         Spheres.Add(new Sphere(
             name: "Test Sphere 1",
             position: new Vector3(-2, 0, 0),
@@ -187,7 +188,7 @@ internal static class Renderer
             mass: 1.0f,
             orbitRadius: 2.0f,
             angularSpeed: 0.5f
-        ));
+        ));*/
 
 
         // ! Check correct initialization
@@ -239,7 +240,7 @@ internal static class Renderer
 
         //? Call to our own bespoke UI        
         ImGuiElementContainer.SubmitUI();
-        ImGui.ShowMetricsWindow();
+        //ImGui.ShowMetricsWindow();
 
         _controller.Render();
 
@@ -261,5 +262,10 @@ internal static class Renderer
     public static ImGuiController GetController()
     {
         return _controller!;
+    }
+    
+    public static Matrix4 GetProjectionMatrix()
+    {
+        return _projection; // Assuming you store it in Renderer
     }
 }

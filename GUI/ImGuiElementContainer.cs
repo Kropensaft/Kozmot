@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Numerics;
 using ImGuiNET;
 
@@ -6,7 +7,7 @@ namespace OpenGL.GUI;
 internal abstract class ImGuiElementContainer : IDisposable
 {
     private static readonly string[] planetTypes = new[] { "Planet", "Star", "Gas Giant", "Moon" };
-    private static string buffer = "0.0";
+    private static string buffer = "";
     private static string nameBuffer = "";
     private static bool emissive;
     private static float posFromStar;
@@ -33,36 +34,23 @@ internal abstract class ImGuiElementContainer : IDisposable
                 Console.WriteLine($"Selected planet type: {planetTypes[defaultPlanetTypeIndex]}");
                 emissive = defaultPlanetTypeIndex == 1; // Stars are emissive (they emit light)
 
-                switch (defaultPlanetTypeIndex)
+                mass = defaultPlanetTypeIndex switch
                 {
                     //Earth
-                    case 0:
-                        mass = Constants.ROCKY_PLANET_MASS;
-                        break;
+                    0 => Constants.ROCKY_PLANET_MASS,
                     //Star
-                    case 1:
-                        mass = Constants.STAR_MASS;
-                        break;
+                    1 => Constants.STAR_MASS,
                     //Gas Giant
-                    case 2:
-                        mass = Constants.GAS_GIANT_MASS;
-                        break;
+                    2 => Constants.GAS_GIANT_MASS,
                     //Moon
-                    case 3:
-                        mass = Constants.MOON_MASS;
-                        break;
+                    3 => Constants.MOON_MASS,
                     //Desert planet (mars)
-                    case 4:
-                        mass = Constants.DESERT_MASS;
-                        break;
+                    4 => Constants.DESERT_MASS,
                     //Ice giant (Nepture)
-                    case 5:
-                        mass = Constants.ICE_GIANT_MASS;
-                        break;
-                    default:
-                        mass = Constants.DEFAULT_SPHERE_MASS;
-                        break;
-                }
+                    5 => Constants.ICE_GIANT_MASS,
+                    //Default
+                    _ => Constants.ROCKY_PLANET_MASS
+                };
                 buffer = mass.ToString();
             }
 
@@ -172,13 +160,14 @@ internal abstract class ImGuiElementContainer : IDisposable
             );
         
     }
-
+    
+    
     private static void ResetUI()
     {
         nameBuffer = "";
         buffer = Constants.BESPOKE_TEXT_DEFAULT;
         color = new Vector3(0.5f, 0.5f, 0.5f);
-        posFromStar = 0f;
+        posFromStar = 1f;
         defaultPlanetTypeIndex = 0;
         selectedParentIndex = 0;
         emissive = false;

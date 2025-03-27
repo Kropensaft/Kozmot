@@ -2,6 +2,7 @@ using OpenTK.Mathematics;
 using Vector2 = System.Numerics.Vector2;
 
 #pragma warning disable IDE1006 // Simplify object initialization
+#pragma warning disable CA1707 // Remove unused private members
 namespace OpenGL;
 
 public static class Constants
@@ -12,7 +13,7 @@ public static class Constants
     public static readonly int SCREEN_WIDTH = 800;
 
     public static readonly int SCREEN_HEIGHT = 600;
-    public static readonly Vector3 INITIAL_CAMERA_POS = (-1, 3, 10);
+    public static readonly Vector3 INITIAL_CAMERA_POS = (0,0,5);
 
 
     /// <summary>
@@ -51,16 +52,12 @@ public static class Constants
     ///     Grid value(s)
     /// </summary>
     public static readonly int GRID_SIZE = 200;
-
     public static readonly float GRID_STEP = 1.0f;
 
     /// <summary>
     ///     Grid color values
     /// </summary>
     public static readonly float GRID_RED_VALUE = 1.0f;
-
-    //public static readonly float GRID_GREEN_VALUE = 0f;
-    //public static readonly float GRID_BLUE_VALUE = 0f;
     public static readonly float GRID_ALPHA_VALUE = .3f;
     public static readonly float GRID_FALLBACK_FLOAT = .5f;
     public static readonly float GRID_COMPARISON_FLOAT = .001f;
@@ -97,7 +94,7 @@ public static class Constants
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
     public static readonly uint BESPOKE_TEXTEDIT_WIDE_WIDTH = 120;
 
-    public static readonly string BESPOKE_TEXT_DEFAULT = "0.0";
+    public static readonly string BESPOKE_TEXT_DEFAULT = "1.2";
 
 
     public static readonly string[] planetTypes = new[]

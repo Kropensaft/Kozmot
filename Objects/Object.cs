@@ -5,7 +5,7 @@ namespace OpenGL;
 
 public class Object
 {
-    public Object(string name, Vector3 position, Vector3 rotation, Vector3 scale,
+    protected Object(string name, Vector3 position, Vector3 rotation, Vector3 scale,
         System.Numerics.Vector3 color, float mass, bool isEmissive = false)
     {
         Name = name;
@@ -24,10 +24,10 @@ public class Object
     public Vector3 Scale { get; protected set; }
     public System.Numerics.Vector3 Color { get; set; }
     public string Name { get; set; }
-    public float Mass { get; set; }
+    protected float Mass { get; set; }
     public bool IsEmissive { get; set; }
-    public Vector3 Velocity { get; set; }
-    public Vector3 Acceleration { get; set; }
+    private Vector3 Velocity { get; set; }
+    protected Vector3 Acceleration { get; set; }
 
     public virtual void Update(double deltaTime)
     {
