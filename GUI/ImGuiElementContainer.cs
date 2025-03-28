@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using ImGuiNET;
 
@@ -7,7 +6,7 @@ namespace OpenGL.GUI;
 internal abstract class ImGuiElementContainer : IDisposable
 {
     private static readonly string[] planetTypes = new[] { "Planet", "Star", "Gas Giant", "Moon" };
-    private static string buffer = "";
+    private static string massBuffer = "";
     private static string nameBuffer = "";
     private static bool emissive;
     private static float posFromStar;
@@ -15,7 +14,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static int selectedParentIndex;
     private static float mass;
     private static Vector3 color = new(0.5f, 0.5f, 0.5f);
-    private static readonly List<Object> celestialBodies = new();
+    public static List<Object> celestialBodies = new();
 
     public void Dispose()
     {
@@ -26,7 +25,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     {
         if (ImGui.Begin("Planet Creator"))
         {
-            ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDTH);
+            ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
             if (ImGui.InputText("Planet name", ref nameBuffer, 20)) Console.WriteLine("Input changed: " + nameBuffer);
 
             if (ImGui.Combo("Planet type", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
@@ -46,12 +45,30 @@ internal abstract class ImGuiElementContainer : IDisposable
                     3 => Constants.MOON_MASS,
                     //Desert planet (mars)
                     4 => Constants.DESERT_MASS,
-                    //Ice giant (Nepture)
+                    //Ice giant (Neptune)
                     5 => Constants.ICE_GIANT_MASS,
                     //Default
                     _ => Constants.ROCKY_PLANET_MASS
                 };
-                buffer = mass.ToString();
+                massBuffer = mass.ToString();
+
+                color = defaultPlanetTypeIndex switch
+                {
+                    //Earth
+                    0 => Constants.ROCKY_PLANET_COLOR,
+                    //Star
+                    1 => Constants.STAR_COLOR,
+                    //Gas Giant
+                    2 => Constants.GAS_GIANT_COLOR,
+                    //Moon
+                    3 => Constants.MOON_COLOR,
+                    //Desert planet (mars)
+                    4 => Constants.DESERT_PLANET_COLOR,
+                    //Ice giant (Neptune)
+                    5 => Constants.ICE_GIANT_COLOR,
+                    //Default
+                    _ => Constants.ROCKY_PLANET_COLOR
+                };
             }
 
             // Show parent selector only for moons
@@ -79,7 +96,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             }
 
             ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDTH);
-            if (ImGui.InputText("Mass cca 200-0.05", ref buffer, 15)) Console.WriteLine("Mass changed: " + buffer);
+            if (ImGui.InputText("Mass cca 200-0.05", ref massBuffer, 15)) Console.WriteLine("Mass changed: " + massBuffer);
 
             ImGui.ColorEdit3("Color", ref color);
 
@@ -108,7 +125,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     }
 
     /// <summary>
-    /// Helper method for checking if a celestial body has a parent 'planet'
+    ///     Helper method for checking if a celestial body has a parent 'planet'
     /// </summary>
     /// <returns></returns>
     private static Object? GetSelectedParent()
@@ -117,7 +134,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             return celestialBodies[selectedParentIndex];
         return null;
     }
-    
+
     private static Sphere SaveUIValues()
     {
         if (string.IsNullOrWhiteSpace(nameBuffer))
@@ -126,13 +143,19 @@ internal abstract class ImGuiElementContainer : IDisposable
             return null;
         }
 
-        if (!float.TryParse(buffer, out float mass))
+        if (float.TryParse(massBuffer, out float mass))
         {
+            // Success case - massBuffer contains a valid float
+            Console.WriteLine($"Successfully parsed mass: {mass}");
+            //return mass; // or whatever you want to return for success
+        }
+        else
+        {
+            // Failure case - massBuffer is NOT a valid float
             Console.WriteLine("Error: Invalid mass value");
             return null;
         }
-
-        var position = OpenTK.Mathematics.Vector3.UnitX * posFromStar; 
+        var position = OpenTK.Mathematics.Vector3.UnitX * posFromStar;
 
         Object parent = null;
         if (defaultPlanetTypeIndex == 3 && celestialBodies.Count > 0) // Moon
@@ -147,26 +170,26 @@ internal abstract class ImGuiElementContainer : IDisposable
         }
 
         return new Sphere(
-                name: nameBuffer,
-                position: position,
-                rotation: OpenTK.Mathematics.Vector3.Zero,
-                scale: OpenTK.Mathematics.Vector3.One * Constants.INITIAL_SPHERE_RADIUS,
-                color: color,
-                mass: float.TryParse(buffer, out float massValue) ? massValue : 1.0f,
-                orbitRadius: posFromStar,
-                angularSpeed: Constants.INITIAL_SPHERE_VELOCITY,
-                isEmissive: emissive,
-                parent: defaultPlanetTypeIndex == 3 ? GetSelectedParent() : null
-            );
-        
+            nameBuffer,
+            position,
+            OpenTK.Mathematics.Vector3.Zero,
+            OpenTK.Mathematics.Vector3.One * Constants.INITIAL_SPHERE_RADIUS,
+            color,
+            float.TryParse(massBuffer, out float massValue) ? massValue : 1.0f,
+            posFromStar,
+            Constants.INITIAL_SPHERE_VELOCITY,
+            emissive,
+            defaultPlanetTypeIndex == 3 ? GetSelectedParent() : null
+        );
     }
-    
-    
+
+
     private static void ResetUI()
     {
-        nameBuffer = "";
-        buffer = Constants.BESPOKE_TEXT_DEFAULT;
-        color = new Vector3(0.5f, 0.5f, 0.5f);
+        nameBuffer = Constants.DEFAULT_NAME_BUFFER;
+        massBuffer = Constants.DEFAULT_MASS_BUFFER;
+        mass = Constants.ROCKY_PLANET_MASS;
+        color = Constants.ROCKY_PLANET_COLOR;
         posFromStar = 1f;
         defaultPlanetTypeIndex = 0;
         selectedParentIndex = 0;

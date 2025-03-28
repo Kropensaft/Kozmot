@@ -8,12 +8,17 @@ namespace OpenGL;
 public static class Constants
 {
     /// <summary>
+    ///     Gravitational constant for simulation (6.67430 × 10^-11 in real world)
+    /// </summary>
+    public const float GRAVITATIONAL_CONSTANT = 0.1f; // Adjusted for simulation scale
+
+    /// <summary>
     ///     Window Constants
     /// </summary>
     public static readonly int SCREEN_WIDTH = 800;
 
     public static readonly int SCREEN_HEIGHT = 600;
-    public static readonly Vector3 INITIAL_CAMERA_POS = (0,0,5);
+    public static readonly Vector3 INITIAL_CAMERA_POS = (0, 0, 5);
 
 
     /// <summary>
@@ -26,10 +31,10 @@ public static class Constants
     public static readonly int SPHERE_STACK_COUNT = 18;
     public static readonly int SPHERE_SECTOR_COUNT = 36;
     public static readonly float DEFAULT_SPHERE_MASS = 1.0f;
-    
-    
+
+
     /// <summary>
-    /// Basic values depending on planet type
+    ///     Basic values depending on planet type
     /// </summary>
     public static readonly float STAR_MASS = 100.0f;
     public static readonly float GAS_GIANT_MASS = 15.0f;
@@ -37,7 +42,16 @@ public static class Constants
     public static readonly float MOON_MASS = 0.1f;
     public static readonly float DESERT_MASS = 0.8f;
     public static readonly float ICE_GIANT_MASS = 20f;
-    
+
+    /// <summary>
+    /// Colors based on the celestial type
+    /// </summary>
+    public static readonly System.Numerics.Vector3 ROCKY_PLANET_COLOR = new(0.4f, 0.3f, 0.2f); // Earth-like brown
+    public static readonly System.Numerics.Vector3 STAR_COLOR = new(1.0f, 0.9f, 0.7f); // Yellow-white star
+    public static readonly System.Numerics.Vector3 GAS_GIANT_COLOR = new(0.8f, 0.6f, 0.4f); // Jupiter-like tan
+    public static readonly System.Numerics.Vector3 MOON_COLOR = new(0.5f, 0.5f, 0.5f); // Gray moon
+    public static readonly System.Numerics.Vector3 DESERT_PLANET_COLOR = new(0.7f, 0.5f, 0.3f); // Mars-like red
+    public static readonly System.Numerics.Vector3 ICE_GIANT_COLOR = new(0.5f, 0.7f, 0.9f); // Neptune-like blue
 
 
     /// <summary>
@@ -52,12 +66,14 @@ public static class Constants
     ///     Grid value(s)
     /// </summary>
     public static readonly int GRID_SIZE = 200;
+
     public static readonly float GRID_STEP = 1.0f;
 
     /// <summary>
     ///     Grid color values
     /// </summary>
     public static readonly float GRID_RED_VALUE = 1.0f;
+
     public static readonly float GRID_ALPHA_VALUE = .3f;
     public static readonly float GRID_FALLBACK_FLOAT = .5f;
     public static readonly float GRID_COMPARISON_FLOAT = .001f;
@@ -94,7 +110,8 @@ public static class Constants
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
     public static readonly uint BESPOKE_TEXTEDIT_WIDE_WIDTH = 120;
 
-    public static readonly string BESPOKE_TEXT_DEFAULT = "1.2";
+    public static readonly string DEFAULT_MASS_BUFFER = "1.2";
+    public static readonly string DEFAULT_NAME_BUFFER = "Name me!";
 
 
     public static readonly string[] planetTypes = new[]
@@ -110,12 +127,10 @@ public static class Constants
     public static readonly string gridVertexShaderPath = "Shaders/Grid.vert";
     public static readonly string gridFragmentShaderPath = "Shaders/Grid.frag";
 
-    /// <summary>
-    /// Gravitational constant for simulation (6.67430 × 10^-11 in real world)
-    /// </summary>
-    public const float GRAVITATIONAL_CONSTANT = 0.1f; // Adjusted for simulation scale
-    
-    
+    public static readonly string LineVertPath = "Shaders/line.vert";
+    public static readonly string LineFragPath = "Shaders/line.frag";
+
+
     /// <summary>
     ///     Calculate the approximate gravitational force between two simulated celestial bodies
     /// </summary>

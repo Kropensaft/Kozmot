@@ -1,5 +1,6 @@
 using OpenTK.Mathematics;
-using OpenGL;  // Added for Renderer access
+
+// Added for Renderer access
 
 namespace OpenGL;
 

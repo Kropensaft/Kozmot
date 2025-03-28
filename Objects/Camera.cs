@@ -7,16 +7,16 @@ namespace OpenGL.Objects;
 /// </summary>
 public class Camera
 {
-    // Camera direction vectors
-    private Vector3 _front = -Vector3.UnitZ;
     public static Vector3 _pivot = Vector3.Zero; // Central point to orbit around
+
+    // Distance from the pivot
+    private float _distance = 5.0f;
+
+    // Camera direction vectors
 
     // Camera rotation
     private float _pitch; // Rotation around the X axis
     private float _yaw = -MathHelper.PiOver2; // Rotation around the Y axis (initialized to look forward)
-
-    // Distance from the pivot
-    private float _distance = 5.0f;
 
     public Camera(Vector3 position)
     {
@@ -28,7 +28,8 @@ public class Camera
     public Vector3 Position { get; private set; }
 
     // Properties to expose direction vectors
-    public Vector3 Front => _front;
+    public Vector3 Front { get; private set; } = -Vector3.UnitZ;
+
     public Vector3 Up { get; private set; } = Vector3.UnitY;
     public Vector3 Right { get; private set; } = Vector3.UnitX;
 
@@ -80,27 +81,27 @@ public class Camera
     {
         return Matrix4.LookAt(Position, _pivot, Up);
     }
-    
+
     public Matrix4 GetProjectionMatrix(float aspectRatio)
     {
         return Matrix4.CreatePerspectiveFieldOfView(
-            MathHelper.DegreesToRadians(45f), 
-            aspectRatio, 
-            0.1f, 
+            MathHelper.DegreesToRadians(45f),
+            aspectRatio,
+            0.1f,
             1000f
         );
     }
 
     private void UpdateVectors()
     {
-        _front = new Vector3(
+        Front = new Vector3(
             MathF.Cos(_pitch) * MathF.Cos(_yaw),
             MathF.Sin(_pitch),
             MathF.Cos(_pitch) * MathF.Sin(_yaw)
         ).Normalized();
 
-        Position = _pivot - _front * _distance; // Orbit around pivot
-        Right = Vector3.Cross(_front, Vector3.UnitY).Normalized();
-        Up = Vector3.Cross(Right, _front).Normalized();
+        Position = _pivot - Front * _distance; // Orbit around pivot
+        Right = Vector3.Cross(Front, Vector3.UnitY).Normalized();
+        Up = Vector3.Cross(Right, Front).Normalized();
     }
 }
