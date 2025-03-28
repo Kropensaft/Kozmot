@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using ImGuiNET;
 
@@ -142,8 +143,9 @@ internal abstract class ImGuiElementContainer : IDisposable
             Console.WriteLine("Error: Name cannot be empty");
             return null;
         }
-
-        if (float.TryParse(massBuffer, out float mass))
+        
+        
+        if (float.TryParse(massBuffer, NumberStyles.Float, CultureInfo.CurrentCulture, out float mass))
         {
             // Success case - massBuffer contains a valid float
             Console.WriteLine($"Successfully parsed mass: {mass}");
