@@ -78,30 +78,15 @@ internal static class InputHandler
             Console.WriteLine("Closing window...");
             WindowManager.GetWindow().Close();
         }
-        
-        /*
-        if (e.Key == Keys.R)
-        {
-            var newSphere = ImGuiElementContainer.SaveUIValues();
-            if (newSphere != null)
-            {
-                Renderer.AddObject(newSphere);
-                ImGuiElementContainer.celestialBodies.Add(newSphere);
-                Console.WriteLine($"Created sphere with R key: {newSphere.Name}");
-            }
-        }*/
-        
-        if (e.Key == Keys.G)
-        {
-            Console.WriteLine("Adding a sphere");
-            Renderer.AddObject(GenerateSphere(System.Numerics.Vector3.One));
-        }
 
         if (e.Key == Keys.C)
         {
-            Console.WriteLine("Removing last object added");
-            if (Renderer.Spheres.Count > 1)
+            Console.WriteLine("Remove last object key pressed");
+            if (Renderer.Spheres.Count > 1 && ImGuiElementContainer.celestialBodies.Count > 1)
+            {
                 Renderer.RemoveObject();
+                ImGuiElementContainer.celestialBodies.RemoveAt(ImGuiElementContainer.celestialBodies.Count - 1);
+            }
         }
 
         // Zoom in/out with mouse wheel (optional)

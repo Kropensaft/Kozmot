@@ -1,4 +1,4 @@
 UI
 Celestial object type is displaying fallback value (Planet)
-Bugs in parsing floats
+# Bugs in parsing floats - Fixed (29.3.25)
 ...

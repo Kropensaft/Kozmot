@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Drawing;
-using ImGuiNET;
 using OpenGL.GUI;
 using OpenGL.Objects;
 using OpenTK.Graphics.OpenGL4;
@@ -37,6 +35,7 @@ internal static class Renderer
 
     //GUI 
     private static ImGuiController? _controller;
+    private static bool UIinitcalled;
 
     //Initalize grid
     private static Grid? _grid;
@@ -124,8 +123,7 @@ internal static class Renderer
         );
         Spheres.Add(sphere);
         ImGuiElementContainer.celestialBodies.Add(sphere);
-        
-        
+
 
         (float[] Vertices, uint[] Indices) sphereData = Spheres.ElementAt(Spheres.Count - 1)
             .GenerateSphere(Constants.SPHERE_SECTOR_COUNT, Constants.SPHERE_STACK_COUNT);
@@ -219,7 +217,13 @@ internal static class Renderer
 
         //? Call to our own bespoke UI        
         ImGuiElementContainer.SubmitUI();
-        
+
+        //? Makes it so that on program start the UI is reset and only at that point
+        if (!UIinitcalled)
+        {
+            ImGuiElementContainer.ResetUI();
+            UIinitcalled = true;
+        }
 
         _controller.Render();
 

@@ -37,6 +37,7 @@ public static class Constants
     ///     Basic values depending on planet type
     /// </summary>
     public static readonly float STAR_MASS = 100.0f;
+
     public static readonly float GAS_GIANT_MASS = 15.0f;
     public static readonly float ROCKY_PLANET_MASS = 1.2f;
     public static readonly float MOON_MASS = 0.1f;
@@ -44,9 +45,10 @@ public static class Constants
     public static readonly float ICE_GIANT_MASS = 20f;
 
     /// <summary>
-    /// Colors based on the celestial type
+    ///     Colors based on the celestial type
     /// </summary>
     public static readonly System.Numerics.Vector3 ROCKY_PLANET_COLOR = new(0.4f, 0.3f, 0.2f); // Earth-like brown
+
     public static readonly System.Numerics.Vector3 STAR_COLOR = new(1.0f, 0.9f, 0.7f); // Yellow-white star
     public static readonly System.Numerics.Vector3 GAS_GIANT_COLOR = new(0.8f, 0.6f, 0.4f); // Jupiter-like tan
     public static readonly System.Numerics.Vector3 MOON_COLOR = new(0.5f, 0.5f, 0.5f); // Gray moon

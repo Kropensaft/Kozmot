@@ -7,7 +7,7 @@ namespace OpenGL;
 public class Object
 {
     protected Object(string name, Vector3 position, Vector3 rotation, Vector3 scale,
-        System.Numerics.Vector3 color, float mass, bool isEmissive = false)
+        System.Numerics.Vector3 color, float mass, string type, bool isEmissive = false)
     {
         Name = name;
         Position = position;
@@ -15,6 +15,7 @@ public class Object
         Scale = scale;
         Color = color;
         Mass = mass;
+        Type = type;
         IsEmissive = isEmissive;
         Velocity = Vector3.Zero;
         Acceleration = Vector3.Zero;
@@ -25,6 +26,8 @@ public class Object
     public Vector3 Scale { get; protected set; }
     public System.Numerics.Vector3 Color { get; set; }
     public string Name { get; set; }
+    
+    public string Type { get; set; }
     protected float Mass { get; set; }
     public bool IsEmissive { get; set; }
     private Vector3 Velocity { get; set; }
@@ -52,7 +55,7 @@ public class Sphere : Object
     public Sphere(string name, Vector3 position, Vector3 rotation, Vector3 scale,
         System.Numerics.Vector3 color, float mass, float orbitRadius,
         float angularSpeed, bool isEmissive = false, Object? parent = null)
-        : base(name, position, rotation, scale, color, mass, isEmissive)
+        : base(name, position, rotation, scale, color, mass, "",isEmissive)
     {
         OrbitRadius = orbitRadius;
         AngularSpeed = angularSpeed;
