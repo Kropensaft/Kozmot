@@ -3,12 +3,11 @@ using System.Numerics;
 using ImGuiNET;
 using OpenGL.Objects;
 
-
 namespace OpenGL.GUI;
 
 internal abstract class ImGuiElementContainer : IDisposable
 {
-    private static string[] planetTypes = Constants.planetTypes;
+    private static readonly string[] planetTypes = Constants.planetTypes;
     private static string massBuffer = "";
     private static string nameBuffer = "";
     private static bool emissive;
@@ -18,8 +17,16 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static float mass;
     public static Vector3 color = new(0.5f, 0.5f, 0.5f);
     public static List<Object> celestialBodies = new();
-    
+
     private static Vector3 IndicatorColor;
+
+    /// <summary>
+    ///     Check whether any current UI element is being edited
+    /// </summary>
+    public static bool IsEditing =>
+        !string.IsNullOrEmpty(nameBuffer) ||
+        ImGui.IsItemActive() ||
+        ImGui.IsAnyItemActive();
 
     public void Dispose()
     {
@@ -32,7 +39,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             .Where(b => b is Sphere && ((Sphere)b).Parent == null)
             .Select(b => b.Name)
             .ToArray();
-        
+
         if (!ImGui.Begin("GUI", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar))
             return;
 
@@ -42,7 +49,6 @@ internal abstract class ImGuiElementContainer : IDisposable
             {
                 // Planet Creator Tab
                 if (ImGui.BeginTabItem("Planet Creator"))
-                {
                     try
                     {
                         ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
@@ -81,7 +87,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                         // ? If the object is a moon
                         if (defaultPlanetTypeIndex == 3)
                         {
-
                             if (parentNames.Length > 0)
                             {
                                 if (ImGui.Combo("Orbits around", ref selectedParentIndex, parentNames,
@@ -127,11 +132,9 @@ internal abstract class ImGuiElementContainer : IDisposable
                     {
                         ImGui.EndTabItem();
                     }
-                }
 
                 // How to Use Tab
                 if (ImGui.BeginTabItem("How to use"))
-                {
                     try
                     {
                         ImGui.Text("=== Planet Creator Guide ===");
@@ -163,11 +166,9 @@ internal abstract class ImGuiElementContainer : IDisposable
                     {
                         ImGui.EndTabItem();
                     }
-                }
 
                 //Camera settings tab
                 if (ImGui.BeginTabItem("Camera settings"))
-                {
                     try
                     {
                         ImGui.Text("Select a central pivot for the camera");
@@ -184,12 +185,13 @@ internal abstract class ImGuiElementContainer : IDisposable
                             Console.WriteLine($"Selected pivot: {selectedParentIndex}, changing...");
                             Camera._pivot = celestialBodies[selectedParentIndex].Position;
                         }
+
                         ImGui.Separator();
                         ImGui.Text("=== Indicator sphere settings ===");
-                        
+
                         if (ImGui.Checkbox("Render Indicator", ref Renderer.RenderIndicator))
                             Console.WriteLine($"Render Indicator: {Renderer.RenderIndicator}");
-                        
+
                         if (ImGui.ColorEdit3("Color", ref IndicatorColor))
                         {
                             Console.WriteLine($"Indicator color: {IndicatorColor}");
@@ -199,15 +201,12 @@ internal abstract class ImGuiElementContainer : IDisposable
                         }
 
                         if (ImGui.SliderFloat("Indicator transparency", ref Constants.INDICATOR_ALPHA, 0.0f, 0.9f))
-                        {
                             Console.WriteLine($"Indicator alpha: {Constants.INDICATOR_ALPHA}");
-                        }
                     }
                     finally
                     {
                         ImGui.EndTabItem();
                     }
-                }
 
                 ImGui.EndTabBar();
             }
@@ -275,15 +274,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             defaultPlanetTypeIndex == 3 ? GetSelectedParent() : null
         );
     }
-    
-    /// <summary>
-    /// Check whether any current UI element is being edited
-    /// </summary>
-    public static bool IsEditing => 
-        !string.IsNullOrEmpty(nameBuffer) || 
-        ImGui.IsItemActive() || 
-        ImGui.IsAnyItemActive();
-    
+
     public static void ResetUI()
     {
         nameBuffer = Constants.DEFAULT_NAME_BUFFER;

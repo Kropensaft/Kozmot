@@ -34,6 +34,23 @@ public static class Constants
 
 
     /// <summary>
+    ///     Skybox values
+    /// </summary>
+    // Skybox texture paths (order: right, left, top, bottom, front, back)
+    public static readonly string[] SkyboxTexturePaths = new[]
+    {
+        "./ImageDependencies/Skybox/right.png",
+        "./ImageDependencies/Skybox/left.png",
+        "./ImageDependencies/Skybox/top.png",
+        "./ImageDependencies/Skybox/bottom.png",
+        "./ImageDependencies/Skybox/front.png",
+        "./ImageDependencies/Skybox/back.png"
+    };
+
+    public static readonly string skyboxVertexShaderPath = "Shaders/Skybox.vert";
+    public static readonly string skyboxFragmentShaderPath = "Shaders/Skybox.frag";
+
+    /// <summary>
     ///     Basic values depending on planet type
     /// </summary>
     public static readonly float STAR_MASS = 100.0f;
@@ -55,27 +72,27 @@ public static class Constants
     public static readonly System.Numerics.Vector3 DESERT_PLANET_COLOR = new(0.7f, 0.5f, 0.3f); // Mars-like red
     public static readonly System.Numerics.Vector3 ICE_GIANT_COLOR = new(0.5f, 0.7f, 0.9f); // Neptune-like blue
 
-    
-    
+
     /// <summary>
-    /// Indicator values
+    ///     Indicator values
     /// </summary>
     public static readonly string indicatorVertexShaderPath = "Shaders/Indicator.vert";
+
     public static readonly string indicatorFragmentShaderPath = "Shaders/Indicator.frag";
-    public static readonly OpenTK.Mathematics.Vector3 INDICATOR_COLOR_DEF = new(0.0f, 1.0f, 0.0f);
+    public static readonly Vector3 INDICATOR_COLOR_DEF = new(0.0f, 1.0f, 0.0f);
     public static readonly float INDICATOR_ALPHA_DEF = 0.4f;
-    
+
     //Centralized values which aren't constant
-    public static OpenTK.Mathematics.Vector3 INDICATOR_COLOR = new(0.0f, 0.0f, 0.0f);
+    public static Vector3 INDICATOR_COLOR = new(0.0f, 0.0f, 0.0f);
     public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
-    
+
     /// <summary>
     ///     Rendered values
     /// </summary>
     public static readonly float PROJECTION_MATRIX_RADIAN_CONSTANT = 45f;
 
     public static readonly float NEAR_DEPTH_CONSTANT = .1f;
-    public static readonly float FAR_DEPTH_CONSTANT = 100f;
+    public static readonly float FAR_DEPTH_CONSTANT = 500f;
 
     /// <summary>
     ///     Grid value(s)

@@ -11,19 +11,23 @@
     <ItemGroup>
         <PackageReference Include="ImGui.NET" Version="1.91.6.1"/>
         <PackageReference Include="OpenTK.Core" Version="4.9.3"/>
+
         <None Update="Shaders/*.vert">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+
         <None Update="Shaders/*.frag">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+
+        <None Update="ImageDependencies\Skybox\*.jpg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
         <PackageReference Include="OpenTK.Graphics" Version="4.9.3"/>
         <PackageReference Include="OpenTK.Mathematics" Version="4.9.3"/>
         <PackageReference Include="OpenTK.Windowing.Desktop" Version="4.9.3"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="ImageDependencies\"/>
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7"/>
     </ItemGroup>
 
 </Project>

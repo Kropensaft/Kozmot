@@ -1,5 +1,4 @@
 using System.Drawing;
-using ImGuiNET;
 using OpenGL.GUI;
 using OpenGL.Objects;
 using OpenTK.Graphics.OpenGL4;
@@ -41,6 +40,9 @@ internal static class Renderer
 
     //Initalize grid
     private static Grid? _grid;
+
+    //Initialize the skybox
+    private static Skybox? _skybox;
 
     //Initialize camera
     public static Camera? _camera;
@@ -90,10 +92,11 @@ internal static class Renderer
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-        
-         Indicator.Initialize();
+
+        Indicator.Initialize();
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
+        _skybox = new Skybox();
 
         // Initialize matrices
         _projection = Matrix4.CreatePerspectiveFieldOfView(
@@ -102,8 +105,6 @@ internal static class Renderer
             Constants.NEAR_DEPTH_CONSTANT,
             Constants.FAR_DEPTH_CONSTANT
         );
-
-        // ! We're aware that camera is declared as possibly null, however Camera class is never null when passing references_view = _camera!.GetViewMatrix();
 
         _shaderPrograms["grid"] =
             Shader.CreateShaderProgram(Constants.gridVertexShaderPath, Constants.gridFragmentShaderPath);
@@ -159,8 +160,8 @@ internal static class Renderer
         GL.EnableVertexAttribArray(1);
 
         // Get uniform locations of respective matrices
-        //int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
-        //int modelLoc = GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix");
+        int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
+        int modelLoc = GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix");
         int viewLoc = GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix");
         int projLoc = GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix");
 
@@ -182,12 +183,13 @@ internal static class Renderer
     // ? Called each frame
     public static void OnUpdate(FrameEventArgs args)
     {
+        _skybox!.Render(_camera!.GetViewMatrix(), _projection);
         _controller!.Update(_window!, (float)args.Time);
 
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         GL.UseProgram(_shaderPrograms["default"]);
         GL.BindVertexArray(_vao);
-
+        
         // Update the view matrix using the shared camera
         var view = _camera!.GetViewMatrix();
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix"), false, ref view);
@@ -207,14 +209,13 @@ internal static class Renderer
 
             GL.DrawElements(PrimitiveType.Triangles, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
-
-    
+        
         //render the spheres
         GL.DepthFunc(DepthFunction.Lequal);
         GL.UseProgram(_shaderPrograms["grid"]);
         _grid!.Render(_shaderPrograms["grid"], _camera.GetViewMatrix(), _projection);
         GL.DepthFunc(DepthFunction.Less);
-
+        
         // ? Toggles GUI fullscreen - ImGui.DockSpaceOverViewport();
 
 
@@ -227,14 +228,16 @@ internal static class Renderer
             ImGuiElementContainer.ResetUI();
             UIinitcalled = true;
         }
-        
-        var IndColor = (Constants.INDICATOR_COLOR == Vector3.Zero ? Constants.INDICATOR_COLOR_DEF : Constants.INDICATOR_COLOR); 
-        var IndFloat = (Constants.INDICATOR_ALPHA == 0.0f ? Constants.INDICATOR_ALPHA_DEF : Constants.INDICATOR_ALPHA);
-        
+
+        var IndColor = Constants.INDICATOR_COLOR == Vector3.Zero
+            ? Constants.INDICATOR_COLOR_DEF
+            : Constants.INDICATOR_COLOR;
+        float IndFloat = Constants.INDICATOR_ALPHA == 0.0f ? Constants.INDICATOR_ALPHA_DEF : Constants.INDICATOR_ALPHA;
+
         //? Render the indicator after the spheres
-        if(RenderIndicator)
+        if (RenderIndicator)
             Indicator.Render(_camera!.GetViewMatrix(), _projection, IndColor, IndFloat);
-        
+
         _controller.Render();
 
         ImGuiController.CheckGLError("End of Frame");

@@ -26,7 +26,7 @@ public class Object
     public Vector3 Scale { get; protected set; }
     public System.Numerics.Vector3 Color { get; set; }
     public string Name { get; set; }
-    
+
     public string Type { get; set; }
     protected float Mass { get; set; }
     public bool IsEmissive { get; set; }
@@ -55,7 +55,7 @@ public class Sphere : Object
     public Sphere(string name, Vector3 position, Vector3 rotation, Vector3 scale,
         System.Numerics.Vector3 color, float mass, float orbitRadius,
         float angularSpeed, bool isEmissive = false, Object? parent = null)
-        : base(name, position, rotation, scale, color, mass, "",isEmissive)
+        : base(name, position, rotation, scale, color, mass, "", isEmissive)
     {
         OrbitRadius = orbitRadius;
         AngularSpeed = angularSpeed;

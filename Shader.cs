@@ -7,6 +7,14 @@ namespace OpenGL;
 /// </summary>
 internal static class Shader
 {
+    
+    /// <summary>
+    /// Public function for creating compiling and attaching shaders 
+    /// </summary>
+    /// <param name="vertexShaderPath"> Path to *.vert file</param>
+    /// <param name="fragmentShaderPath">Path to *.frag file</param>
+    /// <returns>Shader program (int)</returns>
+    /// <exception cref="Exception">If linking fails throws "Program linking failed: + ProgramInfoLog"</exception>
     public static int CreateShaderProgram(string vertexShaderPath, string fragmentShaderPath)
     {
         //Create the shader.vert/frag codes from their respective files
