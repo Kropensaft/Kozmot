@@ -1,4 +1,5 @@
 UI
-Celestial object type is displaying fallback value (Planet)
+Celestial object type is current selected value
+Velocity doesn't update for moons in orbit when closer
 # Bugs in parsing floats - Fixed (29.3.25)
 ...

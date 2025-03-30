@@ -26,7 +26,7 @@ public static class Constants
     /// </summary>
     public static readonly float INITIAL_SPHERE_RADIUS = .3f;
 
-    public static readonly float INITIAL_SPHERE_VELOCITY = .1f;
+    public static readonly float INITIAL_SPHERE_VELOCITY = .4f;
     public static readonly float DEFAULT_ORBIT_RADIUS = .2f;
     public static readonly int SPHERE_STACK_COUNT = 18;
     public static readonly int SPHERE_SECTOR_COUNT = 36;
@@ -55,7 +55,20 @@ public static class Constants
     public static readonly System.Numerics.Vector3 DESERT_PLANET_COLOR = new(0.7f, 0.5f, 0.3f); // Mars-like red
     public static readonly System.Numerics.Vector3 ICE_GIANT_COLOR = new(0.5f, 0.7f, 0.9f); // Neptune-like blue
 
-
+    
+    
+    /// <summary>
+    /// Indicator values
+    /// </summary>
+    public static readonly string indicatorVertexShaderPath = "Shaders/Indicator.vert";
+    public static readonly string indicatorFragmentShaderPath = "Shaders/Indicator.frag";
+    public static readonly OpenTK.Mathematics.Vector3 INDICATOR_COLOR_DEF = new(0.0f, 1.0f, 0.0f);
+    public static readonly float INDICATOR_ALPHA_DEF = 0.4f;
+    
+    //Centralized values which aren't constant
+    public static OpenTK.Mathematics.Vector3 INDICATOR_COLOR = new(0.0f, 0.0f, 0.0f);
+    public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
+    
     /// <summary>
     ///     Rendered values
     /// </summary>

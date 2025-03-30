@@ -1,4 +1,5 @@
 using System.Drawing;
+using ImGuiNET;
 using OpenGL.GUI;
 using OpenGL.Objects;
 using OpenTK.Graphics.OpenGL4;
@@ -36,6 +37,7 @@ internal static class Renderer
     //GUI 
     private static ImGuiController? _controller;
     private static bool UIinitcalled;
+    public static bool RenderIndicator = true;
 
     //Initalize grid
     private static Grid? _grid;
@@ -88,7 +90,8 @@ internal static class Renderer
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-
+        
+         Indicator.Initialize();
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
 
@@ -205,7 +208,7 @@ internal static class Renderer
             GL.DrawElements(PrimitiveType.Triangles, _indices!.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-
+    
         //render the spheres
         GL.DepthFunc(DepthFunction.Lequal);
         GL.UseProgram(_shaderPrograms["grid"]);
@@ -224,7 +227,14 @@ internal static class Renderer
             ImGuiElementContainer.ResetUI();
             UIinitcalled = true;
         }
-
+        
+        var IndColor = (Constants.INDICATOR_COLOR == Vector3.Zero ? Constants.INDICATOR_COLOR_DEF : Constants.INDICATOR_COLOR); 
+        var IndFloat = (Constants.INDICATOR_ALPHA == 0.0f ? Constants.INDICATOR_ALPHA_DEF : Constants.INDICATOR_ALPHA);
+        
+        //? Render the indicator after the spheres
+        if(RenderIndicator)
+            Indicator.Render(_camera!.GetViewMatrix(), _projection, IndColor, IndFloat);
+        
         _controller.Render();
 
         ImGuiController.CheckGLError("End of Frame");

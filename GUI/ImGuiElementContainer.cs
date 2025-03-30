@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Numerics;
 using ImGuiNET;
+using OpenGL.Objects;
 
 
 namespace OpenGL.GUI;
@@ -11,12 +12,14 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static string massBuffer = "";
     private static string nameBuffer = "";
     private static bool emissive;
-    private static Vector3 position = new(1f, 0f, 0f); // Replaced posFromStar with Vector3 position
+    public static Vector3 position = new(1f, 0f, 0f); // Replaced posFromStar with Vector3 position
     private static int defaultPlanetTypeIndex;
     private static int selectedParentIndex;
     private static float mass;
-    private static Vector3 color = new(0.5f, 0.5f, 0.5f);
+    public static Vector3 color = new(0.5f, 0.5f, 0.5f);
     public static List<Object> celestialBodies = new();
+    
+    private static Vector3 IndicatorColor;
 
     public void Dispose()
     {
@@ -75,6 +78,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                             };
                         }
 
+                        // ? If the object is a moon
                         if (defaultPlanetTypeIndex == 3)
                         {
 
@@ -152,6 +156,8 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Separator();
                         ImGui.Text("=== Disclaimer ===");
                         ImGui.BulletText("Keyboard input won't work if the UI window is focused");
+                        ImGui.BulletText("During runtime you will see a green semi transparent sphere");
+                        ImGui.Text("this sphere is an indicator of the planets position");
                     }
                     finally
                     {
@@ -176,6 +182,25 @@ internal abstract class ImGuiElementContainer : IDisposable
                         if (ImGui.Button("Switch pivots"))
                         {
                             Console.WriteLine($"Selected pivot: {selectedParentIndex}, changing...");
+                            Camera._pivot = celestialBodies[selectedParentIndex].Position;
+                        }
+                        ImGui.Separator();
+                        ImGui.Text("=== Indicator sphere settings ===");
+                        
+                        if (ImGui.Checkbox("Render Indicator", ref Renderer.RenderIndicator))
+                            Console.WriteLine($"Render Indicator: {Renderer.RenderIndicator}");
+                        
+                        if (ImGui.ColorEdit3("Color", ref IndicatorColor))
+                        {
+                            Console.WriteLine($"Indicator color: {IndicatorColor}");
+                            Constants.INDICATOR_COLOR.X = IndicatorColor.X;
+                            Constants.INDICATOR_COLOR.Y = IndicatorColor.Y;
+                            Constants.INDICATOR_COLOR.Z = IndicatorColor.Z;
+                        }
+
+                        if (ImGui.SliderFloat("Indicator transparency", ref Constants.INDICATOR_ALPHA, 0.0f, 0.9f))
+                        {
+                            Console.WriteLine($"Indicator alpha: {Constants.INDICATOR_ALPHA}");
                         }
                     }
                     finally
@@ -240,7 +265,7 @@ internal abstract class ImGuiElementContainer : IDisposable
         return new Sphere(
             nameBuffer,
             openTkPosition, // OpenTK Vector3
-            OpenTK.Mathematics.Vector3.Zero,
+            OpenTK.Mathematics.Vector3.One,
             OpenTK.Mathematics.Vector3.One * Constants.INITIAL_SPHERE_RADIUS,
             color,
             parsedMass,
@@ -250,7 +275,15 @@ internal abstract class ImGuiElementContainer : IDisposable
             defaultPlanetTypeIndex == 3 ? GetSelectedParent() : null
         );
     }
-
+    
+    /// <summary>
+    /// Check whether any current UI element is being edited
+    /// </summary>
+    public static bool IsEditing => 
+        !string.IsNullOrEmpty(nameBuffer) || 
+        ImGui.IsItemActive() || 
+        ImGui.IsAnyItemActive();
+    
     public static void ResetUI()
     {
         nameBuffer = Constants.DEFAULT_NAME_BUFFER;
