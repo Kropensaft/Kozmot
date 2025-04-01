@@ -85,11 +85,11 @@ public static class Constants
     public static readonly string indicatorVertexShaderPath = "Shaders/Indicator.vert";
 
     public static readonly string indicatorFragmentShaderPath = "Shaders/Indicator.frag";
-    public static readonly Vector3 INDICATOR_COLOR_DEF = new(0.0f, 1.0f, 0.0f);
+    public static readonly System.Numerics.Vector3 INDICATOR_COLOR_DEF = new(0.0f, 1.0f, 0.0f);
     public static readonly float INDICATOR_ALPHA_DEF = 0.4f;
 
     //Centralized values which aren't constant
-    public static Vector3 INDICATOR_COLOR = new(0.0f, 0.0f, 0.0f);
+    public static System.Numerics.Vector3 INDICATOR_COLOR = new(0.0f, 0.0f, 0.0f);
     public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
 
     /// <summary>
@@ -150,6 +150,9 @@ public static class Constants
 
     public static readonly string DEFAULT_MASS_BUFFER = "1,2";
     public static readonly string DEFAULT_NAME_BUFFER = "Name me!";
+
+    public static readonly float SLIDER_CLAMP_MIN = -2f;
+    public static readonly float SLIDER_CLAMP_MAX = 100f;
 
 
     public static readonly string[] planetTypes = new[]

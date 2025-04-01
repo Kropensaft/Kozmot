@@ -1,9 +1,9 @@
 UI
-Celestial object type is current selected value
 Moon doesnt behave by gravity 
-Fix skybox
 Update UI to show possibility of setScale
-update indicator based on planets scale
+# Celestial object type is current selected value - Fixed (1.4.25)
+# Fix skybox - Fixed (1.4.25)
+# update indicator based on planets scale - Fixed (1.4.25)
 # Bugs in parsing floats - Fixed (29.3.25)
 ...
 

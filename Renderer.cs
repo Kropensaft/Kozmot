@@ -125,7 +125,8 @@ internal static class Renderer
         _shaderPrograms["default"] =
             Shader.CreateShaderProgram(Constants.vertexShaderPath, Constants.fragmentShaderPath);
         //new grid instance
-        _grid = new Grid(Constants.GRID_SIZE);
+        if(Grid.RenderGrid)
+            _grid = new Grid(Constants.GRID_SIZE);
 
 
         //? Generate a new sphere
@@ -133,11 +134,12 @@ internal static class Renderer
             "Test Sphere 2",
             new Vector3(4, 0, 0),
             Vector3.Zero,
-            new Vector3(2f, 2f, 2f),
+            new Vector3(.5f, .5f, .5f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
             1.0f,
             2.0f,
-            0.5f
+            0.5f,
+            Constants.planetTypes[0]
         );
         Spheres.Add(sphere);
         ImGuiElementContainer.celestialBodies.Add(sphere);
@@ -262,7 +264,8 @@ internal static class Renderer
         // --- 6. Render Grid ---
         // Grid.Render should handle its own state (shader, VAO, uniforms, depth func changes)
         // Make sure Grid.Render takes projection matrix as argument
-        _grid?.Render(_shaderPrograms["grid"], currentView, currentProjection); // Pass currentProjection
+        if(Grid.RenderGrid)
+            _grid?.Render(_shaderPrograms["grid"], currentView, currentProjection); // Pass currentProjection
         CheckGLError("After Grid Render");
         // Grid.Render should restore DepthFunc to Less if it changed it
 
@@ -270,9 +273,24 @@ internal static class Renderer
         // Indicator.Render handles its own state (shader, VAO, uniforms)
         if (RenderIndicator)
         {
-            var IndColor = Constants.INDICATOR_COLOR == Vector3.Zero ? Constants.INDICATOR_COLOR_DEF : Constants.INDICATOR_COLOR;
-            float IndFloat = Constants.INDICATOR_ALPHA == 0.0f ? Constants.INDICATOR_ALPHA_DEF : Constants.INDICATOR_ALPHA;
-            Indicator.Render(currentView, currentProjection, IndColor, IndFloat); // Pass currentProjection
+            // 1. Determine the base color (now comparing System.Numerics == System.Numerics)
+            var baseColorNum = Constants.INDICATOR_COLOR == System.Numerics.Vector3.Zero // This comparison now works
+                ? Constants.INDICATOR_COLOR_DEF // This is also System.Numerics.Vector3
+                : Constants.INDICATOR_COLOR;
+
+            // 2. Determine the alpha value
+            float alpha = Constants.INDICATOR_ALPHA <= 0.0f
+                ? Constants.INDICATOR_ALPHA_DEF
+                : Constants.INDICATOR_ALPHA;
+
+            // 3. CONVERT TO OPENTK TYPE FOR RENDERING
+            var finalIndicatorColorTk = new OpenTK.Mathematics.Vector3(
+                baseColorNum.X,
+                baseColorNum.Y,
+                baseColorNum.Z
+            );
+            
+            Indicator.Render(currentView, currentProjection, finalIndicatorColorTk, alpha);
             CheckGLError("After Indicator Render");
         }
 

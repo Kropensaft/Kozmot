@@ -94,6 +94,7 @@ internal static class InputHandler
         if (e.Key == Keys.Down) _camera!.Distance += 0.1f;
     }
 
+    /*
     public static Sphere GenerateSphere(System.Numerics.Vector3 color)
     {
         var random = new Random();
@@ -112,7 +113,7 @@ internal static class InputHandler
             Constants.DEFAULT_ORBIT_RADIUS,
             Constants.INITIAL_SPHERE_VELOCITY
         );
-    }
+    }*/
 
     private static void OnUpdateFrame(FrameEventArgs args)
     {

@@ -14,7 +14,7 @@ public class Grid
     public static int _vao, _vbo, _ebo;
     public static float[]? _vertices;
     public static uint[]? _indices;
-
+    public static bool RenderGrid = true;
 
     public Grid(int size = 200, float step = 1.0f)
     {

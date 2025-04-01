@@ -58,15 +58,17 @@ namespace OpenGL
             // Generate sphere mesh
             // Ensure Sphere constructor and GenerateSphere can handle the data types
             var sphere = new Sphere("Indicator_Internal",
-                                    Vector3.Zero, // OpenTK Position
-                                    Vector3.Zero, // OpenTK Velocity/Rotation?
-                                    new Vector3(_currentRadius, _currentRadius, _currentRadius), // OpenTK Scale/Size
-                                    System.Numerics.Vector3.One, // Assuming Sphere expects System.Numerics color? Adjust if needed.
-                                    0f, // Mass
-                                    0f, // orbitRadius
-                                    0f, // velocity
-                                    false, // emissive
-                                    null); // parent
+                Vector3.Zero, // OpenTK Position
+                Vector3.Zero, // OpenTK Velocity/Rotation?
+                new Vector3(_currentRadius, _currentRadius, _currentRadius), // OpenTK Scale/Size
+                System.Numerics.Vector3.One, // Assuming Sphere expects System.Numerics color? Adjust if needed.
+                0f, // Mass
+                0f, // orbitRadius
+                0f, // velocity
+                null, // parent
+                false,
+                null); // emissive
+                                    
 
             try
             {
