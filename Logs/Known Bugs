@@ -1,5 +1,10 @@
 UI
 Celestial object type is current selected value
-Velocity doesn't update for moons in orbit when closer
+Moon doesnt behave by gravity 
+Fix skybox
+Update UI to show possibility of setScale
+update indicator based on planets scale
 # Bugs in parsing floats - Fixed (29.3.25)
 ...
+
+ 

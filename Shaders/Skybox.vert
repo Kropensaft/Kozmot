@@ -1,19 +1,14 @@
 #version 330 core
-uniform mat4 uProjection;
-uniform mat4 uView;
+layout (location = 0) in vec3 aPos;
 
-in vec3 aPosition;
-out vec3 vTexCoord;
+out vec3 texCoords;
+
+uniform mat4 projection;
+uniform mat4 view;
 
 void main()
 {
-    // Remove translation from view matrix
-    mat4 viewRotation = mat4(mat3(uView));
-    vec4 clipPos = uProjection * viewRotation * vec4(aPosition, 1.0);
-
-    // Use .xyww to ensure depth = 1.0 (far plane)
-    gl_Position = clipPos.xyww;
-
-    // Pass raw position as texture coordinates
-    vTexCoord = aPosition;
-}
+    texCoords = aPos;
+    vec4 pos = vec4(aPos, 1.0) * view * projection;
+    gl_Position = vec4(pos.xy, pos.w, pos.w);
+}  

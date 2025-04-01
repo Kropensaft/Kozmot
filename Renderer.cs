@@ -79,8 +79,13 @@ internal static class Renderer
         Spheres.Clear();
 
         // ? ImGui
-        Console.WriteLine("Deleting ImGui Buffers...\n");
+        Console.WriteLine("Deleting ImGui Buffers...");
         ImGuiController.DestroyDeviceObjects();
+        
+        
+        // ? Indicator
+        Console.WriteLine("Deleting Indicator buffers...\n");
+        Indicator.Dispose();
 
         Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond - elapsedtime} ms.");
     }

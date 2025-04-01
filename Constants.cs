@@ -39,12 +39,12 @@ public static class Constants
     // Skybox texture paths (order: right, left, top, bottom, front, back)
     public static readonly string[] SkyboxTexturePaths = new[]
     {
-        "./ImageDependencies/Skybox/right.png",
-        "./ImageDependencies/Skybox/left.png",
-        "./ImageDependencies/Skybox/top.png",
-        "./ImageDependencies/Skybox/bottom.png",
-        "./ImageDependencies/Skybox/front.png",
-        "./ImageDependencies/Skybox/back.png"
+        "./ImageDependencies/Skybox/right.jpg",
+        "./ImageDependencies/Skybox/left.jpg",
+        "./ImageDependencies/Skybox/wTop.jpg",
+        "./ImageDependencies/Skybox/bottom.jpg",
+        "./ImageDependencies/Skybox/front.jpg",
+        "./ImageDependencies/Skybox/back.jpg"
     };
 
     public static readonly string skyboxVertexShaderPath = "Shaders/Skybox.vert";
@@ -60,6 +60,13 @@ public static class Constants
     public static readonly float MOON_MASS = 0.1f;
     public static readonly float DESERT_MASS = 0.8f;
     public static readonly float ICE_GIANT_MASS = 20f;
+    
+    public static readonly float STAR_RADIUS = 1.39f;
+    public static readonly float GAS_GIANT_RADIUS = 0.74f;
+    public static readonly float ROCKY_PLANET_RADIUS = 0.32f;
+    public static readonly float MOON_RADIUS = 0.14f;
+    public static readonly float DESERT_PLANET_RADIUS = 0.28f;
+    public static readonly float ICE_GIANT_RADIUS = 0.81f;
 
     /// <summary>
     ///     Colors based on the celestial type
@@ -174,4 +181,49 @@ public static class Constants
     {
         return mass1 * mass2 / float.Pow(distance, 2);
     }
+
+    //Skybox face values
+    public static readonly float[] _skyboxVertices =
+    {
+        // Positions (corrected winding order)
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f
+    };
+
+    public static readonly uint[] _skyboxIndices =
+    {
+        0, 1, 2, 2, 3, 0,   // Front
+        4, 5, 6, 6, 7, 4,   // Back
+        8, 9, 10, 10, 11, 8, // Top
+        12, 13, 14, 14, 15, 12, // Bottom
+        16, 17, 18, 18, 19, 16, // Left
+        20, 21, 22, 22, 23, 20  // Right
+    };
 }

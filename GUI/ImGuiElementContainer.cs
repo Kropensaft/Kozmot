@@ -11,9 +11,13 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static string massBuffer = "";
     private static string nameBuffer = "";
     private static bool emissive;
-    public static Vector3 position = new(1f, 0f, 0f); // Replaced posFromStar with Vector3 position
+    public static Vector3 position = new(1f, 0f, 0f);
     private static int defaultPlanetTypeIndex;
     private static int selectedParentIndex;
+    
+    //? Public vars
+    public static uint selectedPlanetTypeRef => (uint)defaultPlanetTypeIndex;
+    
     private static float mass;
     public static Vector3 color = new(0.5f, 0.5f, 0.5f);
     public static List<Object> celestialBodies = new();
@@ -57,6 +61,7 @@ internal abstract class ImGuiElementContainer : IDisposable
 
                         if (ImGui.Combo("Planet type", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
                         {
+                            
                             Console.WriteLine($"Selected planet type: {planetTypes[defaultPlanetTypeIndex]}");
                             emissive = defaultPlanetTypeIndex == 1;
 
@@ -99,7 +104,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                             }
                         }
 
-                        if (ImGui.DragFloat3("Position", ref position, 0.01f, -10f, 10f))
+                        if (ImGui.DragFloat3("Position", ref position, 0.01f, -1f, 10f))
                             Console.WriteLine($"Position changed: X={position.X}, Y={position.Y}, Z={position.Z}");
 
                         ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDTH);
@@ -265,7 +270,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             nameBuffer,
             openTkPosition, // OpenTK Vector3
             OpenTK.Mathematics.Vector3.One,
-            OpenTK.Mathematics.Vector3.One * Constants.INITIAL_SPHERE_RADIUS,
+            new OpenTK.Mathematics.Vector3(Indicator.GetRadii(),Indicator.GetRadii(),Indicator.GetRadii()),
             color,
             parsedMass,
             openTkPosition.Length, // Use OpenTK's Vector3 Length property

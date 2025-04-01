@@ -75,6 +75,7 @@ public class Sphere : Object
             if (other != this)
                 ApplyGravity(other, deltaTime);
 
+        //? If the planet is a moon and a parent is selected, calculate the orbit and best location for the moon
         if (Parent != null)
         {
             Angle += AngularSpeed * (float)deltaTime;
