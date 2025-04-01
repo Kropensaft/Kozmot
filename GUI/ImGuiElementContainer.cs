@@ -356,7 +356,8 @@ namespace OpenGL.GUI
 
             try
             {
-                Console.WriteLine($"Creating new Sphere : {nameBuffer} \n " +
+                Console.WriteLine($"\n" +
+                                  $"Creating new Sphere : {nameBuffer} \n " +
                                   $"World pos :{worldPosition}\n" +
                                   $"Rotation : {sphereRotation}\n" +
                                   $"Scale :{sphereScale}\n" +

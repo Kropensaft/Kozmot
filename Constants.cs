@@ -148,7 +148,7 @@ public static class Constants
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
     public static readonly uint BESPOKE_TEXTEDIT_WIDE_WIDTH = 120;
 
-    public static readonly string DEFAULT_MASS_BUFFER = "1,2";
+    public static readonly string DEFAULT_MASS_BUFFER = "1.2";
     public static readonly string DEFAULT_NAME_BUFFER = "Name me!";
 
     public static readonly float SLIDER_CLAMP_MIN = -2f;
