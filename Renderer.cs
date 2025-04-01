@@ -101,7 +101,16 @@ internal static class Renderer
         Indicator.Initialize();
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
-        _skybox = new Skybox();
+        
+        try
+        {
+            _skybox = new Skybox(Constants.SkyboxFaces, "Shaders/"); // Assuming shaders are in "Shaders" folder
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to initialize Skybox: {ex.Message}");
+            _skybox = null; // Prevent rendering if initialization failed
+        }
 
         // Initialize matrices
         _projection = Matrix4.CreatePerspectiveFieldOfView(
@@ -186,68 +195,118 @@ internal static class Renderer
     }
 
     // ? Called each frame
-    public static void OnUpdate(FrameEventArgs args)
+        public static void OnUpdate(FrameEventArgs args)
     {
-        _skybox!.Render(_camera!.GetViewMatrix(), _projection);
+        // 1. Update ImGui input state (needs to happen early)
         _controller!.Update(_window!, (float)args.Time);
 
+        // 2. Clear Buffers (once per frame)
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+        // 3. Get Camera Matrices (once per frame)
+        float aspectRatio = _window!.Size.X / (float)_window.Size.Y;
+        Matrix4 currentView = _camera!.GetViewMatrix();
+        Matrix4 currentProjection = _camera.GetProjectionMatrix(aspectRatio);
+        // Use 'currentProjection' below instead of the potentially stale '_projection' member
+
+        // --- 4. Render Skybox ---
+        if (_skybox != null)
+        {
+             // Skybox.Render handles its own state (shader, VAO, uniforms, depth func)
+            _skybox.Render(currentView, currentProjection);
+            Skybox.CheckGLError("After Skybox render"); // Use the static method if it exists
+        }
+        // Skybox.Render should have restored DepthFunc to Less
+
+        // --- 5. Render Spheres ---
+        // Set the shader program FOR THE SPHERES
         GL.UseProgram(_shaderPrograms["default"]);
-        GL.BindVertexArray(_vao);
-        
-        // Update the view matrix using the shared camera
-        var view = _camera!.GetViewMatrix();
-        GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix"), false, ref view);
+        CheckGLError("Use Default Program for Spheres");
+
+        // Set camera uniforms FOR THE SPHERES SHADER (only need to set once if shader doesn't change)
+        GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix"), false, ref currentView);
+        GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix"), false, ref currentProjection); // Use currentProjection
+        CheckGLError("Set Sphere View/Projection Uniforms");
 
 
-        // Recalculate position for each sphere spawned
-        foreach (var obj in Spheres) obj.Update(args.Time);
+        // Bind the VAO FOR THE SPHERES
+        GL.BindVertexArray(_vao); // <-- Bind the sphere VAO HERE
+        CheckGLError("Bind Sphere VAO");
 
-        // Render each object
+        // Update and Render each sphere object
         foreach (var obj in Spheres)
         {
+            // Object-specific updates
+            obj.Update(args.Time); // Assuming this doesn't change GL state
+
+            // Set object-specific uniforms
             var model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix"), false, ref model);
+            GL.Uniform3(GL.GetUniformLocation(_shaderPrograms["default"], "object_color"), obj.Color.X, obj.Color.Y, obj.Color.Z);
+            CheckGLError($"Set Uniforms for Sphere: {obj.Name}");
 
-            int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
-            GL.Uniform3(colorLoc, obj.Color.X, obj.Color.Y, obj.Color.Z);
 
-            GL.DrawElements(PrimitiveType.Triangles, _indices!.Length, DrawElementsType.UnsignedInt, 0);
+            // Draw THIS sphere using the bound VAO and EBO
+            // Ensure _indices is not null (should be set in OnLoad)
+            if (_indices != null)
+            {
+                GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+                CheckGLError($"Draw Sphere: {obj.Name}");
+            }
         }
-        
-        //render the spheres
-        GL.DepthFunc(DepthFunction.Lequal);
-        GL.UseProgram(_shaderPrograms["grid"]);
-        _grid!.Render(_shaderPrograms["grid"], _camera.GetViewMatrix(), _projection);
-        GL.DepthFunc(DepthFunction.Less);
-        
-        // ? Toggles GUI fullscreen - ImGui.DockSpaceOverViewport();
 
+        // Unbind Sphere VAO (good practice)
+        GL.BindVertexArray(0);
+        CheckGLError("Unbind Sphere VAO");
 
-        //? Call to our own bespoke UI        
+        // --- 6. Render Grid ---
+        // Grid.Render should handle its own state (shader, VAO, uniforms, depth func changes)
+        // Make sure Grid.Render takes projection matrix as argument
+        _grid?.Render(_shaderPrograms["grid"], currentView, currentProjection); // Pass currentProjection
+        CheckGLError("After Grid Render");
+        // Grid.Render should restore DepthFunc to Less if it changed it
+
+        // --- 7. Render Indicator ---
+        // Indicator.Render handles its own state (shader, VAO, uniforms)
+        if (RenderIndicator)
+        {
+            var IndColor = Constants.INDICATOR_COLOR == Vector3.Zero ? Constants.INDICATOR_COLOR_DEF : Constants.INDICATOR_COLOR;
+            float IndFloat = Constants.INDICATOR_ALPHA == 0.0f ? Constants.INDICATOR_ALPHA_DEF : Constants.INDICATOR_ALPHA;
+            Indicator.Render(currentView, currentProjection, IndColor, IndFloat); // Pass currentProjection
+            CheckGLError("After Indicator Render");
+        }
+
+        // --- 8. Render ImGui UI ---
+        // Submit UI definitions
         ImGuiElementContainer.SubmitUI();
+        CheckGLError("After SubmitUI");
 
-        //? Makes it so that on program start the UI is reset and only at that point
+        // Reset UI only once (logic seems okay)
         if (!UIinitcalled)
         {
             ImGuiElementContainer.ResetUI();
             UIinitcalled = true;
         }
 
-        var IndColor = Constants.INDICATOR_COLOR == Vector3.Zero
-            ? Constants.INDICATOR_COLOR_DEF
-            : Constants.INDICATOR_COLOR;
-        float IndFloat = Constants.INDICATOR_ALPHA == 0.0f ? Constants.INDICATOR_ALPHA_DEF : Constants.INDICATOR_ALPHA;
-
-        //? Render the indicator after the spheres
-        if (RenderIndicator)
-            Indicator.Render(_camera!.GetViewMatrix(), _projection, IndColor, IndFloat);
-
+        // Render the ImGui draw data
         _controller.Render();
+        CheckGLError("After ImGui Render");
 
-        ImGuiController.CheckGLError("End of Frame");
-        //swap the buffer for a new one 
+
+        // --- 9. Swap Buffers ---
+        ImGuiController.CheckGLError("End of Frame"); // Check error before swap
         _window!.SwapBuffers();
+    }
+
+    // Helper Error Check (ensure it's defined or remove calls if not)
+    private static void CheckGLError(string stage) {
+        #if DEBUG
+        ErrorCode error = GL.GetError();
+        if (error != ErrorCode.NoError) {
+            Console.WriteLine($"OpenGL Error ({stage}): {error}");
+            // System.Diagnostics.Debugger.Break();
+        }
+        #endif
     }
 
     public static void AddObject(Sphere obj)

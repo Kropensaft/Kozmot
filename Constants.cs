@@ -16,7 +16,6 @@ public static class Constants
     ///     Window Constants
     /// </summary>
     public static readonly int SCREEN_WIDTH = 800;
-
     public static readonly int SCREEN_HEIGHT = 600;
     public static readonly Vector3 INITIAL_CAMERA_POS = (0, 0, 5);
 
@@ -37,11 +36,11 @@ public static class Constants
     ///     Skybox values
     /// </summary>
     // Skybox texture paths (order: right, left, top, bottom, front, back)
-    public static readonly string[] SkyboxTexturePaths = new[]
+    public static readonly string[] SkyboxFaces = new[]
     {
         "./ImageDependencies/Skybox/right.jpg",
         "./ImageDependencies/Skybox/left.jpg",
-        "./ImageDependencies/Skybox/wTop.jpg",
+        "./ImageDependencies/Skybox/top.jpg",
         "./ImageDependencies/Skybox/bottom.jpg",
         "./ImageDependencies/Skybox/front.jpg",
         "./ImageDependencies/Skybox/back.jpg"
