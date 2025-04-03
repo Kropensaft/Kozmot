@@ -81,8 +81,8 @@ internal static class Renderer
         // ? ImGui
         Console.WriteLine("Deleting ImGui Buffers...");
         ImGuiController.DestroyDeviceObjects();
-        
-        
+
+
         // ? Indicator
         Console.WriteLine("Deleting Indicator buffers...\n");
         Indicator.Dispose();
@@ -101,7 +101,7 @@ internal static class Renderer
         Indicator.Initialize();
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
-        
+
         try
         {
             _skybox = new Skybox(Constants.SkyboxFaces, "Shaders/"); // Assuming shaders are in "Shaders" folder
@@ -125,7 +125,7 @@ internal static class Renderer
         _shaderPrograms["default"] =
             Shader.CreateShaderProgram(Constants.vertexShaderPath, Constants.fragmentShaderPath);
         //new grid instance
-        if(Grid.RenderGrid)
+        if (Grid.RenderGrid)
             _grid = new Grid(Constants.GRID_SIZE);
 
 
@@ -197,7 +197,7 @@ internal static class Renderer
     }
 
     // ? Called each frame
-        public static void OnUpdate(FrameEventArgs args)
+    public static void OnUpdate(FrameEventArgs args)
     {
         // 1. Update ImGui input state (needs to happen early)
         _controller!.Update(_window!, (float)args.Time);
@@ -207,14 +207,14 @@ internal static class Renderer
 
         // 3. Get Camera Matrices (once per frame)
         float aspectRatio = _window!.Size.X / (float)_window.Size.Y;
-        Matrix4 currentView = _camera!.GetViewMatrix();
-        Matrix4 currentProjection = _camera.GetProjectionMatrix(aspectRatio);
+        var currentView = _camera!.GetViewMatrix();
+        var currentProjection = _camera.GetProjectionMatrix(aspectRatio);
         // Use 'currentProjection' below instead of the potentially stale '_projection' member
 
         // --- 4. Render Skybox ---
         if (_skybox != null)
         {
-             // Skybox.Render handles its own state (shader, VAO, uniforms, depth func)
+            // Skybox.Render handles its own state (shader, VAO, uniforms, depth func)
             _skybox.Render(currentView, currentProjection);
             Skybox.CheckGLError("After Skybox render"); // Use the static method if it exists
         }
@@ -227,7 +227,8 @@ internal static class Renderer
 
         // Set camera uniforms FOR THE SPHERES SHADER (only need to set once if shader doesn't change)
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix"), false, ref currentView);
-        GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix"), false, ref currentProjection); // Use currentProjection
+        GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix"), false,
+            ref currentProjection); // Use currentProjection
         CheckGLError("Set Sphere View/Projection Uniforms");
 
 
@@ -244,7 +245,8 @@ internal static class Renderer
             // Set object-specific uniforms
             var model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix"), false, ref model);
-            GL.Uniform3(GL.GetUniformLocation(_shaderPrograms["default"], "object_color"), obj.Color.X, obj.Color.Y, obj.Color.Z);
+            GL.Uniform3(GL.GetUniformLocation(_shaderPrograms["default"], "object_color"), obj.Color.X, obj.Color.Y,
+                obj.Color.Z);
             CheckGLError($"Set Uniforms for Sphere: {obj.Name}");
 
 
@@ -264,7 +266,7 @@ internal static class Renderer
         // --- 6. Render Grid ---
         // Grid.Render should handle its own state (shader, VAO, uniforms, depth func changes)
         // Make sure Grid.Render takes projection matrix as argument
-        if(Grid.RenderGrid)
+        if (Grid.RenderGrid)
             _grid?.Render(_shaderPrograms["grid"], currentView, currentProjection); // Pass currentProjection
         CheckGLError("After Grid Render");
         // Grid.Render should restore DepthFunc to Less if it changed it
@@ -284,12 +286,12 @@ internal static class Renderer
                 : Constants.INDICATOR_ALPHA;
 
             // 3. CONVERT TO OPENTK TYPE FOR RENDERING
-            var finalIndicatorColorTk = new OpenTK.Mathematics.Vector3(
+            var finalIndicatorColorTk = new Vector3(
                 baseColorNum.X,
                 baseColorNum.Y,
                 baseColorNum.Z
             );
-            
+
             Indicator.Render(currentView, currentProjection, finalIndicatorColorTk, alpha);
             CheckGLError("After Indicator Render");
         }
@@ -317,14 +319,13 @@ internal static class Renderer
     }
 
     // Helper Error Check (ensure it's defined or remove calls if not)
-    private static void CheckGLError(string stage) {
-        #if DEBUG
-        ErrorCode error = GL.GetError();
-        if (error != ErrorCode.NoError) {
-            Console.WriteLine($"OpenGL Error ({stage}): {error}");
-            // System.Diagnostics.Debugger.Break();
-        }
-        #endif
+    private static void CheckGLError(string stage)
+    {
+#if DEBUG
+        var error = GL.GetError();
+        if (error != ErrorCode.NoError) Console.WriteLine($"OpenGL Error ({stage}): {error}");
+        // System.Diagnostics.Debugger.Break();
+#endif
     }
 
     public static void AddObject(Sphere obj)
@@ -332,7 +333,7 @@ internal static class Renderer
         Spheres.Add(obj);
     }
 
-    public static void RemoveObject()
+    public static void RemoveObject(Object obj = null)
     {
         Spheres.RemoveAt(Spheres.Count - 1);
     }

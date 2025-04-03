@@ -24,7 +24,7 @@ internal static class Program
 
         //Program settings 
         nativeWindowSettings.ClientSize = new Vector2i(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
-        nativeWindowSettings.Title = "C# GL";
+        nativeWindowSettings.Title = "Kozmot";
         nativeWindowSettings.StartFocused = true;
         nativeWindowSettings.Vsync = VSyncMode.Off;
         nativeWindowSettings.WindowState = Debugger.IsAttached ? WindowState.Maximized : WindowState.Fullscreen;

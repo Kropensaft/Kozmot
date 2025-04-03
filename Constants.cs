@@ -16,6 +16,7 @@ public static class Constants
     ///     Window Constants
     /// </summary>
     public static readonly int SCREEN_WIDTH = 800;
+
     public static readonly int SCREEN_HEIGHT = 600;
     public static readonly Vector3 INITIAL_CAMERA_POS = (0, 0, 5);
 
@@ -59,7 +60,7 @@ public static class Constants
     public static readonly float MOON_MASS = 0.1f;
     public static readonly float DESERT_MASS = 0.8f;
     public static readonly float ICE_GIANT_MASS = 20f;
-    
+
     public static readonly float STAR_RADIUS = 1.39f;
     public static readonly float GAS_GIANT_RADIUS = 0.74f;
     public static readonly float ROCKY_PLANET_RADIUS = 0.32f;
@@ -171,6 +172,51 @@ public static class Constants
     public static readonly string LineVertPath = "Shaders/line.vert";
     public static readonly string LineFragPath = "Shaders/line.frag";
 
+    //Skybox face values
+    public static readonly float[] _skyboxVertices =
+    {
+        // Positions (corrected winding order)
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+
+        -1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f
+    };
+
+    public static readonly uint[] _skyboxIndices =
+    {
+        0, 1, 2, 2, 3, 0, // Front
+        4, 5, 6, 6, 7, 4, // Back
+        8, 9, 10, 10, 11, 8, // Top
+        12, 13, 14, 14, 15, 12, // Bottom
+        16, 17, 18, 18, 19, 16, // Left
+        20, 21, 22, 22, 23, 20 // Right
+    };
+
 
     /// <summary>
     ///     Calculate the approximate gravitational force between two simulated celestial bodies
@@ -183,49 +229,4 @@ public static class Constants
     {
         return mass1 * mass2 / float.Pow(distance, 2);
     }
-
-    //Skybox face values
-    public static readonly float[] _skyboxVertices =
-    {
-        // Positions (corrected winding order)
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f
-    };
-
-    public static readonly uint[] _skyboxIndices =
-    {
-        0, 1, 2, 2, 3, 0,   // Front
-        4, 5, 6, 6, 7, 4,   // Back
-        8, 9, 10, 10, 11, 8, // Top
-        12, 13, 14, 14, 15, 12, // Bottom
-        16, 17, 18, 18, 19, 16, // Left
-        20, 21, 22, 22, 23, 20  // Right
-    };
 }
