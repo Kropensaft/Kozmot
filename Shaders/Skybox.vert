@@ -9,8 +9,6 @@ uniform mat4 view; // View matrix WITHOUT translation
 void main()
 {
     TexCoords = aPos;
-    // Remove translation from view matrix before applying projection
-    // Pass position to fragment shader, ensuring z = w for max depth
     vec4 pos = projection * view * vec4(aPos, 1.0);
     gl_Position = pos.xyww;
 }

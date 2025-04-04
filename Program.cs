@@ -42,6 +42,7 @@ internal static class Program
         //Pass references
         InputHandler.InitializeInputs(window, camera);
         Renderer._camera = camera;
+        Renderer.showFPS = false;
 
 
         WindowManager.Initialize(window);

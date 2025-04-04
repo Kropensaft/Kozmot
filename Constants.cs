@@ -172,61 +172,68 @@ public static class Constants
     public static readonly string LineVertPath = "Shaders/line.vert";
     public static readonly string LineFragPath = "Shaders/line.frag";
 
-    //Skybox face values
-    public static readonly float[] _skyboxVertices =
-    {
-        // Positions (corrected winding order)
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-
-        -1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f
-    };
-
-    public static readonly uint[] _skyboxIndices =
-    {
-        0, 1, 2, 2, 3, 0, // Front
-        4, 5, 6, 6, 7, 4, // Back
-        8, 9, 10, 10, 11, 8, // Top
-        12, 13, 14, 14, 15, 12, // Bottom
-        16, 17, 18, 18, 19, 16, // Left
-        20, 21, 22, 22, 23, 20 // Right
-    };
 
 
     /// <summary>
-    ///     Calculate the approximate gravitational force between two simulated celestial bodies
+    /// Texture atlas values
     /// </summary>
-    /// <param name="mass1"> Mass of the first celestial body</param>
-    /// <param name="mass2"> Mass of the second celestial body</param>
-    /// <param name="distance"> Distance between said objects</param>
-    /// <returns></returns>
-    public static float G_FORCE(float mass1, float mass2, float distance)
+    public static readonly string[] _TexturePaths = new[]
     {
-        return mass1 * mass2 / float.Pow(distance, 2);
-    }
+        "./ImageDependencies/Textures/Ocean",
+        "./ImageDependencies/Textures/Star",
+        "./ImageDependencies/Textures/Gas",
+        "./ImageDependencies/Textures/Moon",
+        "./ImageDependencies/Textures/Desert", 
+        "./ImageDependencies/Textures/Ice"
+        // TODO : Add and implement the textures
+    };
+    
+    //Skybox face values
+    public static readonly float[] _skyboxVertices =
+    {
+        // Positions
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+
+        -1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f, 
+        1.0f, -1.0f, -1.0f, 
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f
+    };
+
+    
 }

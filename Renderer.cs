@@ -42,6 +42,8 @@ internal static class Renderer
     //Initalize grid
     private static Grid? _grid;
 
+    public static bool showFPS {get; set;}
+
     //Initialize the skybox
     private static Skybox? _skybox;
 
@@ -105,7 +107,7 @@ internal static class Renderer
 
         try
         {
-            _skybox = new Skybox(Constants.SkyboxFaces, "Shaders/"); // Assuming shaders are in "Shaders" folder
+            _skybox = new Skybox(Constants.SkyboxFaces, "Shaders/");
         }
         catch (Exception ex)
         {
@@ -306,7 +308,9 @@ internal static class Renderer
         // --- 8. Render ImGui UI ---
         // Submit UI definitions
         ImGuiElementContainer.SubmitUI();
-        ImGui.ShowMetricsWindow();
+        
+        if(showFPS)
+            ImGui.ShowMetricsWindow();
         CheckGLError("After SubmitUI");
 
         // Reset UI only once (logic seems okay)

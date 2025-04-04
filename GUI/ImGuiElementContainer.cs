@@ -124,8 +124,8 @@ internal abstract class ImGuiElementContainer : IDisposable
                         }
 
 
-                        if (ImGui.DragFloat3("Position (Relative)", ref position, 0.01f, Constants.SLIDER_CLAMP_MIN,
-                                Constants.SLIDER_CLAMP_MAX))
+                        if (ImGui.DragFloat3("Position (Relative)", ref position, 0.2f, -Constants.GRID_SIZE,
+                                Constants.GRID_SIZE))
                         {
                         } // No action needed on change here
 
