@@ -1,4 +1,5 @@
 using System.Drawing;
+using ImGuiNET;
 using OpenGL.GUI;
 using OpenGL.Objects;
 using OpenTK.Graphics.OpenGL4;
@@ -192,7 +193,7 @@ internal static class Renderer
         if (!_window.Exists)
         {
             _window.Close();
-            Console.WriteLine("Game Window not initialized.");
+            throw new Exception("Game Window not initialized.");
         }
     }
 
@@ -237,11 +238,17 @@ internal static class Renderer
         CheckGLError("Bind Sphere VAO");
 
         // Update and Render each sphere object
-        foreach (var obj in Spheres)
+        // ! Spheres.ToList is crucial since we need the original List only as a reference of objects 
+        foreach (var obj in Spheres.ToList())
         {
+            if (obj.Position.X > Constants.GRID_SIZE)
+            {
+                //TODO : If a planet is too far do something
+            }
+
             // Object-specific updates
             obj.Update(args.Time); // Assuming this doesn't change GL state
-
+            
             // Set object-specific uniforms
             var model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix"), false, ref model);
@@ -299,6 +306,7 @@ internal static class Renderer
         // --- 8. Render ImGui UI ---
         // Submit UI definitions
         ImGuiElementContainer.SubmitUI();
+        ImGui.ShowMetricsWindow();
         CheckGLError("After SubmitUI");
 
         // Reset UI only once (logic seems okay)
