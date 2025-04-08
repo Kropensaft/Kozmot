@@ -131,6 +131,8 @@ internal static class Renderer
         if (Grid.RenderGrid)
             _grid = new Grid(Constants.GRID_SIZE);
 
+        
+        
 
         //? Generate a new sphere
         var sphere = new Sphere(
