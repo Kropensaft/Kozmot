@@ -136,7 +136,7 @@ internal static class Renderer
 
         //? Generate a new sphere
         var sphere = new Sphere(
-            "Test Sphere 2",
+            "Default Planet",
             new Vector3(4, 0, 0),
             Vector3.Zero,
             new Vector3(.5f, .5f, .5f),

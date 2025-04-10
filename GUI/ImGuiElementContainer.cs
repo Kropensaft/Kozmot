@@ -17,6 +17,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static int selectedParentIndex;
     private static int selectedPivotIndex; // Separate index for camera pivot
 
+    private static float customRadius = 0.01f; 
     private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
     public static Vector3 color = Constants.ROCKY_PLANET_COLOR; // Use System.Numerics for ImGui
     public static List<Object> celestialBodies = new();
@@ -71,7 +72,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
                         if (ImGui.InputText("Planet name", ref nameBuffer, 20))
                         {
-                        } // No action needed on change here
+                        }
 
                         if (ImGui.Combo("Planet type", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
                         {
@@ -85,7 +86,8 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 3 => Constants.MOON_MASS,
                                 4 => Constants.DESERT_MASS,
                                 5 => Constants.ICE_GIANT_MASS,
-                                _ => Constants.ROCKY_PLANET_MASS
+                                6 => Constants.FLOAT_ONE, // Custom settings so value doesnt matter 
+                                _ => Constants.ROCKY_PLANET_MASS 
                             };
                             massBuffer = mass.ToString(CultureInfo.InvariantCulture); // Use invariant culture
 
@@ -97,10 +99,19 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 3 => Constants.MOON_COLOR,
                                 4 => Constants.DESERT_PLANET_COLOR,
                                 5 => Constants.ICE_GIANT_COLOR,
+                                6 => Constants.MOON_COLOR, // Custom settings so value doesnt matter 
                                 _ => Constants.ROCKY_PLANET_COLOR
                             };
                         }
 
+                        if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
+                        {
+                            if (ImGui.SliderFloat("Custom radius, (Moon ~ .14, Star ~ 1.4)", ref customRadius,
+                                    0.1f, 2f))
+                            {
+                            }
+                        }
+                        
                         // Moon parent selection
                         if (defaultPlanetTypeIndex == 3) // Index 3 is Moon
                         {
@@ -146,12 +157,10 @@ internal abstract class ImGuiElementContainer : IDisposable
                             var newSphere = SaveUIValues();
                             if (newSphere != null)
                             {
-                                // Assuming Renderer has a method like AddObject
-                                Renderer.AddObject(newSphere); // Replace with your actual method
+                                Renderer.AddObject(newSphere);
                                 celestialBodies.Add(newSphere);
-                                ResetUI(); // Reset after successful creation
+                                ResetUI();
                             }
-                            // Error messages are printed within SaveUIValues
                         }
 
                         ImGui.Separator();
@@ -351,13 +360,17 @@ internal abstract class ImGuiElementContainer : IDisposable
             case 5: // Ice Giant
                 radius = Constants.ICE_GIANT_RADIUS;
                 break;
+            case 6: // Custom
+                radius = customRadius;
+                break;
             default: // Fallback to default rocky planet size
                 Console.WriteLine(
                     $"Warning: Unknown planet type index {defaultPlanetTypeIndex}. Defaulting to Rocky Planet radius.");
                 radius = Constants.ROCKY_PLANET_RADIUS;
                 break;
         }
-
+        
+        
         var sphereScale = new OpenTK.Mathematics.Vector3(radius, radius, radius);
         var sphereColor = color; // Already System.Numerics.Vector3
         var sphereRotation = DEFAULT_ROTATION;
@@ -378,7 +391,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                               $"Mass :{parsedMass}\n" +
                               $"Orbit radius: {orbitRadius}\n" +
                               $"Speed: {angularSpeed}\n" +
-                              $"Name: {planetTypeName}\n" +
+                              $"Type: {planetTypeName}\n" +
                               $"Emissive? :{emissive}\n" +
                               $"Parent ? :{parent}");
 #endif

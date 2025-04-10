@@ -122,6 +122,7 @@ public static class Constants
     ///     Miscellaneous
     /// </summary>
     public static readonly float FLOAT_ZERO = 0.0f;
+    public static readonly float FLOAT_ONE = 1.0f;
 
 
     /// <summary>
@@ -157,7 +158,7 @@ public static class Constants
 
 
     public static readonly string[] planetTypes = new[]
-        { "Ocean planet", "Star", "Gas Giant", "Moon", "Desert planet", "Ice Giant" };
+        { "Ocean planet", "Star", "Gas Giant", "Moon", "Desert planet", "Ice Giant", "Custom" };
 
     /// <summary>
     ///     FilePaths
