@@ -152,6 +152,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                         {
                         } // Allow manual override
 
+                        
                         if (ImGui.Button("Create", Constants.BESPOKE_BUTTON_SIZE))
                         {
                             var newSphere = SaveUIValues();
@@ -162,9 +163,14 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 ResetUI();
                             }
                         }
+                        ImGui.SameLine();
+                        if (ImGui.Button("Remove last", Constants.BESPOKE_BUTTON_SIZE))
+                        {
+                            InputHandler.RemoveLastAdded();
+                        }
 
                         ImGui.Separator();
-                        ImGui.Text("Created Objects:");
+                        ImGui.Text("Created objects: ");
                         foreach (var body in celestialBodies)
                             // Display using the Type stored in the object
                             ImGui.Text($"{body.Name} ({body.Type})");

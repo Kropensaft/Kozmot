@@ -139,9 +139,9 @@ internal static class Renderer
             "Default Planet",
             new Vector3(4, 0, 0),
             Vector3.Zero,
-            new Vector3(.5f, .5f, .5f),
+            new Vector3(.3f, .3f, .3f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
-            1.0f,
+            0.1f,
             2.0f,
             0.5f,
             Constants.planetTypes[0]

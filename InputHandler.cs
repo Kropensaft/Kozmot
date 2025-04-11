@@ -81,11 +81,7 @@ internal static class InputHandler
         if (e.Key == Keys.C)
         {
             Console.WriteLine("Remove last object key pressed");
-            if (Renderer.Spheres.Count > 1 && ImGuiElementContainer.celestialBodies.Count > 1)
-            {
-                Renderer.RemoveObject();
-                ImGuiElementContainer.celestialBodies.RemoveAt(ImGuiElementContainer.celestialBodies.Count - 1);
-            }
+            RemoveLastAdded();
         }
 
         // Zoom in/out with mouse wheel (optional)
@@ -113,7 +109,14 @@ internal static class InputHandler
             Constants.INITIAL_SPHERE_VELOCITY
         );
     }*/
-
+    public static void RemoveLastAdded()
+    {
+        if (Renderer.Spheres.Count > 1 && ImGuiElementContainer.celestialBodies.Count > 1)
+        {
+            Renderer.RemoveObject();
+            ImGuiElementContainer.celestialBodies.RemoveAt(ImGuiElementContainer.celestialBodies.Count - 1);
+        }
+    }
     private static void OnUpdateFrame(FrameEventArgs args)
     {
         var window = WindowManager.GetWindow();

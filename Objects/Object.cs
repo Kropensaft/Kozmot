@@ -86,15 +86,13 @@ public class Sphere : Object
         OrbitRadius = orbitRadius;
         AngularSpeed = angularSpeed;
         Parent = parent;
-        // Initialize angle based on initial position relative to parent if needed, or start at 0
         if (Parent != null && OrbitRadius > 0.001f)
         {
-            var relativePos = Position - Parent.Position;
-            Angle = MathF.Atan2(relativePos.Z, relativePos.X); // Calculate initial angle
-        }
-        else
-        {
-            Angle = 0f; // Default if no parent or zero radius
+            // Set initial position relative to parent
+            Position = Parent.Position + new Vector3(OrbitRadius, 0, 0);
+            // Calculate initial tangential velocity for orbit
+            float orbitalSpeed = MathF.Sqrt(Constants.GRAVITATIONAL_CONSTANT * Parent.Mass / OrbitRadius);
+            Velocity = new Vector3(0, 0, orbitalSpeed); // Adjust direction as needed
         }
     }
 
@@ -106,50 +104,29 @@ public class Sphere : Object
 
     public override void Update(double deltaTime)
     {
-        if (this.Position.X > (float)Constants.GRID_SIZE)
-            Renderer.RemoveObject();
-        // Apply gravity first before updating position
-        foreach (var other in Renderer.Spheres.OfType<Sphere>()) // Ensure we only interact with Spheres
-            if (other != this) // Don't apply gravity to self
+        // Apply gravitational forces
+        foreach (var other in Renderer.Spheres.OfType<Sphere>())
+            if (other != this)
                 ApplyGravity(other, deltaTime);
 
-        // Update velocity and position based on accumulated acceleration (gravity)
-        base.Update(deltaTime); // This updates Position based on Velocity/Acceleration
-
-        // If orbiting a parent, override Position based on orbital mechanics *after* base update
-        if (Parent != null)
-        {
-            Angle += AngularSpeed * (float)deltaTime;
-            // Ensure Angle stays within reasonable bounds if needed (e.g., wrap around 2*PI)
-            // Angle %= (2 * MathF.PI); // Optional: keep angle manageable
-
-            // Calculate new position relative to parent's *current* position
-            Position = Parent.Position + new Vector3(
-                OrbitRadius * MathF.Cos(Angle),
-                0, // Assuming orbits are in the XZ plane relative to parent
-                OrbitRadius * MathF.Sin(Angle)
-            );
-            
-        }
+        // Update position via physics
+        base.Update(deltaTime);
     }
 
     private void ApplyGravity(Sphere other, double deltaTime)
     {
-        var direction = other.Position - Position;
-        float distanceSq = direction.LengthSquared; // Use squared distance for efficiency
+        var direction = other.Position - Position; // Corrected direction
+        float distanceSq = direction.LengthSquared;
 
-        // Avoid division by zero and extreme forces at very close distances
-        if (distanceSq < 0.01f * 0.01f) // Adjust minimum distance threshold as needed (e.g., sum of radii squared)
-            return;
+        if (distanceSq < 0.01f) return;
 
         float distance = MathF.Sqrt(distanceSq);
-        var forceDir = direction / distance; // Normalize direction
+        Vector3 forceDir = direction / distance;
 
-        // Calculate gravitational force magnitude (F = G * m1 * m2 / r^2)
         float forceMagnitude = Constants.GRAVITATIONAL_CONSTANT * (Mass * other.Mass) / distanceSq;
-        
-        var accelerationDueToOther = forceDir * (forceMagnitude / Mass);
-        Acceleration += accelerationDueToOther; // Accumulate acceleration
+        Vector3 acceleration = forceDir * (forceMagnitude / Mass);
+
+        Acceleration += acceleration;
     }
 
 
