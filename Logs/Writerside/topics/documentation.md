@@ -86,10 +86,18 @@ __GUI__ :
 __Objects__ : 
 
 + **Camera.cs** - Implementation of an ArcBall camera, which is a type of camera moving on all axis around a central pivot in this case a selected celestial object. It is also crucial for creating and passing on the projection and view matrices used for rasterization calculations by OpenTK.
-
+    + _Core Methods_ :
+      + Vec3 Position {get; private set; }
+      + Vec3 Front {get; private set;}
+      + Vec3 Up {get; private set;}
+      + Vec3 Right {get; private set;}
+      + UpdateVector() - Called by Renderer after a move action is performed in order to recalculate the angles
+      + Mat4 GetProjectionMatrix(float aspectRatio) - called when a reference for the projMatrix is needed
 + **Grid.cs** - A white square grid with highlighted main axis in red and blue, rendered on its own buffer.
     + _Core Methods_ :
-      + 
+      + GenerateGeometry(int size, int step) - Generates vertices/indices for the shaders based on the number of steps and size
+      + (private) InitializeBuffers() - Prepares the OpenGL calls and necessary arrays
+      + Render(int shaderProgram, Mat4 viewMatrix, Mat4 projMatrix) - Call inside Renderer in Update in order to render, can be put inside a function to disable rendering ex. "Button click"
 + **Indicator.cs** - A semi-transparent planetary like object which is used to show the user where the configured object will be located at what approximate proportions, it is also fully customizable in terms of presentation inside the Camera UI tab.
     + _Core Methods_:
       + GetRadii() - Returns a predetermined radius for a planet based on its selected type.

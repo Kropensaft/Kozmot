@@ -3,8 +3,8 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="1"
-                 name="Proggramer"
-                 start-page="starter-topic.md">
+                 name="Technical Documentation"
+                 start-page="documentation.md">
 
     <toc-element topic="documentation.md"/>
 </instance-profile>
