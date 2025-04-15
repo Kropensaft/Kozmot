@@ -18,7 +18,8 @@ internal static class Renderer
     //virtual array object, virtual buffer object, element buffer object, ---//---
     private static int _vao, _vbo, _ebo;
 
-
+    public static bool cleanupActive = false;
+    
     private static readonly Dictionary<string, int> _shaderPrograms = new();
 
     // ? window can be null during initialization
@@ -54,6 +55,7 @@ internal static class Renderer
     // ! After program ends delete all objects used by OpenGL and objects allocated at runtime
     public static void ResourceCleanup()
     {
+        cleanupActive = true;
         int elapsedtime = DateTime.Now.Millisecond;
         Console.WriteLine("Starting Resource Cleanup...\n");
 
@@ -90,7 +92,7 @@ internal static class Renderer
         Console.WriteLine("Deleting Indicator buffers...\n");
         Indicator.Dispose();
 
-        Console.WriteLine($"Resource cleanup completed in {DateTime.Now.Millisecond - elapsedtime} ms.");
+        Console.WriteLine($"Resource cleanup completed in {Math.Abs(DateTime.Now.Millisecond - elapsedtime)} ms.");
     }
 
     public static void OnLoad()
@@ -217,7 +219,7 @@ internal static class Renderer
         // Use 'currentProjection' below instead of the potentially stale '_projection' member
 
         // --- 4. Render Skybox ---
-        if (_skybox != null)
+        if (_skybox != null && !cleanupActive)
         {
             // Skybox.Render handles its own state (shader, VAO, uniforms, depth func)
             _skybox.Render(currentView, currentProjection);
@@ -227,20 +229,23 @@ internal static class Renderer
 
         // --- 5. Render Spheres ---
         // Set the shader program FOR THE SPHERES
-        GL.UseProgram(_shaderPrograms["default"]);
-        CheckGLError("Use Default Program for Spheres");
-
+        if(!cleanupActive)
+        {
+            GL.UseProgram(_shaderPrograms["default"]);
+            CheckGLError("Use Default Program for Spheres");
+        
         // Set camera uniforms FOR THE SPHERES SHADER (only need to set once if shader doesn't change)
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix"), false, ref currentView);
         GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix"), false,
             ref currentProjection); // Use currentProjection
         CheckGLError("Set Sphere View/Projection Uniforms");
-
+        
 
         // Bind the VAO FOR THE SPHERES
         GL.BindVertexArray(_vao); // <-- Bind the sphere VAO HERE
         CheckGLError("Bind Sphere VAO");
-
+        }
+        
         // Update and Render each sphere object
         // ! Spheres.ToList is crucial since we need the original List only as a reference of objects 
         foreach (var obj in Spheres.ToList())
@@ -270,21 +275,21 @@ internal static class Renderer
             }
         }
 
-        // Unbind Sphere VAO (good practice)
+        // Unbind Sphere VAO
         GL.BindVertexArray(0);
         CheckGLError("Unbind Sphere VAO");
 
         // --- 6. Render Grid ---
         // Grid.Render should handle its own state (shader, VAO, uniforms, depth func changes)
         // Make sure Grid.Render takes projection matrix as argument
-        if (Grid.RenderGrid)
+        if (Grid.RenderGrid && !cleanupActive)
             _grid?.Render(_shaderPrograms["grid"], currentView, currentProjection); // Pass currentProjection
         CheckGLError("After Grid Render");
         // Grid.Render should restore DepthFunc to Less if it changed it
 
         // --- 7. Render Indicator ---
         // Indicator.Render handles its own state (shader, VAO, uniforms)
-        if (RenderIndicator)
+        if (RenderIndicator && !cleanupActive)
         {
             // 1. Determine the base color (now comparing System.Numerics == System.Numerics)
             var baseColorNum = Constants.INDICATOR_COLOR == System.Numerics.Vector3.Zero // This comparison now works

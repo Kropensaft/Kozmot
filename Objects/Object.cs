@@ -1,13 +1,7 @@
 using OpenGL.Objects;
 using OpenTK.Mathematics;
 
-// Needed for OfType potentially
-
-// Assuming Renderer, Constants are accessible globally or via static using
-// e.g., using static YourProject.Constants;
-// using YourProject.RendererNamespace;
-
-namespace OpenGL; // Or OpenGL.Objects based on your using statement
+namespace OpenGL;
 
 public abstract class Object // Make abstract if never instantiated directly
 {

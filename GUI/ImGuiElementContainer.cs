@@ -55,7 +55,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             .ToArray();
 
 
-        if (!ImGui.Begin("GUI", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar))
+        if (!ImGui.Begin("GUI", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize))
         {
             ImGui.End(); // Make sure to End() even if Begin() returns false
             return;
@@ -194,7 +194,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Text("=== Camera Controls ===");
                         ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
                         ImGui.BulletText("Right Mouse Button + Drag: Orbit camera");
-                        ImGui.BulletText("Spacebar + Left Mouse Button + Drag: Orbit (Touchpad alt)");
+                        ImGui.BulletText("Spacebar + Drag: Orbit (Touchpad alternative)");
                         ImGui.Separator();
                         ImGui.Text("=== Keyboard Shortcuts ===");
                         ImGui.BulletText("ESC: Quit Application");
