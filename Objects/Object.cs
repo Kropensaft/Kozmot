@@ -1,4 +1,3 @@
-using OpenGL.Objects;
 using OpenTK.Mathematics;
 
 namespace OpenGL;
@@ -53,9 +52,9 @@ public abstract class Object // Make abstract if never instantiated directly
     public virtual Matrix4 GetModelMatrix()
     {
         return Matrix4.CreateScale(Scale) *
-               Matrix4.CreateRotationX(Rotation.X) *
-               Matrix4.CreateRotationY(Rotation.Y) *
-               Matrix4.CreateRotationZ(Rotation.Z) *
+               Matrix4.CreateRotationX(Rotation.X) * // X-axis rotation
+               Matrix4.CreateRotationY(Rotation.Y) * // Y-axis rotation
+               Matrix4.CreateRotationZ(Rotation.Z) * // Z-axis rotation
                Matrix4.CreateTranslation(Position);
     }
 }
@@ -92,6 +91,7 @@ public class Sphere : Object
 
     // Properties specific to orbiting spheres
     public float OrbitRadius { get; set; }
+    public int TextureID { get; set; }
     public float AngularSpeed { get; } // Typically constant once set
     private float Angle { get; set; } // Current angle in the orbit
     public Object? Parent { get; set; } // The object this sphere orbits
@@ -115,10 +115,10 @@ public class Sphere : Object
         if (distanceSq < 0.01f) return;
 
         float distance = MathF.Sqrt(distanceSq);
-        Vector3 forceDir = direction / distance;
+        var forceDir = direction / distance;
 
         float forceMagnitude = Constants.GRAVITATIONAL_CONSTANT * (Mass * other.Mass) / distanceSq;
-        Vector3 acceleration = forceDir * (forceMagnitude / Mass);
+        var acceleration = forceDir * (forceMagnitude / Mass);
 
         Acceleration += acceleration;
     }
@@ -127,7 +127,6 @@ public class Sphere : Object
     // Instance method to generate mesh data based on instance properties
     public (float[] Vertices, uint[] Indices) GenerateSphere(int sectors = 36, int stacks = 18)
     {
-        
         float radius = Scale.X; // Base radius from scale
         // If scale is zero (or near zero), use a default fallback.
         if (radius < 0.001f) radius = Constants.INITIAL_SPHERE_RADIUS;
@@ -158,10 +157,15 @@ public class Sphere : Object
                 vertices.Add(y);
                 vertices.Add(z);
 
+                float u = (float)j / sectors;
+                float v = 1.0f - (float)i / stacks; // Flip V coordinate
+
+                vertices.Add(u);
+                vertices.Add(v);
                 // Vertex color (r, g, b) using the object's System.Numerics.Vector3 Color
-                vertices.Add(Color.X);
-                vertices.Add(Color.Y);
-                vertices.Add(Color.Z);
+                // vertices.Add(Color.X);
+                // vertices.Add(Color.Y);
+                // vertices.Add(Color.Z);
             }
         }
 

@@ -17,7 +17,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static int selectedParentIndex;
     private static int selectedPivotIndex; // Separate index for camera pivot
 
-    private static float customRadius = 0.01f; 
+    private static float customRadius = 0.01f;
     private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
     public static Vector3 color = Constants.ROCKY_PLANET_COLOR; // Use System.Numerics for ImGui
     public static List<Object> celestialBodies = new();
@@ -26,9 +26,9 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static Vector3 IndicatorColor = Constants.INDICATOR_COLOR;
     private static readonly OpenTK.Mathematics.Vector3 DEFAULT_ROTATION = OpenTK.Mathematics.Vector3.Zero;
     private static readonly OpenTK.Mathematics.Vector3 DEFAULT_SCALE = OpenTK.Mathematics.Vector3.One * 0.1f;
+    private static bool IsGUITransparent;
 
     public static uint selectedPlanetTypeRef => (uint)defaultPlanetTypeIndex;
-    private static bool IsGUITransparent = false;
 
     public static bool IsEditing =>
         !string.IsNullOrEmpty(nameBuffer) || // Check nameBuffer directly
@@ -66,7 +66,6 @@ internal abstract class ImGuiElementContainer : IDisposable
         }
         else
         {
-            
             if (!ImGui.Begin("GUI",
                     ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar |
                     ImGuiWindowFlags.NoResize))
@@ -102,7 +101,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 4 => Constants.DESERT_MASS,
                                 5 => Constants.ICE_GIANT_MASS,
                                 6 => Constants.FLOAT_ONE, // Custom settings so value doesnt matter 
-                                _ => Constants.ROCKY_PLANET_MASS 
+                                _ => Constants.ROCKY_PLANET_MASS
                             };
                             massBuffer = mass.ToString(CultureInfo.InvariantCulture); // Use invariant culture
 
@@ -120,13 +119,11 @@ internal abstract class ImGuiElementContainer : IDisposable
                         }
 
                         if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
-                        {
                             if (ImGui.SliderFloat("Custom radius, (Moon ~ .14, Star ~ 1.4)", ref customRadius,
                                     0.1f, 2f))
                             {
                             }
-                        }
-                        
+
                         // Moon parent selection
                         if (defaultPlanetTypeIndex == 3) // Index 3 is Moon
                         {
@@ -167,10 +164,12 @@ internal abstract class ImGuiElementContainer : IDisposable
                         {
                         }
 
-                        
+
                         if (ImGui.Button("Create", Constants.BESPOKE_BUTTON_SIZE))
                         {
                             var newSphere = SaveUIValues();
+                            newSphere.TextureID = TextureLoader.LoadTexture(
+                                Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, newSphere.Type)]);
                             if (newSphere != null)
                             {
                                 Renderer.AddObject(newSphere);
@@ -178,11 +177,9 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 ResetUI();
                             }
                         }
+
                         ImGui.SameLine();
-                        if (ImGui.Button("Remove last", Constants.BESPOKE_BUTTON_SIZE))
-                        {
-                            InputHandler.RemoveLastAdded();
-                        }
+                        if (ImGui.Button("Remove last", Constants.BESPOKE_BUTTON_SIZE)) InputHandler.RemoveLastAdded();
 
                         ImGui.Separator();
                         ImGui.Text("Created objects: ");
@@ -270,7 +267,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                         {
                         }
 
-                        
 
                         if (ImGui.ColorEdit3("Indicator Color", ref IndicatorColor))
                             // Update the actual constant color used by the indicator renderer
@@ -278,34 +274,31 @@ internal abstract class ImGuiElementContainer : IDisposable
 
                         if (ImGui.SliderFloat("Indicator Transparency", ref Constants.INDICATOR_ALPHA, 0.0f, 0.9f))
                         {
-                        } 
+                        }
                     }
-                    
+
                     finally
                     {
                         ImGui.EndTabItem();
                     }
-                
+
                 if (ImGui.BeginTabItem("Window Settings"))
                     try
                     {
                         if (ImGui.Checkbox("Show metrics window", ref Renderer.showFPS))
                         {
-                            
                         }
 
                         if (ImGui.Checkbox("Transparent window", ref IsGUITransparent))
                         {
-                            
                         }
                     }
-                    
+
                     finally
                     {
                         ImGui.EndTabItem();
                     }
-                
-                
+
 
                 ImGui.EndTabBar();
             }
@@ -414,8 +407,8 @@ internal abstract class ImGuiElementContainer : IDisposable
                 radius = Constants.ROCKY_PLANET_RADIUS;
                 break;
         }
-        
-        
+
+
         var sphereScale = new OpenTK.Mathematics.Vector3(radius, radius, radius);
         var sphereColor = color; // Already System.Numerics.Vector3
         var sphereRotation = DEFAULT_ROTATION;

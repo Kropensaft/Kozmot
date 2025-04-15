@@ -3,8 +3,9 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="1"
-                 name="Technical Documentation"
-                 start-page="documentation.md">
+                  name="Technical Documentation"
+                  start-page="documentation.md">
 
     <toc-element topic="documentation.md"/>
+    <toc-element topic="README.md"/>
 </instance-profile>

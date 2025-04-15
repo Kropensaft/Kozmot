@@ -7,12 +7,8 @@ namespace OpenGL;
 
 public static class Constants
 {
-    
-    
     /// Sphere textures 
     /// https://www.solarsystemscope.com/textures/
-    ///
-    
     /// <summary>
     ///     Gravitational constant for simulation (6.67430 × 10^-11 in real world)
     /// </summary>
@@ -128,6 +124,7 @@ public static class Constants
     ///     Miscellaneous
     /// </summary>
     public static readonly float FLOAT_ZERO = 0.0f;
+
     public static readonly float FLOAT_ONE = 1.0f;
 
 
@@ -180,21 +177,19 @@ public static class Constants
     public static readonly string LineFragPath = "Shaders/line.frag";
 
 
-
     /// <summary>
-    /// Texture atlas values
+    ///     Texture atlas values
     /// </summary>
     public static readonly string[] _TexturePaths = new[]
     {
-        "./ImageDependencies/Textures/Ocean",
-        "./ImageDependencies/Textures/Star",
-        "./ImageDependencies/Textures/Gas",
-        "./ImageDependencies/Textures/Moon",
-        "./ImageDependencies/Textures/Desert", 
-        "./ImageDependencies/Textures/Ice"
-        // TODO : Add and implement the textures
+        "./ImageDependencies/Textures/earth",
+        "./ImageDependencies/Textures/sun",
+        "./ImageDependencies/Textures/gas_giant",
+        "./ImageDependencies/Textures/moon",
+        "./ImageDependencies/Textures/desert",
+        "./ImageDependencies/Textures/ice_fiant"
     };
-    
+
     //Skybox face values
     public static readonly float[] _skyboxVertices =
     {
@@ -236,11 +231,9 @@ public static class Constants
 
         -1.0f, -1.0f, -1.0f,
         -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f, 
-        1.0f, -1.0f, -1.0f, 
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
         -1.0f, -1.0f, 1.0f,
         1.0f, -1.0f, 1.0f
     };
-
-    
 }
