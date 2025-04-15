@@ -138,7 +138,7 @@ internal static class Renderer
         var sphere = new Sphere(
             "Default Planet",
             new Vector3(4, 0, 0),
-            new Vector3(0, MathHelper.DegreesToRadians(45), 0),
+            Vector3.Zero,
             new Vector3(.3f, .3f, .3f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
             0.1f,
@@ -147,6 +147,7 @@ internal static class Renderer
             Constants.planetTypes[0]
         );
 
+        sphere.RotationSpeed = MathHelper.DegreesToRadians(45);
         sphere.TextureID =
             TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sphere.Type)]);
         Spheres.Add(sphere);
@@ -173,16 +174,7 @@ internal static class Renderer
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices,
             BufferUsageHint.StaticDraw);
-
-
-        // Attribute pointers
-        /*GL.VertexAttribPointer(0, Constants.VERTEX_ATRIBB_SIZE,
-            VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-        GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(1, Constants.VERTEX_ATRIBB_SIZE,
-            VertexAttribPointerType.Float, false, 6 * sizeof(float), Constants.VERTEX_ATRIBB_SIZE * sizeof(float));
-        GL.EnableVertexAttribArray(1);*/
-
+        
         GL.VertexAttribPointer(0, Constants.VERTEX_ATRIBB_SIZE,
             VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);

@@ -117,6 +117,7 @@ internal static class InputHandler
             ImGuiElementContainer.celestialBodies.RemoveAt(ImGuiElementContainer.celestialBodies.Count - 1);
         }
     }
+
     private static void OnUpdateFrame(FrameEventArgs args)
     {
         var window = WindowManager.GetWindow();

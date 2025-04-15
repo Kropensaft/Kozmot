@@ -36,6 +36,8 @@ public abstract class Object // Make abstract if never instantiated directly
     public string Type { get; set; } // Public getter for Type
     public float Mass { get; protected set; } // Public getter for Mass
     public bool IsEmissive { get; set; }
+    
+    public float RotationSpeed { get; set; } = 1.0f; // Radians per second
 
     // Protected or private for internal physics state
     protected Vector3 Velocity { get; set; }
@@ -47,12 +49,18 @@ public abstract class Object // Make abstract if never instantiated directly
         Velocity += Acceleration * (float)deltaTime;
         Position += Velocity * (float)deltaTime;
         Acceleration = Vector3.Zero; // Reset acceleration for next frame
+        
+        Rotation += new Vector3(
+            0, 
+            RotationSpeed * (float)deltaTime, 
+            0
+        );
     }
 
     public virtual Matrix4 GetModelMatrix()
     {
         return Matrix4.CreateScale(Scale) *
-               Matrix4.CreateRotationX(Rotation.X) * // X-axis rotation
+               Matrix4.CreateRotationX(MathHelper.DegreesToRadians(90)) * // X-axis rotation
                Matrix4.CreateRotationY(Rotation.Y) * // Y-axis rotation
                Matrix4.CreateRotationZ(Rotation.Z) * // Z-axis rotation
                Matrix4.CreateTranslation(Position);
@@ -162,10 +170,7 @@ public class Sphere : Object
 
                 vertices.Add(u);
                 vertices.Add(v);
-                // Vertex color (r, g, b) using the object's System.Numerics.Vector3 Color
-                // vertices.Add(Color.X);
-                // vertices.Add(Color.Y);
-                // vertices.Add(Color.Z);
+             
             }
         }
 

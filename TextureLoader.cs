@@ -20,7 +20,8 @@ public static class TextureLoader
         }
 
         using Image<Rgba32> image = Image.Load<Rgba32>(validPath);
-        image.Mutate(x => x.Flip(FlipMode.Vertical));
+        //image.Mutate(x => x.Flip(FlipMode.Vertical));
+        
 
         byte[] pixels = new byte[4 * image.Width * image.Height];
         image.CopyPixelDataTo(pixels);

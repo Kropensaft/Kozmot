@@ -2,11 +2,12 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using StbImageSharp;
+
 // For image loading
 
 // For Path operations
 
-namespace OpenGL.Objects; 
+namespace OpenGL.Objects;
 
 internal class Skybox : IDisposable
 {
@@ -15,7 +16,6 @@ internal class Skybox : IDisposable
     private readonly int _vao;
     private readonly int _vbo;
 
-    
 
     /// <summary>
     ///     Creates and initializes the Skybox.
@@ -52,7 +52,8 @@ internal class Skybox : IDisposable
 
         _vbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, Constants._skyboxVertices.Length * sizeof(float), Constants._skyboxVertices,
+        GL.BufferData(BufferTarget.ArrayBuffer, Constants._skyboxVertices.Length * sizeof(float),
+            Constants._skyboxVertices,
             BufferUsageHint.StaticDraw);
         CheckGLError("Skybox VBO Setup");
 
