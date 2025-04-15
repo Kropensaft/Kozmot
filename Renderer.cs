@@ -43,7 +43,7 @@ internal static class Renderer
     //Initalize grid
     private static Grid? _grid;
 
-    public static bool showFPS {get; set;}
+    public static bool showFPS = false;
 
     //Initialize the skybox
     private static Skybox? _skybox;
@@ -310,7 +310,7 @@ internal static class Renderer
 
             Indicator.Render(currentView, currentProjection, finalIndicatorColorTk, alpha);
             CheckGLError("After Indicator Render");
-        }
+        }  
 
         // --- 8. Render ImGui UI ---
         // Submit UI definitions

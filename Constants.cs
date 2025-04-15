@@ -7,6 +7,12 @@ namespace OpenGL;
 
 public static class Constants
 {
+    
+    
+    /// Sphere textures 
+    /// https://www.solarsystemscope.com/textures/
+    ///
+    
     /// <summary>
     ///     Gravitational constant for simulation (6.67430 × 10^-11 in real world)
     /// </summary>
@@ -90,7 +96,7 @@ public static class Constants
     public static readonly float INDICATOR_ALPHA_DEF = 0.4f;
 
     //Centralized values which aren't constant
-    public static System.Numerics.Vector3 INDICATOR_COLOR = new(0.0f, 0.0f, 0.0f);
+    public static System.Numerics.Vector3 INDICATOR_COLOR = new(0.0f, 1.0f, 0.0f);
     public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
 
     /// <summary>

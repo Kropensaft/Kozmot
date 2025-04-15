@@ -28,7 +28,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static readonly OpenTK.Mathematics.Vector3 DEFAULT_SCALE = OpenTK.Mathematics.Vector3.One * 0.1f;
 
     public static uint selectedPlanetTypeRef => (uint)defaultPlanetTypeIndex;
-
+    private static bool IsGUITransparent = false;
 
     public static bool IsEditing =>
         !string.IsNullOrEmpty(nameBuffer) || // Check nameBuffer directly
@@ -54,11 +54,26 @@ internal abstract class ImGuiElementContainer : IDisposable
             .Select(b => b.Name)
             .ToArray();
 
-
-        if (!ImGui.Begin("GUI", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize))
+        if (IsGUITransparent)
         {
-            ImGui.End(); // Make sure to End() even if Begin() returns false
-            return;
+            if (!ImGui.Begin("GUI",
+                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground |
+                    ImGuiWindowFlags.NoResize))
+            {
+                ImGui.End(); // Make sure to End() even if Begin() returns false
+                return;
+            }
+        }
+        else
+        {
+            
+            if (!ImGui.Begin("GUI",
+                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar |
+                    ImGuiWindowFlags.NoResize))
+            {
+                ImGui.End(); // Make sure to End() even if Begin() returns false
+                return;
+            }
         }
 
         try
@@ -150,7 +165,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                         // Ensure emissive checkbox reflects current type unless manually changed
                         if (ImGui.Checkbox("Emissive", ref emissive))
                         {
-                        } // Allow manual override
+                        }
 
                         
                         if (ImGui.Button("Create", Constants.BESPOKE_BUTTON_SIZE))
@@ -255,18 +270,42 @@ internal abstract class ImGuiElementContainer : IDisposable
                         {
                         }
 
+                        
+
                         if (ImGui.ColorEdit3("Indicator Color", ref IndicatorColor))
                             // Update the actual constant color used by the indicator renderer
-                            Constants.INDICATOR_COLOR = Constants.INDICATOR_COLOR;
+                            Constants.INDICATOR_COLOR = IndicatorColor;
 
                         if (ImGui.SliderFloat("Indicator Transparency", ref Constants.INDICATOR_ALPHA, 0.0f, 0.9f))
                         {
-                        } // Assuming Constants.INDICATOR_ALPHA exists
+                        } 
                     }
+                    
                     finally
                     {
                         ImGui.EndTabItem();
                     }
+                
+                if (ImGui.BeginTabItem("Window Settings"))
+                    try
+                    {
+                        if (ImGui.Checkbox("Show metrics window", ref Renderer.showFPS))
+                        {
+                            
+                        }
+
+                        if (ImGui.Checkbox("Transparent window", ref IsGUITransparent))
+                        {
+                            
+                        }
+                    }
+                    
+                    finally
+                    {
+                        ImGui.EndTabItem();
+                    }
+                
+                
 
                 ImGui.EndTabBar();
             }
