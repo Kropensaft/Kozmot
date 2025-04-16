@@ -40,9 +40,9 @@ internal static class WindowManager
 
     public static void CheckGlErrors()
     {
-        Console.WriteLine("Starting error checking sequence...");
+        Logger.WriteLine("Starting error checking sequence...");
         var error = GL.GetError();
-        Console.WriteLine(error != ErrorCode.NoError ? $"OpenGL Error: {error}" : "No errors detected");
+        Logger.WriteLine(error != ErrorCode.NoError ? $"OpenGL Error: {error}" : "No errors detected");
     }
 
     //Function to return a reference to _window from other files

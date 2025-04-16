@@ -238,7 +238,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                             {
                                 if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
                                 {
-                                    Console.WriteLine(
+                                    Logger.WriteLine(
                                         $"Setting camera pivot to: {celestialBodies[selectedPivotIndex].Name}");
                                     Camera._pivot =
                                         celestialBodies[selectedPivotIndex]
@@ -246,7 +246,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Invalid pivot selection.");
+                                    Logger.WriteLine("Invalid pivot selection.");
                                 }
                             }
                         }
@@ -314,13 +314,13 @@ internal abstract class ImGuiElementContainer : IDisposable
     {
         if (string.IsNullOrWhiteSpace(nameBuffer))
         {
-            Console.WriteLine("Error: Name cannot be empty");
+            Logger.WriteLine("Error: Name cannot be empty");
             return null;
         }
 
         if (!float.TryParse(massBuffer, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedMass))
         {
-            Console.WriteLine("Error: Invalid mass value: " + massBuffer);
+            Logger.WriteLine("Error: Invalid mass value: " + massBuffer);
             return null;
         }
 
@@ -362,7 +362,7 @@ internal abstract class ImGuiElementContainer : IDisposable
             }
             else
             {
-                Console.WriteLine(
+                Logger.WriteLine(
                     "Warning: Moon type selected, but no valid parent chosen or index out of bounds. Creating as non-orbiting object at specified coords.");
                 worldPosition = relativePosition;
                 orbitRadius = worldPosition.Length;
@@ -402,7 +402,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                 radius = customRadius;
                 break;
             default: // Fallback to default rocky planet size
-                Console.WriteLine(
+                Logger.WriteLine(
                     $"Warning: Unknown planet type index {defaultPlanetTypeIndex}. Defaulting to Rocky Planet radius.");
                 radius = Constants.ROCKY_PLANET_RADIUS;
                 break;
@@ -420,7 +420,7 @@ internal abstract class ImGuiElementContainer : IDisposable
         try
         {
 #if DEBUG
-            Console.WriteLine($"\n" +
+            Logger.WriteLine($"\n" +
                               $"Creating new Sphere : {nameBuffer} \n " +
                               $"World pos :{worldPosition}\n" +
                               $"Rotation : {sphereRotation}\n" +
@@ -450,7 +450,7 @@ internal abstract class ImGuiElementContainer : IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating Sphere: {ex.Message}");
+            Logger.WriteLine($"Error creating Sphere: {ex.Message}");
             return null;
         }
     }

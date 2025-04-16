@@ -200,7 +200,7 @@ public class Sphere : Object
             }
         }
 
-        // Console.WriteLine($"Generated mesh for sphere '{Name}'"); // Optional logging
+        // Logger.WriteLine($"Generated mesh for sphere '{Name}'"); // Optional logging
         return (vertices.ToArray(), indices.ToArray());
     }
 }

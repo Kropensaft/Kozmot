@@ -28,7 +28,7 @@ internal static class Indicator
             5 => Constants.ICE_GIANT_RADIUS,
             _ => Constants.ROCKY_PLANET_RADIUS
         });
-        // Console.WriteLine($"GetRadii: {radii}"); // Debug
+        // Logger.WriteLine($"GetRadii: {radii}"); // Debug
         return radii;
     }
 
@@ -44,13 +44,13 @@ internal static class Indicator
         if (Math.Abs(newRadius - _currentRadius) < 0.000001f && _vertices != null &&
             _indices != null) return; // Mesh data is up-to-date
 
-        // Console.WriteLine($"Indicator mesh radius changed. Regenerating mesh data for radius: {newRadius}"); // Debug
+        // Logger.WriteLine($"Indicator mesh radius changed. Regenerating mesh data for radius: {newRadius}"); // Debug
         _currentRadius = newRadius;
 
         // Ensure radius is valid for sphere generation
         if (_currentRadius <= 0)
         {
-            Console.WriteLine($"Warning: Indicator radius is non-positive ({_currentRadius}). Using fallback.");
+            Logger.WriteLine($"Warning: Indicator radius is non-positive ({_currentRadius}). Using fallback.");
             _currentRadius = 0.1f; // Fallback small radius
         }
 
@@ -77,7 +77,7 @@ internal static class Indicator
             if (sphereData.Vertices == null || sphereData.Vertices.Length == 0 || sphereData.Indices == null ||
                 sphereData.Indices.Length == 0)
             {
-                Console.WriteLine("Error: Sphere generation returned null or empty data.");
+                Logger.WriteLine("Error: Sphere generation returned null or empty data.");
                 // Keep old data if possible, or handle error appropriately
                 if (_vertices == null || _indices == null)
                 {
@@ -94,7 +94,7 @@ internal static class Indicator
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error during Sphere.GenerateSphere: {ex.Message}");
+            Logger.WriteLine($"Error during Sphere.GenerateSphere: {ex.Message}");
             // Handle error: potentially keep old data, log, etc.
             if (_vertices == null || _indices == null)
             {
@@ -112,7 +112,7 @@ internal static class Indicator
         // Ensure initial data is valid before proceeding
         if (_vertices == null || _indices == null || _vertices.Length == 0 || _indices.Length == 0)
         {
-            Console.WriteLine("Error: Indicator failed to initialize mesh data. Cannot create GL buffers.");
+            Logger.WriteLine("Error: Indicator failed to initialize mesh data. Cannot create GL buffers.");
             // Handle this critical failure - maybe throw, or set a flag to prevent rendering
             return;
         }
@@ -176,7 +176,7 @@ internal static class Indicator
         if (_vao <= 0 || _vbo <= 0 || _ebo <= 0 || _shaderProgram <= 0 || _vertices == null || _indices == null ||
             _indices.Length == 0)
         {
-            Console.WriteLine("Indicator Render skipped: Invalid state (VAO/VBO/EBO/Shader/Mesh Data)."); // Debug
+            Logger.WriteLine("Indicator Render skipped: Invalid state (VAO/VBO/EBO/Shader/Mesh Data)."); // Debug
             return;
         }
 
@@ -269,7 +269,7 @@ internal static class Indicator
     {
 #if DEBUG // Only run error checks in debug builds for performance
         var error = GL.GetError();
-        if (error != ErrorCode.NoError) Console.WriteLine($"OpenGL Error ({stage}): {error}");
+        if (error != ErrorCode.NoError) Logger.WriteLine($"OpenGL Error ({stage}): {error}");
         // System.Diagnostics.Debugger.Break(); // Break execution in debugger
 #endif
     }

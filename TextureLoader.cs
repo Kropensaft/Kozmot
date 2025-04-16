@@ -15,7 +15,7 @@ public static class TextureLoader
 
         if (validPath == null)
         {
-            Console.WriteLine($"Texture not found: {path}");
+            Logger.WriteLine($"Texture not found: {path}");
             return 0; // Consider a fallback texture
         }
 

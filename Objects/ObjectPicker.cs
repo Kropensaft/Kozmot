@@ -48,32 +48,32 @@ public static class ObjectPicker
         MouseButtonEventArgs mouseClick, Vector2 windowSize, Matrix4 projectionMatrix)
     {
         // Debug: Print mouse and window coordinates
-        Console.WriteLine($"\n Mouse: ({mouseState.X}, {mouseState.Y}), Window: {windowSize}");
+        Logger.WriteLine($"\n Mouse: ({mouseState.X}, {mouseState.Y}), Window: {windowSize}");
 
         var ndc = ScreenToNDC(new Vector2(mouseState.X, mouseState.Y), windowSize);
-        Console.WriteLine($"NDC: {ndc}");
+        Logger.WriteLine($"NDC: {ndc}");
 
         var ray = ScreenPointToRay(camera, ndc, projectionMatrix);
 
-        Console.WriteLine($"Ray Origin: {ray.Origin}, Direction: {ray.Direction}");
-        Console.WriteLine($"Camera: {camera.Position}");
+        Logger.WriteLine($"Ray Origin: {ray.Origin}, Direction: {ray.Direction}");
+        Logger.WriteLine($"Camera: {camera.Position}");
 
         // ? Draw the Ray for debugging
         DrawRay(ray.Origin, ray.Direction, new Vector3(0f, 1f, 0f));
 
         // Debug: Print all spheres being checked
-        Console.WriteLine($"Checking {Renderer.Spheres.Count} spheres:");
+        Logger.WriteLine($"Checking {Renderer.Spheres.Count} spheres:");
         foreach (var sphere in Renderer.Spheres)
         {
-            Console.WriteLine($"- {sphere.Name}: Pos={sphere.Position}, Scale={sphere.Scale}");
+            Logger.WriteLine($"- {sphere.Name}: Pos={sphere.Position}, Scale={sphere.Scale}");
             if (RaySphereIntersection(ray, sphere.Position, sphere.Scale.X / 2f, out var hit))
             {
-                Console.WriteLine($"HIT: {hit}");
+                Logger.WriteLine($"HIT: {hit}");
                 return hit - sphere.Scale;
             }
         }
 
-        Console.WriteLine("");
+        Logger.WriteLine("");
         return null;
     }
 

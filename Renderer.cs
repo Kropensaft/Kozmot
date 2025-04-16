@@ -57,42 +57,42 @@ internal static class Renderer
     {
         cleanupActive = true;
         int elapsedtime = DateTime.Now.Millisecond;
-        Console.WriteLine("Starting Resource Cleanup...\n");
+        Logger.WriteLine("Starting Resource Cleanup...\n");
 
 
-        Console.WriteLine("Deleting Primary buffers...");
+        Logger.WriteLine("Deleting Primary buffers...");
         // Delete VAO, VBO, and EBO
         GL.DeleteVertexArray(_vao);
         GL.DeleteBuffer(_vbo);
         GL.DeleteBuffer(_ebo);
 
 
-        Console.WriteLine("Deleting Shader programs...");
+        Logger.WriteLine("Deleting Shader programs...");
         // Delete shader program
         foreach (int shader in _shaderPrograms.Values)
             GL.DeleteProgram(shader);
 
 
-        Console.WriteLine("Deleting Grid buffers...");
+        Logger.WriteLine("Deleting Grid buffers...");
         //Delete buffers
         GL.DeleteVertexArray(Grid._vao);
         GL.DeleteBuffer(Grid._vbo);
         GL.DeleteBuffer(Grid._ebo);
 
-        Console.WriteLine("Deleting Objects...");
+        Logger.WriteLine("Deleting Objects...");
         // Deallocate the objects
         Spheres.Clear();
 
         // ? ImGui
-        Console.WriteLine("Deleting ImGui Buffers...");
+        Logger.WriteLine("Deleting ImGui Buffers...");
         ImGuiController.DestroyDeviceObjects();
 
 
         // ? Indicator
-        Console.WriteLine("Deleting Indicator buffers...\n");
+        Logger.WriteLine("Deleting Indicator buffers...\n");
         Indicator.Dispose();
 
-        Console.WriteLine($"Resource cleanup completed in {Math.Abs(DateTime.Now.Millisecond - elapsedtime)} ms.");
+        Logger.WriteLine($"Resource cleanup completed in {Math.Abs(DateTime.Now.Millisecond - elapsedtime)} ms.");
     }
 
     public static void OnLoad()
@@ -113,7 +113,7 @@ internal static class Renderer
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize Skybox: {ex.Message}");
+            Logger.WriteLine($"Failed to initialize Skybox: {ex.Message}");
             _skybox = null; // Prevent rendering if initialization failed
         }
 
@@ -348,7 +348,7 @@ internal static class Renderer
     {
 #if DEBUG
         var error = GL.GetError();
-        if (error != ErrorCode.NoError) Console.WriteLine($"OpenGL Error ({stage}): {error}");
+        if (error != ErrorCode.NoError) Logger.WriteLine($"OpenGL Error ({stage}): {error}");
         // System.Diagnostics.Debugger.Break();
 #endif
     }

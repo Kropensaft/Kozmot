@@ -50,12 +50,12 @@ internal static class InputHandler
     {
         if (e.OffsetY > 0)
         {
-            Console.WriteLine("Mouse wheel scrolled UP");
+            Logger.WriteLine("Mouse wheel scrolled UP");
             _camera!.Distance -= 0.5f;
         }
         else if (e.OffsetY < 0)
         {
-            Console.WriteLine("Mouse wheel scrolled DOWN");
+            Logger.WriteLine("Mouse wheel scrolled DOWN");
             _camera!.Distance += 0.5f;
         }
     }
@@ -74,13 +74,13 @@ internal static class InputHandler
 
         if (e.Key == Keys.Escape)
         {
-            Console.WriteLine("Closing window...");
+            Logger.WriteLine("Closing window...");
             WindowManager.GetWindow().Close();
         }
 
         if (e.Key == Keys.C)
         {
-            Console.WriteLine("Remove last object key pressed");
+            Logger.WriteLine("Remove last object key pressed");
             RemoveLastAdded();
         }
 

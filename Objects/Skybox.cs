@@ -168,7 +168,7 @@ internal class Skybox : IDisposable
             string path = faces[i];
             if (!File.Exists(path))
             {
-                Console.WriteLine($"Error: Cubemap texture file not found: {path}");
+                Logger.WriteLine($"Error: Cubemap texture file not found: {path}");
                 // Handle error appropriately - maybe load a placeholder?
                 continue; // Skip this face
             }
@@ -194,19 +194,19 @@ internal class Skybox : IDisposable
                             image.Data); // Pixel data
 #if DEBUG
                         if (Debugger.IsAttached)
-                            Console.WriteLine(
+                            Logger.WriteLine(
                                 $"Loaded cubemap face: {targetFace} ({path}) Width={image.Width}, Height={image.Height}");
 #endif
                     }
                     else
                     {
-                        Console.WriteLine($"Error: Failed to load image data from {path}");
+                        Logger.WriteLine($"Error: Failed to load image data from {path}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading cubemap face {path}: {ex.Message}");
+                Logger.WriteLine($"Error loading cubemap face {path}: {ex.Message}");
             }
         }
 
@@ -245,7 +245,7 @@ internal class Skybox : IDisposable
     ~Skybox()
     {
         Dispose(false);
-        Console.WriteLine("Warning: Skybox finalizer called. Dispose() should be used.");
+        Logger.WriteLine("Warning: Skybox finalizer called. Dispose() should be used.");
     }
 
     public static void CheckGLError(string stage)
@@ -254,7 +254,7 @@ internal class Skybox : IDisposable
         var error = GL.GetError();
         if (error != ErrorCode.NoError)
         {
-            Console.WriteLine($"OpenGL Error ({stage}): {error}");
+            Logger.WriteLine($"OpenGL Error ({stage}): {error}");
             Debugger.Break(); // Break execution in debugger
         }
 #endif
