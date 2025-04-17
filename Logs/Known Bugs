@@ -9,6 +9,7 @@ Update Indicator.GetRadii() to account for the "custom" planet type
 ######################
 ####### FIXED ########
 ######################
+# 'custom' generation crashes the program - Fixed (17.4.25)
 # Update Selected pivot dynamically - Fixed (17.4.25)
 # Moon doesnt behave by gravity - Fixed (11.4.25)
 # Update UI to show possibility of setScale - Fixed (11.4.25) 'Added a custom scalable planet type'

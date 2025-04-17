@@ -120,10 +120,14 @@ internal abstract class ImGuiElementContainer : IDisposable
                         }
 
                         if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
+                        {
                             if (ImGui.SliderFloat("Custom radius, (Moon ~ .14, Star ~ 1.4)", ref customRadius,
                                     0.1f, 2f))
                             {
                             }
+                            
+                            ImGui.ColorEdit3("Color", ref color);
+                        }
 
                         // Moon parent selection
                         if (defaultPlanetTypeIndex == 3) // Index 3 is Moon
@@ -157,8 +161,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                         if (ImGui.InputText("Mass (e.g., 1.0)", ref massBuffer, 15))
                         {
                         } // No action needed on change here
-
-                        ImGui.ColorEdit3("Color", ref color);
 
                         // Ensure emissive checkbox reflects current type unless manually changed
                         if (ImGui.Checkbox("Emissive", ref emissive))
@@ -198,16 +200,17 @@ internal abstract class ImGuiElementContainer : IDisposable
                     try
                     {
                         ImGui.Text("=== Planet Creator Guide ===");
-                        ImGui.BulletText("1. Enter Name, Select Type.");
+                        ImGui.BulletText("1. Enter Name and Select Type.");
                         ImGui.BulletText("2. Set Position (relative to parent for moons, else origin).");
                         ImGui.BulletText("3. For Moons: Select Parent from 'Orbits around' dropdown.");
-                        ImGui.BulletText("4. Adjust Mass, Color, Emissive properties.");
+                        ImGui.BulletText("4. For 'Custom' select color, and scale");
                         ImGui.BulletText("5. Click 'Create'.");
                         ImGui.Separator();
                         ImGui.Text("=== Camera Controls ===");
                         ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
                         ImGui.BulletText("Right Mouse Button + Drag: Orbit camera");
                         ImGui.BulletText("Spacebar + Drag: Orbit (Touchpad alternative)");
+                        ImGui.BulletText("If you wish to centralize a planet in it's movement, select it as a pivot");
                         ImGui.Separator();
                         ImGui.Text("=== Keyboard Shortcuts ===");
                         ImGui.BulletText("ESC: Quit Application");
@@ -292,14 +295,13 @@ internal abstract class ImGuiElementContainer : IDisposable
                     {
                         ImGui.EndTabItem();
                     }
-
-
                 ImGui.EndTabBar();
             }
         }
         finally
         {
             ImGui.End();
+            
         }
     }
 

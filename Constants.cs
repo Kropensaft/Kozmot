@@ -187,7 +187,8 @@ public static class Constants
         "./ImageDependencies/Textures/gas_giant",
         "./ImageDependencies/Textures/moon",
         "./ImageDependencies/Textures/desert",
-        "./ImageDependencies/Textures/ice_fiant"
+        "./ImageDependencies/Textures/ice_fiant",
+        "./ImageDependencies/Textures/custom"
     };
 
     //Skybox face values
