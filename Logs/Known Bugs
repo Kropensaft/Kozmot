@@ -7,8 +7,8 @@ Update Indicator.GetRadii() to account for the "custom" planet type
 ######################
 ####### FIXED ########
 ######################
-Moon doesnt behave by gravity - Fixed (11.4.25)
-Update UI to show possibility of setScale - Fixed (11.4.25) 'Added a custom scalable planet type'
+# Moon doesnt behave by gravity - Fixed (11.4.25)
+# Update UI to show possibility of setScale - Fixed (11.4.25) 'Added a custom scalable planet type'
 # Celestial object type is current selected value - Fixed (1.4.25)
 # Fix skybox - Fixed (1.4.25)
 # update indicator based on planets scale - Fixed (1.4.25)
