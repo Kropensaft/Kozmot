@@ -15,7 +15,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     public static Vector3 position = new(1f, 0f, 0f); // Use System.Numerics for ImGui
     private static int defaultPlanetTypeIndex;
     private static int selectedParentIndex;
-    private static int selectedPivotIndex; // Separate index for camera pivot
+    public static int selectedPivotIndex; // Separate index for camera pivot
 
     private static float customRadius = 0.01f;
     private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
@@ -40,6 +40,7 @@ internal abstract class ImGuiElementContainer : IDisposable
         GC.SuppressFinalize(this); // Standard Dispose pattern
     }
 
+    //TODO: Add angular velocity and initial direction as variable fields
     public static void SubmitUI()
     {
         // Get names of potential parents (parentless Spheres)
@@ -233,9 +234,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                             // Use selectedPivotIndex for camera pivot choice
                             ImGui.Combo("Camera Pivot Object", ref selectedPivotIndex, allBodyNames,
                                 allBodyNames.Length);
-
-                            if (ImGui.Button("Set Camera Pivot"))
-                            {
+                            
                                 if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
                                 {
                                     Logger.WriteLine(
@@ -244,11 +243,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                                         celestialBodies[selectedPivotIndex]
                                             .Position; // Assuming Camera._pivot exists and is OpenTK.Vector3
                                 }
-                                else
-                                {
-                                    Logger.WriteLine("Invalid pivot selection.");
-                                }
-                            }
                         }
                         else
                         {
