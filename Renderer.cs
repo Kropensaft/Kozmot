@@ -174,7 +174,7 @@ internal static class Renderer
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices,
             BufferUsageHint.StaticDraw);
-        
+
         GL.VertexAttribPointer(0, Constants.VERTEX_ATRIBB_SIZE,
             VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);

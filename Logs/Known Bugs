@@ -4,11 +4,12 @@
 
 Add Angular velocity field to ImGuiElementContainer
 Add Direction vector field to ImGuiElementContainer
-Update Indicator.GetRadii() to account for the "custom" planet type
+
 
 ######################
 ####### FIXED ########
 ######################
+# Update Indicator.GetRadii() to account for the "custom" planet type - Fixed (18.4.25)
 # 'custom' generation crashes the program - Fixed (17.4.25)
 # Update Selected pivot dynamically - Fixed (17.4.25)
 # Moon doesnt behave by gravity - Fixed (11.4.25)

@@ -17,7 +17,6 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static int selectedParentIndex;
     public static int selectedPivotIndex; // Separate index for camera pivot
 
-    private static float customRadius = 0.01f;
     private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
     public static Vector3 color = Constants.ROCKY_PLANET_COLOR; // Use System.Numerics for ImGui
     public static List<Object> celestialBodies = new();
@@ -121,11 +120,12 @@ internal abstract class ImGuiElementContainer : IDisposable
 
                         if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
                         {
-                            if (ImGui.SliderFloat("Custom radius, (Moon ~ .14, Star ~ 1.4)", ref customRadius,
-                                    0.1f, 2f))
+                            if (ImGui.SliderFloat("Custom radius, (Moon ~ .14, Star ~ 1.4)",
+                                    ref Constants.CUSTOM_RADIUS,
+                                    0.05f, 2f))
                             {
                             }
-                            
+
                             ImGui.ColorEdit3("Color", ref color);
                         }
 
@@ -161,11 +161,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                         if (ImGui.InputText("Mass (e.g., 1.0)", ref massBuffer, 15))
                         {
                         } // No action needed on change here
-
-                        // Ensure emissive checkbox reflects current type unless manually changed
-                        if (ImGui.Checkbox("Emissive", ref emissive))
-                        {
-                        }
 
 
                         if (ImGui.Button("Create", Constants.BESPOKE_BUTTON_SIZE))
@@ -237,15 +232,15 @@ internal abstract class ImGuiElementContainer : IDisposable
                             // Use selectedPivotIndex for camera pivot choice
                             ImGui.Combo("Camera Pivot Object", ref selectedPivotIndex, allBodyNames,
                                 allBodyNames.Length);
-                            
-                                if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
-                                {
-                                    Logger.WriteLine(
-                                        $"Setting camera pivot to: {celestialBodies[selectedPivotIndex].Name}");
-                                    Camera._pivot =
-                                        celestialBodies[selectedPivotIndex]
-                                            .Position; // Assuming Camera._pivot exists and is OpenTK.Vector3
-                                }
+
+                            if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
+                            {
+                                Logger.WriteLine(
+                                    $"Setting camera pivot to: {celestialBodies[selectedPivotIndex].Name}");
+                                Camera._pivot =
+                                    celestialBodies[selectedPivotIndex]
+                                        .Position; // Assuming Camera._pivot exists and is OpenTK.Vector3
+                            }
                         }
                         else
                         {
@@ -295,13 +290,13 @@ internal abstract class ImGuiElementContainer : IDisposable
                     {
                         ImGui.EndTabItem();
                     }
+
                 ImGui.EndTabBar();
             }
         }
         finally
         {
             ImGui.End();
-            
         }
     }
 
@@ -395,7 +390,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                 radius = Constants.ICE_GIANT_RADIUS;
                 break;
             case 6: // Custom
-                radius = customRadius;
+                radius = Constants.CUSTOM_RADIUS;
                 break;
             default: // Fallback to default rocky planet size
                 Logger.WriteLine(
@@ -417,17 +412,17 @@ internal abstract class ImGuiElementContainer : IDisposable
         {
 #if DEBUG
             Logger.WriteLine($"\n" +
-                              $"Creating new Sphere : {nameBuffer} \n " +
-                              $"World pos :{worldPosition}\n" +
-                              $"Rotation : {sphereRotation}\n" +
-                              $"Scale :{sphereScale}\n" +
-                              $"Color : {sphereColor}\n" +
-                              $"Mass :{parsedMass}\n" +
-                              $"Orbit radius: {orbitRadius}\n" +
-                              $"Speed: {angularSpeed}\n" +
-                              $"Type: {planetTypeName}\n" +
-                              $"Emissive? :{emissive}\n" +
-                              $"Parent ? :{parent}");
+                             $"Creating new Sphere : {nameBuffer} \n " +
+                             $"World pos :{worldPosition}\n" +
+                             $"Rotation : {sphereRotation}\n" +
+                             $"Scale :{sphereScale}\n" +
+                             $"Color : {sphereColor}\n" +
+                             $"Mass :{parsedMass}\n" +
+                             $"Orbit radius: {orbitRadius}\n" +
+                             $"Speed: {angularSpeed}\n" +
+                             $"Type: {planetTypeName}\n" +
+                             $"Emissive? :{emissive}\n" +
+                             $"Parent ? :{parent}");
 #endif
 
             return new Sphere(

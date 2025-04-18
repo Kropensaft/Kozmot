@@ -1,7 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace OpenGL;
 
@@ -21,7 +20,7 @@ public static class TextureLoader
 
         using Image<Rgba32> image = Image.Load<Rgba32>(validPath);
         //image.Mutate(x => x.Flip(FlipMode.Vertical));
-        
+
 
         byte[] pixels = new byte[4 * image.Width * image.Height];
         image.CopyPixelDataTo(pixels);

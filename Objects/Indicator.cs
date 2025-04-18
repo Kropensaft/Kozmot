@@ -13,7 +13,6 @@ internal static class Indicator
     private static uint[]? _indices;
     private static float _currentRadius = -1f; // Track radius used for mesh generation
 
-    // No changes needed in GetRadii
     public static float GetRadii()
     {
         uint selectedRadius = ImGuiElementContainer.selectedPlanetTypeRef;
@@ -26,6 +25,7 @@ internal static class Indicator
             3 => Constants.MOON_RADIUS,
             4 => Constants.DESERT_PLANET_RADIUS,
             5 => Constants.ICE_GIANT_RADIUS,
+            6 => Constants.CUSTOM_RADIUS,
             _ => Constants.ROCKY_PLANET_RADIUS
         });
         // Logger.WriteLine($"GetRadii: {radii}"); // Debug

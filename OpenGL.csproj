@@ -11,10 +11,10 @@
     <ItemGroup>
         <PackageReference Include="ImGui.NET" Version="1.91.6.1"/>
         <PackageReference Include="OpenTK.Core" Version="4.9.3"/>
-	
-	<None Update="Logs/*.log">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>	
-	</None>
+
+        <None Update="Logs/*.log">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Update="Shaders/*.vert">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

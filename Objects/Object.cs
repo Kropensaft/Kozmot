@@ -36,7 +36,7 @@ public abstract class Object // Make abstract if never instantiated directly
     public string Type { get; set; } // Public getter for Type
     public float Mass { get; protected set; } // Public getter for Mass
     public bool IsEmissive { get; set; }
-    
+
     public float RotationSpeed { get; set; } = 1.0f; // Radians per second
 
     // Protected or private for internal physics state
@@ -49,10 +49,10 @@ public abstract class Object // Make abstract if never instantiated directly
         Velocity += Acceleration * (float)deltaTime;
         Position += Velocity * (float)deltaTime;
         Acceleration = Vector3.Zero; // Reset acceleration for next frame
-        
+
         Rotation += new Vector3(
-            0, 
-            RotationSpeed * (float)deltaTime, 
+            0,
+            RotationSpeed * (float)deltaTime,
             0
         );
     }
@@ -170,7 +170,6 @@ public class Sphere : Object
 
                 vertices.Add(u);
                 vertices.Add(v);
-             
             }
         }
 

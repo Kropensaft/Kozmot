@@ -70,6 +70,8 @@ public static class Constants
     public static readonly float DESERT_PLANET_RADIUS = 0.28f;
     public static readonly float ICE_GIANT_RADIUS = 0.81f;
 
+    public static float CUSTOM_RADIUS = 1.0f;
+
     /// <summary>
     ///     Colors based on the celestial type
     /// </summary>

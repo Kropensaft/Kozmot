@@ -18,7 +18,6 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        
         var windowSettings = GameWindowSettings.Default;
         var nativeWindowSettings = NativeWindowSettings.Default;
 
@@ -52,7 +51,7 @@ internal static class Program
         //Check for GL errors during startup initialization 
         WindowManager.CheckGlErrors();
 
-        
+
         window.Run();
     }
 }
