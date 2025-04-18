@@ -126,7 +126,7 @@ public static class Constants
     ///     Miscellaneous
     /// </summary>
     public static readonly float FLOAT_ZERO = 0.0f;
-
+    public static readonly float TOO_FAR_POSITION = 300f;
     public static readonly float FLOAT_ONE = 1.0f;
 
 

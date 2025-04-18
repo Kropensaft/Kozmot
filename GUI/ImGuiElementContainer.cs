@@ -57,8 +57,7 @@ internal abstract class ImGuiElementContainer : IDisposable
         if (IsGUITransparent)
         {
             if (!ImGui.Begin("GUI",
-                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground |
-                    ImGuiWindowFlags.NoResize))
+                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground ))
             {
                 ImGui.End(); // Make sure to End() even if Begin() returns false
                 return;
@@ -67,8 +66,7 @@ internal abstract class ImGuiElementContainer : IDisposable
         else
         {
             if (!ImGui.Begin("GUI",
-                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar |
-                    ImGuiWindowFlags.NoResize))
+                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar ))
             {
                 ImGui.End(); // Make sure to End() even if Begin() returns false
                 return;
@@ -80,6 +78,37 @@ internal abstract class ImGuiElementContainer : IDisposable
             if (ImGui.BeginTabBar("Settings#left"))
             {
                 // Planet Creator Tab
+                if (ImGui.BeginTabItem("Starter Guide"))
+                    try
+                    {
+                        ImGui.Text("=== Planet Creator Guide ===");
+                        ImGui.BulletText("1. Enter Name and Select Type.");
+                        ImGui.BulletText("2. Set Position (relative to parent for moons, else origin).");
+                        ImGui.BulletText("3. For Moons: Select Parent from 'Orbits around' dropdown.");
+                        ImGui.BulletText("4. For 'Custom' select color, and scale");
+                        ImGui.BulletText("5. Click 'Create'.");
+                        ImGui.Separator();
+                        ImGui.Text("=== Camera Controls ===");
+                        ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
+                        ImGui.BulletText("Right Mouse Button + Drag: Orbit camera");
+                        ImGui.BulletText("Spacebar + Drag: Orbit (Touchpad alternative)");
+                        ImGui.BulletText("If you wish to centralize a planet in it's movement, select it as a pivot");
+                        ImGui.Separator();
+                        ImGui.Text("=== Keyboard Shortcuts ===");
+                        ImGui.BulletText("ESC: Quit Application");
+                        ImGui.BulletText("C: Remove Last Added Object");
+                        ImGui.Separator();
+                        ImGui.Text("=== Notes ===");
+                        ImGui.BulletText("Keyboard input inactive when GUI has focus.");
+                        ImGui.BulletText("Green sphere indicates position during creation.");
+                    }
+                    
+                    finally
+                    {
+                        ImGui.EndTabItem();
+                    }
+
+                // How to Use Tab
                 if (ImGui.BeginTabItem("Planet Creator"))
                     try
                     {
@@ -184,36 +213,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                         foreach (var body in celestialBodies)
                             // Display using the Type stored in the object
                             ImGui.Text($"{body.Name} ({body.Type})");
-                    }
-                    finally
-                    {
-                        ImGui.EndTabItem();
-                    }
-
-                // How to Use Tab
-                if (ImGui.BeginTabItem("How to use"))
-                    try
-                    {
-                        ImGui.Text("=== Planet Creator Guide ===");
-                        ImGui.BulletText("1. Enter Name and Select Type.");
-                        ImGui.BulletText("2. Set Position (relative to parent for moons, else origin).");
-                        ImGui.BulletText("3. For Moons: Select Parent from 'Orbits around' dropdown.");
-                        ImGui.BulletText("4. For 'Custom' select color, and scale");
-                        ImGui.BulletText("5. Click 'Create'.");
-                        ImGui.Separator();
-                        ImGui.Text("=== Camera Controls ===");
-                        ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
-                        ImGui.BulletText("Right Mouse Button + Drag: Orbit camera");
-                        ImGui.BulletText("Spacebar + Drag: Orbit (Touchpad alternative)");
-                        ImGui.BulletText("If you wish to centralize a planet in it's movement, select it as a pivot");
-                        ImGui.Separator();
-                        ImGui.Text("=== Keyboard Shortcuts ===");
-                        ImGui.BulletText("ESC: Quit Application");
-                        ImGui.BulletText("C: Remove Last Added Object");
-                        ImGui.Separator();
-                        ImGui.Text("=== Notes ===");
-                        ImGui.BulletText("Keyboard input inactive when GUI has focus.");
-                        ImGui.BulletText("Green sphere indicates position during creation.");
                     }
                     finally
                     {

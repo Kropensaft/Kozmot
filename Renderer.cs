@@ -228,7 +228,6 @@ internal static class Renderer
             _skybox.Render(currentView, currentProjection);
             Skybox.CheckGLError("After Skybox render"); // Use the static method if it exists
         }
-        // Skybox.Render should have restored DepthFunc to Less
 
         // --- 5. Render Spheres ---
         // Set the shader program FOR THE SPHERES
