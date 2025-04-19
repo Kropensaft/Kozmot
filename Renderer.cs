@@ -39,7 +39,7 @@ internal static class Renderer
     private static ImGuiController? _controller;
     private static bool UIinitcalled;
     public static bool RenderIndicator = true;
-
+    public static bool IsSimulationPaused = false;
     //Initalize grid
     private static Grid? _grid;
 
@@ -258,7 +258,10 @@ internal static class Renderer
             }
 
             // Object-specific updates
-            obj.Update(args.Time); // Assuming this doesn't change GL state
+            if(!IsSimulationPaused)
+            {
+                obj.Update(args.Time);
+            } // Assuming this doesn't change GL state
 
             // Set object-specific uniforms
 

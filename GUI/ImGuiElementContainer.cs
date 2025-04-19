@@ -42,304 +42,304 @@ internal abstract class ImGuiElementContainer : IDisposable
 
     //TODO: Add angular velocity and initial direction as variable fields
     public static void SubmitUI()
+{
+    string[] parentNames = celestialBodies
+        .OfType<Sphere>()
+        .Where(s => s.Parent == null)
+        .Select(s => s.Name)
+        .ToArray();
+
+    string[] allBodyNames = celestialBodies
+        .Select(b => b.Name)
+        .ToArray();
+
+    if (IsGUITransparent)
     {
-        // Get names of potential parents (parentless Spheres)
-        string[] parentNames = celestialBodies
-            .OfType<Sphere>()
-            .Where(s => s.Parent == null)
-            .Select(s => s.Name)
-            .ToArray();
-
-        // Get names of all celestial bodies for pivot selection
-        string[] allBodyNames = celestialBodies
-            .Select(b => b.Name)
-            .ToArray();
-
-        if (IsGUITransparent)
-        {
-            if (!ImGui.Begin("GUI",
-                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground ))
-            {
-                ImGui.End(); // Make sure to End() even if Begin() returns false
-                return;
-            }
-        }
-        else
-        {
-            if (!ImGui.Begin("GUI",
-                    ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar ))
-            {
-                ImGui.End(); // Make sure to End() even if Begin() returns false
-                return;
-            }
-        }
-
-        try
-        {
-            if (ImGui.BeginTabBar("Settings#left"))
-            {
-                // Planet Creator Tab
-                if (ImGui.BeginTabItem("Starter Guide"))
-                    try
-                    {
-                        ImGui.Text("=== Planet Creator Guide ===");
-                        ImGui.BulletText("1. Enter Name and Select Type.");
-                        ImGui.BulletText("2. Set Position (relative to parent for moons, else origin).");
-                        ImGui.BulletText("3. For Moons: Select Parent from 'Orbits around' dropdown.");
-                        ImGui.BulletText("4. For 'Custom' select color, and scale");
-                        ImGui.BulletText("5. Click 'Create'.");
-                        ImGui.Separator();
-                        ImGui.Text("=== Camera Controls ===");
-                        ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
-                        ImGui.BulletText("Right Mouse Button + Drag: Orbit camera");
-                        ImGui.BulletText("Spacebar + Drag: Orbit (Touchpad alternative)");
-                        ImGui.BulletText("If you wish to centralize a planet in it's movement, select it as a pivot");
-                        ImGui.Separator();
-                        ImGui.Text("=== Keyboard Shortcuts ===");
-                        ImGui.BulletText("ESC: Quit Application");
-                        ImGui.BulletText("C: Remove Last Added Object");
-                        ImGui.Separator();
-                        ImGui.Text("=== Notes ===");
-                        ImGui.BulletText("Keyboard input inactive when GUI has focus.");
-                        ImGui.BulletText("Green sphere indicates position during creation.");
-                    }
-                    
-                    finally
-                    {
-                        ImGui.EndTabItem();
-                    }
-
-                // How to Use Tab
-                if (ImGui.BeginTabItem("Planet Creator"))
-                    try
-                    {
-                        ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
-                        if (ImGui.InputText("Planet name", ref nameBuffer, 20))
-                        {
-                        }
-                        
-                       
-                        //Move the RESET button into the right corner
-                        ImGui.SameLine(ImGui.GetWindowWidth() - (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH - Constants.BESPOKE_TEXTEDIT_WIDTH));
-                        if (ImGui.Button("Reset", Constants.BESPOKE_BUTTON_SIZE))
-                        {
-                            ResetUI();
-                            Renderer.ResetSimulation();
-                        }
-
-                        if (ImGui.Combo("Planet type", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
-                        {
-                            emissive = defaultPlanetTypeIndex == 1; // Index 1 is Star
-
-                            mass = defaultPlanetTypeIndex switch
-                            {
-                                0 => Constants.ROCKY_PLANET_MASS,
-                                1 => Constants.STAR_MASS,
-                                2 => Constants.GAS_GIANT_MASS,
-                                3 => Constants.MOON_MASS,
-                                4 => Constants.DESERT_MASS,
-                                5 => Constants.ICE_GIANT_MASS,
-                                6 => Constants.FLOAT_ONE, // Custom settings so value doesnt matter 
-                                _ => Constants.ROCKY_PLANET_MASS
-                            };
-                            massBuffer = mass.ToString(CultureInfo.InvariantCulture); // Use invariant culture
-
-                            color = defaultPlanetTypeIndex switch
-                            {
-                                0 => Constants.ROCKY_PLANET_COLOR,
-                                1 => Constants.STAR_COLOR,
-                                2 => Constants.GAS_GIANT_COLOR,
-                                3 => Constants.MOON_COLOR,
-                                4 => Constants.DESERT_PLANET_COLOR,
-                                5 => Constants.ICE_GIANT_COLOR,
-                                6 => Constants.MOON_COLOR, // Custom settings so value doesnt matter 
-                                _ => Constants.ROCKY_PLANET_COLOR
-                            };
-                        }
-
-                        if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
-                        {
-                            if (ImGui.SliderFloat("Custom radius, (Moon ~ .14, Star ~ 1.4)",
-                                    ref Constants.CUSTOM_RADIUS,
-                                    0.05f, 2f))
-                            {
-                            }
-
-                            ImGui.ColorEdit3("Color", ref color);
-                        }
-
-                        // Moon parent selection
-                        if (defaultPlanetTypeIndex == 3) // Index 3 is Moon
-                        {
-                            if (parentNames.Length > 0)
-                            {
-                                // Use selectedParentIndex for moon parent choice
-                                if (ImGui.Combo("Orbits around", ref selectedParentIndex, parentNames,
-                                        parentNames.Length))
-                                {
-                                } // No action needed on change here
-                            }
-                            else
-                            {
-                                ImGui.Text("No available parent bodies (create a non-moon first)");
-                                selectedParentIndex = -1; // Indicate no valid selection
-                            }
-                        }
-                        else
-                        {
-                            selectedParentIndex = -1; // Reset if not a moon
-                        }
-
-
-                        if (ImGui.DragFloat3("Position (Relative)", ref position, 0.2f, -Constants.GRID_SIZE,
-                                Constants.GRID_SIZE))
-                        {
-                        } // No action needed on change here
-
-                        ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDTH);
-                        if (ImGui.InputText("Mass (e.g., 1.0)", ref massBuffer, 15))
-                        {
-                        } // No action needed on change here
-
-
-                        if (ImGui.Button("Create", Constants.BESPOKE_BUTTON_SIZE))
-                        {
-                            var newSphere = SaveUIValues();
-                            newSphere.TextureID = TextureLoader.LoadTexture(
-                                Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, newSphere.Type)]);
-                            if (newSphere != null)
-                            {
-                                Renderer.AddObject(newSphere);
-                                celestialBodies.Add(newSphere);
-                                ResetUI();
-                            }
-                        }
-
-                        ImGui.SameLine();
-
-                        // Generate list of names for the removal dropdown
-                        string[] removalNames = celestialBodies.Select(b => b.Name).ToArray();
-
-                        if (removalNames.Length > 1)
-                        {
-                            // Ensure the selected index is within bounds
-                            if (selectedRemovalIndex >= removalNames.Length)
-                                selectedRemovalIndex = removalNames.Length - 1;
-
-                            // Display the dropdown and removal button
-                            ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames, removalNames.Length);
-                            ImGui.SameLine();
-                            if (ImGui.Button("Remove Selected", Constants.BESPOKE_BUTTON_SIZE))
-                            {
-                                if (selectedRemovalIndex >= 0 && selectedRemovalIndex < celestialBodies.Count)
-                                {
-                                    // Remove from both celestialBodies and Renderer.Spheres
-                                    celestialBodies.RemoveAt(selectedRemovalIndex);
-                                    Renderer.Spheres.RemoveAt(selectedRemovalIndex);
-            
-                                    // Adjust the selected index to stay within valid range
-                                    selectedRemovalIndex = Math.Clamp(selectedRemovalIndex, 0, celestialBodies.Count - 1);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            ImGui.Text("No objects to remove.");
-                        }
-                        ImGui.Separator();
-                        ImGui.Text("Created objects: ");
-                        foreach (var body in celestialBodies)
-                            // Display using the Type stored in the object
-                            ImGui.Text($"{body.Name} ({body.Type})");
-                        
-                    }
-                    finally
-                    {
-                        ImGui.EndTabItem();
-                    }
-
-                // Camera settings tab
-                if (ImGui.BeginTabItem("Camera settings"))
-                    try
-                    {
-                        ImGui.Text("Select a central pivot for the camera");
-                        ImGui.Separator();
-
-                        if (allBodyNames.Length > 0)
-                        {
-                            // Use selectedPivotIndex for camera pivot choice
-                            ImGui.Combo("Camera Pivot Object", ref selectedPivotIndex, allBodyNames,
-                                allBodyNames.Length);
-
-                            if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
-                            {
-                                
-                                Logger.WriteLine(
-                                    $"Setting camera pivot to: {celestialBodies[selectedPivotIndex].Name}");
-                                Camera._pivot =
-                                    celestialBodies[selectedPivotIndex]
-                                        .Position; // Assuming Camera._pivot exists and is OpenTK.Vector3
-                            }
-                        }
-                        else
-                        {
-                            ImGui.Text("No objects created to pivot around.");
-                        }
-
-
-                        ImGui.Separator();
-                        ImGui.Text("=== Indicator sphere settings ===");
-
-                        if (ImGui.Checkbox("Render Grid", ref Grid.RenderGrid))
-                        {
-                        }
-
-                        if (ImGui.Checkbox("Render Indicator", ref Renderer.RenderIndicator))
-                        {
-                        }
-
-
-                        if (ImGui.ColorEdit3("Indicator Color", ref IndicatorColor))
-                            // Update the actual constant color used by the indicator renderer
-                            Constants.INDICATOR_COLOR = IndicatorColor;
-
-                        if (ImGui.SliderFloat("Indicator Transparency", ref Constants.INDICATOR_ALPHA, 0.0f, 0.9f))
-                        {
-                        }
-                    }
-
-                    finally
-                    {
-                        ImGui.EndTabItem();
-                    }
-
-                if (ImGui.BeginTabItem("Window Settings"))
-                    try
-                    {
-                        if (ImGui.Checkbox("Show metrics window", ref Renderer.showFPS))
-                        {
-                        }
-
-                        if (ImGui.Checkbox("Transparent window", ref IsGUITransparent))
-                        {
-                        }
-                    }
-
-                    finally
-                    {
-                        ImGui.EndTabItem();
-                    }
-
-                ImGui.EndTabBar();
-            }
-        }
-        finally
+        if (!ImGui.Begin("GUI", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground))
         {
             ImGui.End();
+            return;
+        }
+    }
+    else
+    {
+        if (!ImGui.Begin("GUI", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar))
+        {
+            ImGui.End();
+            return;
         }
     }
 
+    try
+    {
+        if (ImGui.BeginTabBar("Settings#left"))
+        {
+            if (ImGui.BeginTabItem("Starter Guide"))
+            {
+                try
+                {
+                    ImGui.Text("=== Planet Creator Guide ===");
+                    ImGui.BulletText("1. Enter Name and Select Type.");
+                    ImGui.BulletText("2. Set Position (relative to parent for moons, else origin).");
+                    ImGui.BulletText("3. For Moons: Select Parent from 'Orbits around' dropdown.");
+                    ImGui.BulletText("4. For 'Custom' select color, and scale");
+                    ImGui.BulletText("5. Click 'Create'.");
+                    ImGui.Separator();
+                    ImGui.Text("=== Camera Controls ===");
+                    ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
+                    ImGui.BulletText("Right Mouse Button + Drag: Orbit camera");
+                    ImGui.BulletText("Spacebar + Drag: Orbit (Touchpad alternative)");
+                    ImGui.BulletText("If you wish to centralize a planet in its movement, select it as a pivot");
+                    ImGui.Separator();
+                    ImGui.Text("=== Keyboard Shortcuts ===");
+                    ImGui.BulletText("ESC: Quit Application");
+                    ImGui.BulletText("C: Remove Last Added Object");
+                    ImGui.Separator();
+                    ImGui.Text("=== Notes ===");
+                    ImGui.BulletText("Keyboard input inactive when GUI has focus.");
+                    ImGui.BulletText("Green sphere indicates position during creation.");
+                }
+                finally { ImGui.EndTabItem(); }
+            }
 
+            if (ImGui.BeginTabItem("Planet Creator"))
+            {
+                try
+                {
+                    // Name Input
+                    ImGui.Text("Name:");
+                    AddToolTip("Unique name for the celestial body");
+                    ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
+                    ImGui.InputText("##PlanetName", ref nameBuffer, 20);
+
+                    // Reset Button
+                    AddToolTip("Resets the simulation to the state it was started in",
+                        ImGui.GetWindowWidth() - (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH - Constants.BESPOKE_TEXTEDIT_WIDTH)+
+                        (Constants.BESPOKE_BUTTON_SIZE.X / 2),
+                        false);
+                    
+                    ImGui.SameLine(ImGui.GetWindowWidth() - (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH - Constants.BESPOKE_TEXTEDIT_WIDTH));
+                    if (ImGui.Button("Reset", Constants.BESPOKE_BUTTON_SIZE))
+                    {
+                        ResetUI();
+                        Renderer.ResetSimulation();
+                    }
+
+                    // Planet Type
+                    ImGui.Text("Type:");
+                    AddToolTip("Determines physical properties and behavior");
+                    if (ImGui.Combo("##PlanetType", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
+                    {
+                        emissive = defaultPlanetTypeIndex == 1;
+                        mass = defaultPlanetTypeIndex switch
+                        {
+                            0 => Constants.ROCKY_PLANET_MASS,
+                            1 => Constants.STAR_MASS,
+                            2 => Constants.GAS_GIANT_MASS,
+                            3 => Constants.MOON_MASS,
+                            4 => Constants.DESERT_MASS,
+                            5 => Constants.ICE_GIANT_MASS,
+                            6 => Constants.FLOAT_ONE,
+                            _ => Constants.ROCKY_PLANET_MASS
+                        };
+                        massBuffer = mass.ToString(CultureInfo.InvariantCulture);
+
+                        color = defaultPlanetTypeIndex switch
+                        {
+                            0 => Constants.ROCKY_PLANET_COLOR,
+                            1 => Constants.STAR_COLOR,
+                            2 => Constants.GAS_GIANT_COLOR,
+                            3 => Constants.MOON_COLOR,
+                            4 => Constants.DESERT_PLANET_COLOR,
+                            5 => Constants.ICE_GIANT_COLOR,
+                            6 => Constants.MOON_COLOR,
+                            _ => Constants.ROCKY_PLANET_COLOR
+                        };
+                    }
+
+                    // Custom Settings
+                    if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
+                    {
+                        ImGui.Text("Radius:");
+                        AddToolTip("Visual size only (doesn't affect physics)");
+                        
+                        ImGui.SliderFloat("##CustomRadius", ref Constants.CUSTOM_RADIUS, 0.05f, 2f);
+
+                        ImGui.Text("Color:");
+                        AddToolTip("Visual size only (doesn't affect physics");
+                        
+                        ImGui.ColorEdit3("##Color", ref color);
+                    }
+
+                    // Moon Parent Selection
+                    if (defaultPlanetTypeIndex == 3)
+                    {
+                        ImGui.Text("Parent:");
+                        AddToolTip("Select a parent body for a stable orbit right out of the box");
+                        if (parentNames.Length > 0)
+                        {
+                            ImGui.Combo("##MoonParent", ref selectedParentIndex, parentNames, parentNames.Length);
+                        }
+                        else
+                        {
+                            ImGui.Text("No available parent bodies");
+                            selectedParentIndex = -1;
+                        }
+                    }
+
+                    // Position
+                    ImGui.Text("Position:");
+                    AddToolTip("Position relative to the X,Y intersection (red & blue lines)");
+                    ImGui.DragFloat3("##Position", ref position, 0.2f, -Constants.GRID_SIZE, Constants.GRID_SIZE);
+
+                    // Mass
+                    ImGui.Text("Mass:");
+                    AddToolTip("Mass in solar units ex. 1.4 ~ Star");
+                    ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDTH);
+                    ImGui.InputText("##Mass", ref massBuffer, 15);
+
+                    // Pause Toggle
+                    ImGui.Checkbox("Pause Simulation", ref Renderer.IsSimulationPaused);
+                    AddToolTip("Freezes the physics simulation while turned on");
+
+                    // Create Button
+                    if (ImGui.Button("Create", Constants.BESPOKE_BUTTON_SIZE))
+                    {
+                        var newSphere = SaveUIValues();
+                        if (newSphere != null)
+                        {
+                            newSphere.TextureID = TextureLoader.LoadTexture(
+                                Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, newSphere.Type)]);
+                            Renderer.AddObject(newSphere);
+                            celestialBodies.Add(newSphere);
+                            ResetUI();
+                        }
+                    }
+
+                    // Removal Section
+                    ImGui.SameLine();
+                    string[] removalNames = celestialBodies.Select(b => b.Name).ToArray();
+                    
+                    ImGui.Text("Remove:");
+                    AddToolTip("Removes the selected celestial body");
+                    if (removalNames.Length > 1)
+                    {
+                        if (selectedRemovalIndex >= removalNames.Length)
+                            selectedRemovalIndex = removalNames.Length - 1;
+
+                        ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames, removalNames.Length);
+                        ImGui.SameLine();
+                        if (ImGui.Button("Remove Selected", Constants.BESPOKE_BUTTON_SIZE))
+                        {
+                            if (selectedRemovalIndex >= 0 && selectedRemovalIndex < celestialBodies.Count)
+                            {
+                                celestialBodies.RemoveAt(selectedRemovalIndex);
+                                Renderer.Spheres.RemoveAt(selectedRemovalIndex);
+                                selectedRemovalIndex = Math.Clamp(selectedRemovalIndex, 0, celestialBodies.Count - 1);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ImGui.Text("No objects to remove.");
+                    }
+
+                    // Object List
+                    ImGui.Separator();
+                    ImGui.Text("Created objects:");
+                    foreach (var body in celestialBodies)
+                        ImGui.Text($"{body.Name} ({body.Type})");
+                }
+                finally { ImGui.EndTabItem(); }
+            }
+
+            if (ImGui.BeginTabItem("Camera settings"))
+            {
+                try
+                {
+                    ImGui.Text("Pivot:");
+                    AddToolTip("Uses the celestial object position as the central pivot");
+                    if (allBodyNames.Length > 0)
+                    {
+                        ImGui.Combo("##CameraPivot", ref selectedPivotIndex, allBodyNames, allBodyNames.Length);
+                        if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
+                        {
+                            Camera._pivot = celestialBodies[selectedPivotIndex].Position;
+                        }
+                    }
+                    else
+                    {
+                        ImGui.Text("No objects created");
+                    }
+
+                    ImGui.Separator();
+                    ImGui.Text("=== Indicator Settings ===");
+                    
+                    ImGui.Checkbox("Render Grid", ref Grid.RenderGrid);
+                    ImGui.Checkbox("Render Indicator", ref Renderer.RenderIndicator);
+
+                    ImGui.Text("Color:");
+                    AddToolTip("color of the scale/position indicating sphere");
+                    if (ImGui.ColorEdit3("##IndicatorColor", ref IndicatorColor))
+                    {
+                        Constants.INDICATOR_COLOR = IndicatorColor;
+                    }
+
+                    ImGui.Text("Transparency:");
+                    AddToolTip("Transparency of the indicator sphere");
+                    ImGui.SliderFloat("##IndicatorAlpha", ref Constants.INDICATOR_ALPHA, 0.0f, 0.9f);
+                }
+                finally { ImGui.EndTabItem(); }
+            }
+
+            if (ImGui.BeginTabItem("Window Settings"))
+            {
+                try
+                {
+                    ImGui.Checkbox("Show metrics window", ref Renderer.showFPS);
+                    AddToolTip("Shows a mainly debugging window which also include metrics such as\n FPS \n ms/frame \n vertex & index count and more");
+                    ImGui.Checkbox("Transparent window", ref IsGUITransparent);
+                    AddToolTip("Renders all of the UI with semi-transparent backgrounds (handy with smaller monitor sizes)");
+                }
+                finally { ImGui.EndTabItem(); }
+            }
+
+            ImGui.EndTabBar();
+        }
+    }
+    finally
+    {
+        ImGui.End();
+    }
+}
+
+    private static void AddToolTip(string message)
+    {
+        ImGui.SameLine();
+        ImGui.TextDisabled("(?)");
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text(message);
+            ImGui.EndTooltip();
+        }
+        ImGui.SameLine();
+    }
+    
+    private static void AddToolTip(string message, float xOffset, bool renderQM = true)
+    {
+        ImGui.SameLine(xOffset);
+        ImGui.TextDisabled(renderQM ? "(?)" : " ");
+
+
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text(message);
+            ImGui.EndTooltip();
+        }
+        ImGui.SameLine(xOffset);
+    }
     private static Sphere? SaveUIValues()
     {
         if (string.IsNullOrWhiteSpace(nameBuffer))
@@ -442,10 +442,8 @@ internal abstract class ImGuiElementContainer : IDisposable
         var sphereScale = new OpenTK.Mathematics.Vector3(radius, radius, radius);
         var sphereColor = color; // Already System.Numerics.Vector3
         var sphereRotation = DEFAULT_ROTATION;
-        float angularSpeed =
-            parent != null || orbitRadius > 0.001f
-                ? DEFAULT_ANGULAR_SPEED
-                : 0f; // Only orbit if parent or not at origin
+        float angularSpeed = Renderer.IsSimulationPaused ? 0f :  // Force 0 speed when paused
+            (parent != null || orbitRadius > 0.001f ? DEFAULT_ANGULAR_SPEED : 0f);
 
         try
         {
