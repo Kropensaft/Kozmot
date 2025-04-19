@@ -353,6 +353,40 @@ internal static class Renderer
 #endif
     }
 
+    public static void ResetSimulation()
+    {
+        // Clear all existing objects from both lists
+        Spheres.Clear();
+        ImGuiElementContainer.celestialBodies.Clear();
+
+        // Re-initialize with default sphere
+        AddDefaultSphere();
+
+        // Reset UI state (name/mass buffers, selected indices, etc.)
+        ImGuiElementContainer.ResetUI();
+        
+    }
+
+    public static void AddDefaultSphere()
+    {
+        var sphere = new Sphere(
+            "Default Planet",
+            new Vector3(4, 0, 0),
+            Vector3.Zero,
+            new Vector3(.3f, .3f, .3f),
+            new System.Numerics.Vector3(0f, 0.5f, 0.5f),
+            0.1f,
+            2.0f,
+            0.5f,
+            Constants.planetTypes[0]
+        );
+
+        sphere.RotationSpeed = MathHelper.DegreesToRadians(45);
+        sphere.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sphere.Type)]);
+        Spheres.Add(sphere);
+        ImGuiElementContainer.celestialBodies.Add(sphere);
+    }
     public static void AddObject(Sphere obj)
     {
         Spheres.Add(obj);

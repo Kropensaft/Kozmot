@@ -2,13 +2,23 @@
 #### NOT-RESOLVED ####
 ######################
 
+$CORE 
 Add Angular velocity field to ImGuiElementContainer
 Add Direction vector field to ImGuiElementContainer
+
+$UI CORE    
+
+
+$UI
+fix Textures inverted in Y-axis
+
 
 
 ######################
 ####### FIXED ########
 ######################
+# Add RESET button - Fixed (19.4.25)
+# Add dropdown for removing planets. - Fixed (19.4.25)
 # Update Indicator.GetRadii() to account for the "custom" planet type - Fixed (18.4.25)
 # 'custom' generation crashes the program - Fixed (17.4.25)
 # Update Selected pivot dynamically - Fixed (17.4.25)

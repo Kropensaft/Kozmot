@@ -15,6 +15,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     public static Vector3 position = new(1f, 0f, 0f); // Use System.Numerics for ImGui
     private static int defaultPlanetTypeIndex;
     private static int selectedParentIndex;
+    private static int selectedRemovalIndex;
     public static int selectedPivotIndex; // Separate index for camera pivot
 
     private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
@@ -116,6 +117,15 @@ internal abstract class ImGuiElementContainer : IDisposable
                         if (ImGui.InputText("Planet name", ref nameBuffer, 20))
                         {
                         }
+                        
+                       
+                        //Move the RESET button into the right corner
+                        ImGui.SameLine(ImGui.GetWindowWidth() - (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH - Constants.BESPOKE_TEXTEDIT_WIDTH));
+                        if (ImGui.Button("Reset", Constants.BESPOKE_BUTTON_SIZE))
+                        {
+                            ResetUI();
+                            Renderer.ResetSimulation();
+                        }
 
                         if (ImGui.Combo("Planet type", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
                         {
@@ -206,13 +216,42 @@ internal abstract class ImGuiElementContainer : IDisposable
                         }
 
                         ImGui.SameLine();
-                        if (ImGui.Button("Remove last", Constants.BESPOKE_BUTTON_SIZE)) InputHandler.RemoveLastAdded();
 
+                        // Generate list of names for the removal dropdown
+                        string[] removalNames = celestialBodies.Select(b => b.Name).ToArray();
+
+                        if (removalNames.Length > 1)
+                        {
+                            // Ensure the selected index is within bounds
+                            if (selectedRemovalIndex >= removalNames.Length)
+                                selectedRemovalIndex = removalNames.Length - 1;
+
+                            // Display the dropdown and removal button
+                            ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames, removalNames.Length);
+                            ImGui.SameLine();
+                            if (ImGui.Button("Remove Selected", Constants.BESPOKE_BUTTON_SIZE))
+                            {
+                                if (selectedRemovalIndex >= 0 && selectedRemovalIndex < celestialBodies.Count)
+                                {
+                                    // Remove from both celestialBodies and Renderer.Spheres
+                                    celestialBodies.RemoveAt(selectedRemovalIndex);
+                                    Renderer.Spheres.RemoveAt(selectedRemovalIndex);
+            
+                                    // Adjust the selected index to stay within valid range
+                                    selectedRemovalIndex = Math.Clamp(selectedRemovalIndex, 0, celestialBodies.Count - 1);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ImGui.Text("No objects to remove.");
+                        }
                         ImGui.Separator();
                         ImGui.Text("Created objects: ");
                         foreach (var body in celestialBodies)
                             // Display using the Type stored in the object
                             ImGui.Text($"{body.Name} ({body.Type})");
+                        
                     }
                     finally
                     {
@@ -234,6 +273,7 @@ internal abstract class ImGuiElementContainer : IDisposable
 
                             if (selectedPivotIndex >= 0 && selectedPivotIndex < celestialBodies.Count)
                             {
+                                
                                 Logger.WriteLine(
                                     $"Setting camera pivot to: {celestialBodies[selectedPivotIndex].Name}");
                                 Camera._pivot =

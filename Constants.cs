@@ -70,7 +70,7 @@ public static class Constants
     public static readonly float DESERT_PLANET_RADIUS = 0.28f;
     public static readonly float ICE_GIANT_RADIUS = 0.81f;
 
-    public static float CUSTOM_RADIUS = 1.0f;
+    public static float CUSTOM_RADIUS = ROCKY_PLANET_RADIUS;
 
     /// <summary>
     ///     Colors based on the celestial type
@@ -149,7 +149,6 @@ public static class Constants
     /// <summary>
     ///     Bespoke GUI values
     /// </summary>
-    public static readonly Vector2 BESPOKE_WINDOW_SIZE = new(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     public static readonly Vector2 BESPOKE_BUTTON_SIZE = new(50, 20);
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
