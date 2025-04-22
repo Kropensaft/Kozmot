@@ -96,6 +96,7 @@ public static class Constants
     //Centralized values which aren't constant
     public static System.Numerics.Vector3 INDICATOR_COLOR = new(0.0f, 1.0f, 0.0f);
     public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
+    public static float DIRECTION_INDICATOR_ALPHA = 1.0f;
 
     /// <summary>
     ///     Rendered values
@@ -126,6 +127,7 @@ public static class Constants
     ///     Miscellaneous
     /// </summary>
     public static readonly float FLOAT_ZERO = 0.0f;
+
     public static readonly float TOO_FAR_POSITION = 300f;
     public static readonly float FLOAT_ONE = 1.0f;
 
@@ -149,8 +151,8 @@ public static class Constants
     /// <summary>
     ///     Bespoke GUI values
     /// </summary>
-
     public static readonly Vector2 BESPOKE_BUTTON_SIZE = new(50, 20);
+
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
     public static readonly uint BESPOKE_TEXTEDIT_WIDE_WIDTH = 120;
 
@@ -173,6 +175,9 @@ public static class Constants
 
     public static readonly string gridVertexShaderPath = "Shaders/Grid.vert";
     public static readonly string gridFragmentShaderPath = "Shaders/Grid.frag";
+
+    public static readonly string dirIndicatorFragmentPath = "Shaders/directionIndicator.frag";
+    public static readonly string dirIndicatorVertexPath = "Shaders/directionIndicator.vert";
 
     public static readonly string LineVertPath = "Shaders/line.vert";
     public static readonly string LineFragPath = "Shaders/line.frag";

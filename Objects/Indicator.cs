@@ -6,12 +6,17 @@ using OpenTK.Mathematics;
 
 namespace OpenGL;
 
-internal static class Indicator
+internal class Indicator
 {
     private static int _vao, _vbo, _ebo, _shaderProgram;
     private static float[]? _vertices;
     private static uint[]? _indices;
     private static float _currentRadius = -1f; // Track radius used for mesh generation
+
+    public static float getCurrentIndicatorRadius()
+    {
+        return Math.Max(0.01f, _currentRadius);
+    }
 
     public static float GetRadii()
     {

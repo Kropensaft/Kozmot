@@ -4,6 +4,7 @@
 
 $CORE 
 fix scaling issue with indicator
+Add Indicator arrow atop the indicator which will display the direction of the movement 
 
 $UI CORE    
 

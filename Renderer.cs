@@ -39,7 +39,9 @@ internal static class Renderer
     private static ImGuiController? _controller;
     private static bool UIinitcalled;
     public static bool RenderIndicator = true;
+
     public static bool IsSimulationPaused = false;
+
     //Initalize grid
     private static Grid? _grid;
 
@@ -89,8 +91,9 @@ internal static class Renderer
 
 
         // ? Indicator
-        Logger.WriteLine("Deleting Indicator buffers...\n");
+        Logger.WriteLine("Deleting Indicator sphere buffers...\n");
         Indicator.Dispose();
+
 
         Logger.WriteLine($"Resource cleanup completed in {Math.Abs(DateTime.Now.Millisecond - elapsedtime)} ms.");
     }
@@ -104,6 +107,7 @@ internal static class Renderer
 
 
         Indicator.Initialize();
+        DirectionIndicator.Initialize();
         _window = WindowManager.GetWindow();
         _controller = new ImGuiController(_window.Size.X, _window.Size.Y);
 
@@ -258,10 +262,7 @@ internal static class Renderer
             }
 
             // Object-specific updates
-            if(!IsSimulationPaused)
-            {
-                obj.Update(args.Time);
-            } // Assuming this doesn't change GL state
+            if (!IsSimulationPaused) obj.Update(args.Time); // Assuming this doesn't change GL state
 
             // Set object-specific uniforms
 
@@ -300,6 +301,30 @@ internal static class Renderer
         // Indicator.Render handles its own state (shader, VAO, uniforms)
         if (RenderIndicator && !cleanupActive)
         {
+            //Render the direction indicator
+            if (Constants.DIRECTION_INDICATOR_ALPHA != 0)
+                DirectionIndicator.Render(
+                    currentView,
+                    currentProjection,
+                    Constants.INDICATOR_COLOR,
+                    Constants.DIRECTION_INDICATOR_ALPHA,
+                    new Vector3(
+                        ImGuiElementContainer.Velocity.X,
+                        ImGuiElementContainer.Velocity.Y,
+                        ImGuiElementContainer.Velocity.Z
+                    ));
+            else
+                DirectionIndicator.Render(
+                    currentView,
+                    currentProjection,
+                    Constants.INDICATOR_COLOR,
+                    Constants.INDICATOR_ALPHA_DEF,
+                    new Vector3(
+                        ImGuiElementContainer.Velocity.X,
+                        ImGuiElementContainer.Velocity.Y,
+                        ImGuiElementContainer.Velocity.Z
+                    ));
+
             // 1. Determine the base color (now comparing System.Numerics == System.Numerics)
             var baseColorNum = Constants.INDICATOR_COLOR == System.Numerics.Vector3.Zero // This comparison now works
                 ? Constants.INDICATOR_COLOR_DEF // This is also System.Numerics.Vector3
@@ -367,7 +392,6 @@ internal static class Renderer
 
         // Reset UI state (name/mass buffers, selected indices, etc.)
         ImGuiElementContainer.ResetUI();
-        
     }
 
     public static void AddDefaultSphere()
@@ -390,6 +414,7 @@ internal static class Renderer
         Spheres.Add(sphere);
         ImGuiElementContainer.celestialBodies.Add(sphere);
     }
+
     public static void AddObject(Sphere obj)
     {
         Spheres.Add(obj);
