@@ -18,7 +18,7 @@ internal static class Renderer
     //virtual array object, virtual buffer object, element buffer object, ---//---
     private static int _vao, _vbo, _ebo;
 
-    public static bool cleanupActive;
+    private static bool cleanupActive;
 
     private static readonly Dictionary<string, int> _shaderPrograms = new();
 
@@ -29,7 +29,7 @@ internal static class Renderer
     private static Matrix4 _projection, _view;
 
     // ! To be renamed in the future and to be used with a new type  
-    public static List<Sphere> Spheres = new();
+    public static readonly List<Sphere> Spheres = new();
 
     //vertex and index arrays
     private static float[]? _vertices;
@@ -189,8 +189,6 @@ internal static class Renderer
         GL.EnableVertexAttribArray(1);
 
         // Get uniform locations of respective matrices
-        int colorLoc = GL.GetUniformLocation(_shaderPrograms["default"], "object_color");
-        int modelLoc = GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix");
         int viewLoc = GL.GetUniformLocation(_shaderPrograms["default"], "view_matrix");
         int projLoc = GL.GetUniformLocation(_shaderPrograms["default"], "projection_matrix");
 
@@ -256,11 +254,6 @@ internal static class Renderer
         // ! Spheres.ToList is crucial since we need the original List only as a reference of objects 
         foreach (var obj in Spheres.ToList())
         {
-            if (obj.Position.X > Constants.GRID_SIZE)
-            {
-                //TODO : If a planet is too far do something
-            }
-
             // Object-specific updates
             if (!IsSimulationPaused) obj.Update(args.Time); // Assuming this doesn't change GL state
 
@@ -420,18 +413,9 @@ internal static class Renderer
         Spheres.Add(obj);
     }
 
-    public static void RemoveObject(Object obj = null)
+    public static void RemoveObject(Object ? obj = null)
     {
         Spheres.RemoveAt(Spheres.Count - 1);
     }
-
-    public static ImGuiController GetController()
-    {
-        return _controller!;
-    }
-
-    public static Matrix4 GetProjectionMatrix()
-    {
-        return _projection; // Assuming you store it in Renderer
-    }
+    
 }

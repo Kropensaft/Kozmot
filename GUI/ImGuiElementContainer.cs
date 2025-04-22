@@ -235,6 +235,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                             if (selectedRemovalIndex >= removalNames.Length)
                                 selectedRemovalIndex = removalNames.Length - 1;
 
+                            ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
                             ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames,
                                 removalNames.Length);
                             ImGui.SameLine();

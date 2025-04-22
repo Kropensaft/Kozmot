@@ -10,7 +10,7 @@ public static class TextureLoader
     {
         // Add missing error handling and format support
         string[] extensions = { ".png", ".jpg", ".jpeg" };
-        string validPath = extensions.Select(ext => path + ext).FirstOrDefault(File.Exists);
+        string? validPath = extensions.Select(ext => path + ext).FirstOrDefault(File.Exists);
 
         if (validPath == null)
         {

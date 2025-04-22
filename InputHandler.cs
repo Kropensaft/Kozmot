@@ -12,10 +12,11 @@ internal static class InputHandler
 {
     private static Camera? _camera;
     private static Vector2 _lastMousePosition;
+    private static DateTime _lastWheelLog = DateTime.MinValue;
     private static readonly float mousePosDiv = 2f;
-    private static int _sphereCounter = 1;
-    private static bool _isRightMouseDown;
+    private static bool ? _isRightMouseDown { get; set; }
     private static bool _isOrbitEnabled;
+    
 
     public static void InitializeInputs(GameWindow window, Camera camera)
     {
@@ -48,15 +49,27 @@ internal static class InputHandler
 
     private static void OnMouseWheel(MouseWheelEventArgs e)
     {
+        TimeSpan logInterval = TimeSpan.FromMilliseconds(Constants.LOG_INTERVAL_MS);
+        
         if (e.OffsetY > 0)
         {
-            Logger.WriteLine("Mouse wheel scrolled UP");
-            _camera!.Distance -= 0.5f;
+            if (DateTime.Now - _lastWheelLog > logInterval)
+            {
+                Logger.WriteLine("Mouse wheel scrolled UP");
+                _lastWheelLog = DateTime.Now;
+            }
+                
+            _camera!.Distance -= Constants.CAMERA_ZOOM_SENSITIVITY;
         }
         else if (e.OffsetY < 0)
         {
-            Logger.WriteLine("Mouse wheel scrolled DOWN");
-            _camera!.Distance += 0.5f;
+            if (DateTime.Now - _lastWheelLog > logInterval)
+            {
+                Logger.WriteLine("Mouse wheel scrolled UP");
+                _lastWheelLog = DateTime.Now;
+            }
+                
+            _camera!.Distance += Constants.CAMERA_ZOOM_SENSITIVITY;
         }
     }
 
@@ -89,26 +102,6 @@ internal static class InputHandler
         if (e.Key == Keys.Down) _camera!.Distance += 0.1f;
     }
 
-    /*
-    public static Sphere GenerateSphere(System.Numerics.Vector3 color)
-    {
-        var random = new Random();
-        float x = (float)(random.NextDouble() * 2 - 1);
-        float y = (float)(random.NextDouble() * 2 - 1);
-        float z = 0;
-        var pos = new Vector3(x, y, z);
-
-        return new Sphere(
-            $"Sphere {_sphereCounter++}",
-            pos,
-            Vector3.Zero,
-            Vector3.One,
-            color,
-            1.0f,
-            Constants.DEFAULT_ORBIT_RADIUS,
-            Constants.INITIAL_SPHERE_VELOCITY
-        );
-    }*/
     public static void RemoveLastAdded()
     {
         if (Renderer.Spheres.Count > 1 && ImGuiElementContainer.celestialBodies.Count > 1)

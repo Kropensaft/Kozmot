@@ -7,8 +7,6 @@ namespace OpenGL;
 
 public static class Constants
 {
-    /// Sphere textures 
-    /// https://www.solarsystemscope.com/textures/
     /// <summary>
     ///     Gravitational constant for simulation (6.67430 × 10^-11 in real world)
     /// </summary>
@@ -48,9 +46,7 @@ public static class Constants
         "./ImageDependencies/Skybox/front.jpg",
         "./ImageDependencies/Skybox/back.jpg"
     };
-
-    public static readonly string skyboxVertexShaderPath = "Shaders/Skybox.vert";
-    public static readonly string skyboxFragmentShaderPath = "Shaders/Skybox.frag";
+    
 
     /// <summary>
     ///     Basic values depending on planet type
@@ -127,18 +123,18 @@ public static class Constants
     ///     Miscellaneous
     /// </summary>
     public static readonly float FLOAT_ZERO = 0.0f;
-
     public static readonly float TOO_FAR_POSITION = 300f;
     public static readonly float FLOAT_ONE = 1.0f;
+    public static readonly int LOG_INTERVAL_MS = 500;
 
 
     /// <summary>
     ///     Camera values
     /// </summary>
     public static readonly float CAMERA_ANGLE_CLAMP = 89f;
-
     public static readonly float CAMERA_SPEED = 2.5f;
     public static readonly float CAMERA_SENSITIVITY = .2f;
+    public static readonly float CAMERA_ZOOM_SENSITIVITY = .5f;
 
     /// <summary>
     ///     Vertex and Index values

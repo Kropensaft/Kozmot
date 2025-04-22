@@ -4,9 +4,9 @@ public class Logger
 {
     private static readonly string LogDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
 
-    private static Logger _LoggerSingleton;
+    private static Logger? _LoggerSingleton;
 
-    public Logger()
+    private Logger()
     {
         EnsureLogDirectoryExists();
         InstantiateStreamWriter();
@@ -21,7 +21,7 @@ public class Logger
         }
     }
 
-    public StreamWriter SW { get; set; }
+    private StreamWriter? SW { get; set; }
 
     ~Logger()
     {
@@ -38,15 +38,9 @@ public class Logger
     public static void WriteLine(string str)
     {
         Console.WriteLine(str);
-        LoggerSingleton.SW.WriteLine(str);
+        LoggerSingleton.SW?.WriteLine(str);
     }
-
-    public static void Write(string str)
-    {
-        Console.Write(str);
-        LoggerSingleton.SW.Write(str);
-    }
-
+    
     private void InstantiateStreamWriter()
     {
         string filePath = Path.Combine(LogDirPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")) + ".txt";
@@ -58,7 +52,7 @@ public class Logger
         catch (UnauthorizedAccessException ex)
         {
             throw new ApplicationException(
-                string.Format("Access denied. Could not instantiate StreamWriter using path: {0}.", filePath), ex);
+                $"Access denied. Could not instantiate StreamWriter using path: {filePath}.", ex);
         }
     }
 

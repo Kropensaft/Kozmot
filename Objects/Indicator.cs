@@ -70,7 +70,7 @@ internal class Indicator
             0f, // Mass
             0f, // orbitRadius
             0f, // velocity
-            null); // emissive
+            ""); // emissive
 
 
         try
