@@ -3,8 +3,7 @@
 ######################
 
 $CORE 
-Add Angular velocity field to ImGuiElementContainer
-Add Direction vector field to ImGuiElementContainer
+fix scaling issue with indicator
 
 $UI CORE    
 
@@ -17,6 +16,8 @@ fix Textures inverted in Y-axis
 ######################
 ####### FIXED ########
 ######################
+# Add Angular velocity field to ImGuiElementContainer - Fixed (22.4.25)
+# Add Direction vector field to ImGuiElementContainer - Fixed (22.4.25)
 # Add RESET button - Fixed (19.4.25)
 # Add dropdown for removing planets. - Fixed (19.4.25)
 # Update Indicator.GetRadii() to account for the "custom" planet type - Fixed (18.4.25)

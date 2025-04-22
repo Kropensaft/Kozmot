@@ -13,6 +13,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static string nameBuffer = Constants.DEFAULT_NAME_BUFFER; // Initialize from Constants
     private static bool emissive;
     public static Vector3 position = new(1f, 0f, 0f); // Use System.Numerics for ImGui
+    private static Vector3 Velocity = new(0f, 0f, 0f);
     private static int defaultPlanetTypeIndex;
     private static int selectedParentIndex;
     private static int selectedRemovalIndex;
@@ -40,7 +41,6 @@ internal abstract class ImGuiElementContainer : IDisposable
         GC.SuppressFinalize(this); // Standard Dispose pattern
     }
 
-    //TODO: Add angular velocity and initial direction as variable fields
     public static void SubmitUI()
 {
     string[] parentNames = celestialBodies
@@ -192,6 +192,10 @@ internal abstract class ImGuiElementContainer : IDisposable
                     AddToolTip("Position relative to the X,Y intersection (red & blue lines)");
                     ImGui.DragFloat3("##Position", ref position, 0.2f, -Constants.GRID_SIZE, Constants.GRID_SIZE);
 
+                    ImGui.Text("Velocity:");
+                    AddToolTip("Velocity is calculated as the Norm of said vector and is applied to the object, ex: (0,10,10) => velocity = new Vec(sqrt(0^2 + 10^2 + 10^2)) ~ 14.4");
+                    ImGui.DragFloat3("##Velocity", ref Velocity, 0.2f, -10f, 10f);
+                    
                     // Mass
                     ImGui.Text("Mass:");
                     AddToolTip("Mass in solar units ex. 1.4 ~ Star");
@@ -473,7 +477,8 @@ internal abstract class ImGuiElementContainer : IDisposable
                 angularSpeed,
                 planetTypeName,
                 emissive,
-                parent
+                parent,
+                new OpenTK.Mathematics.Vector3(Velocity.X, Velocity.Y, Velocity.Z)
             );
         }
         catch (Exception ex)
@@ -492,7 +497,6 @@ internal abstract class ImGuiElementContainer : IDisposable
         position = new Vector3(1f, 0f, 0f);
         defaultPlanetTypeIndex = 0;
         selectedParentIndex = -1; // Reset to invalid/none
-        selectedPivotIndex = 0; // Reset pivot selection
-        emissive = false;
+        Velocity=Vector3.Zero;
     }
 }

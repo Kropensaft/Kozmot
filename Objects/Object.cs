@@ -10,22 +10,31 @@ public abstract class Object // Make abstract if never instantiated directly
         Vector3 position,
         Vector3 rotation,
         Vector3 scale,
-        System.Numerics.Vector3 color, // Store as System.Numerics if used by ImGui/elsewhere
+        System.Numerics.Vector3 color,
         float mass,
-        string type, // Store the type name
-        bool isEmissive = false)
+        string type,
+        bool isEmissive = false,
+        Vector3 initialVelocity = default, // New parameter
+        Vector3 initialAngularVelocity = default) // New parameter
     {
+        // Existing assignments
         Name = name;
         Position = position;
         Rotation = rotation;
         Scale = scale;
-        Color = color; // Assign System.Numerics.Vector3
+        Color = color;
         Mass = mass;
-        Type = type; // Assign the type name
+        Type = type;
         IsEmissive = isEmissive;
-        Velocity = Vector3.Zero;
+
+        // Initialize movement and rotation
+        Velocity = initialVelocity;
+        AngularVelocity = initialAngularVelocity; // Ensure AngularVelocity is a Vector3 property
         Acceleration = Vector3.Zero;
     }
+
+// Add this property if not already present
+    public Vector3 AngularVelocity { get; set; } = new(0, 1f, 0); // Default Y-axis rotation
 
     // Public properties for external access
     public Vector3 Position { get; protected set; } // OpenTK Position
@@ -72,17 +81,30 @@ public class Sphere : Object
     // Constructor takes all necessary parameters including type name
     public Sphere(
         string name,
-        Vector3 position, // Absolute world position
-        Vector3 rotation, // Rotation
-        Vector3 scale, // Scale
-        System.Numerics.Vector3 color, // Color (System.Numerics)
+        Vector3 position,
+        Vector3 rotation,
+        Vector3 scale,
+        System.Numerics.Vector3 color,
         float mass,
-        float orbitRadius, // Distance from parent (or origin if no parent)
-        float angularSpeed, // Angular speed for orbit
-        string planetTypeName, // The name of the type
+        float orbitRadius,
+        float angularSpeed,
+        string planetTypeName,
         bool isEmissive = false,
-        Object? parent = null)
-        : base(name, position, rotation, scale, color, mass, planetTypeName, isEmissive) // Pass typeName to base
+        Object? parent = null,
+        Vector3 initialVelocity = default, // New parameter
+        Vector3 initialAngularVelocity = default) // New parameter
+        : base(
+            name,
+            position,
+            rotation,
+            scale,
+            color,
+            mass,
+            planetTypeName,
+            isEmissive,
+            initialVelocity, // Pass to base
+            initialAngularVelocity // Pass to base
+        )
     {
         OrbitRadius = orbitRadius;
         AngularSpeed = angularSpeed;
