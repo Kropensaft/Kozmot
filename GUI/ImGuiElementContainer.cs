@@ -244,6 +244,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 {
                                     celestialBodies.RemoveAt(selectedRemovalIndex);
                                     Renderer.Spheres.RemoveAt(selectedRemovalIndex);
+                                    selectedPivotIndex = celestialBodies.Count - 1;
                                     selectedRemovalIndex =
                                         Math.Clamp(selectedRemovalIndex, 0, celestialBodies.Count - 1);
                                 }

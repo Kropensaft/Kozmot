@@ -221,8 +221,7 @@ internal static class Renderer
         var currentView = _camera!.GetViewMatrix();
         var currentProjection = _camera.GetProjectionMatrix(aspectRatio);
         // Use 'currentProjection' below instead of the potentially stale '_projection' member
-
-        _camera.Pivot = ImGuiElementContainer.celestialBodies[ImGuiElementContainer.selectedPivotIndex].Position;
+            _camera.Pivot = ImGuiElementContainer.celestialBodies[ImGuiElementContainer.selectedPivotIndex].Position;
         // --- 4. Render Skybox ---
         if (_skybox != null && !cleanupActive)
         {

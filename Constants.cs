@@ -174,10 +174,7 @@ public static class Constants
 
     public static readonly string dirIndicatorFragmentPath = "Shaders/directionIndicator.frag";
     public static readonly string dirIndicatorVertexPath = "Shaders/directionIndicator.vert";
-
-    public static readonly string LineVertPath = "Shaders/line.vert";
-    public static readonly string LineFragPath = "Shaders/line.frag";
-
+    
 
     /// <summary>
     ///     Texture atlas values
