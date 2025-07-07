@@ -219,9 +219,8 @@ internal class Indicator
             ImGuiElementContainer.position.Y,
             ImGuiElementContainer.position.Z
         );
+       
         
-        //Render the indicator at its default position
-        position += Constants.DEFAULT_INDICATOR_POSITION;
         
         
         var model = Matrix4.CreateTranslation(position);
