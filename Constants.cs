@@ -11,21 +11,21 @@ public static class Constants
     ///     Gravitational constant for simulation (6.67430 × 10^-11 in real world)
     /// </summary>
     public const float GRAVITATIONAL_CONSTANT = 0.1f; // Adjusted for simulation scale
-
+    
     /// <summary>
     ///     Window Constants
     /// </summary>
     public static readonly int SCREEN_WIDTH = 800;
 
     public static readonly int SCREEN_HEIGHT = 600;
-    public static readonly Vector3 INITIAL_CAMERA_POS = (0, 0, 5);
+    public static readonly Vector3 INITIAL_CAMERA_POS = (0, 0, 0);
 
 
     /// <summary>
     ///     Sphere Data
     /// </summary>
     public static readonly float INITIAL_SPHERE_RADIUS = .3f;
-
+    
     public static readonly float INITIAL_SPHERE_VELOCITY = .4f;
     public static readonly float DEFAULT_ORBIT_RADIUS = .2f;
     public static readonly int SPHERE_STACK_COUNT = 18;
@@ -93,6 +93,9 @@ public static class Constants
     public static System.Numerics.Vector3 INDICATOR_COLOR = new(0.0f, 1.0f, 0.0f);
     public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
     public static float DIRECTION_INDICATOR_ALPHA = 1.0f;
+    
+    
+    public static Vector3 DEFAULT_INDICATOR_POSITION = new(20, 0, 0);
 
     /// <summary>
     ///     Rendered values
@@ -117,7 +120,7 @@ public static class Constants
     public static readonly float GRID_ALPHA_VALUE = .3f;
     public static readonly float GRID_FALLBACK_FLOAT = .5f;
     public static readonly float GRID_COMPARISON_FLOAT = .001f;
-    public static readonly float GRID_YPOS_FLOAT = -1f;
+    public static readonly float GRID_YPOS_FLOAT = -10f;
 
     /// <summary>
     ///     Miscellaneous
@@ -134,7 +137,7 @@ public static class Constants
     public static readonly float CAMERA_ANGLE_CLAMP = 89f;
     public static readonly float CAMERA_SPEED = 2.5f;
     public static readonly float CAMERA_SENSITIVITY = .2f;
-    public static readonly float CAMERA_ZOOM_SENSITIVITY = .5f;
+    public static float CAMERA_ZOOM_SENSITIVITY = 1.5f;
 
     /// <summary>
     ///     Vertex and Index values

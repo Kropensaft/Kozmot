@@ -16,7 +16,7 @@ namespace OpenGL;
 internal static class Renderer
 {
     //virtual array object, virtual buffer object, element buffer object, ---//---
-    private static int _vao, _vbo, _ebo;
+    public static int _vao, _vbo, _ebo;
 
     private static bool cleanupActive;
 
@@ -139,25 +139,63 @@ internal static class Renderer
 
 
         //? Generate a new sphere
-        var sphere = new Sphere(
-            "Default Planet",
-            new Vector3(4, 0, 0),
+        var sun = new Sphere(
+            "Sun",
+            new Vector3(0, 0, 0),
             Vector3.Zero,
-            new Vector3(.3f, .3f, .3f),
+            new Vector3(10f, 10f, 10f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
-            0.1f,
-            2.0f,
-            0.5f,
+            1.2f,
+            0.0f,
+            0.0f,
+            Constants.planetTypes[1]
+        );
+        
+        sun.RotationSpeed = MathHelper.DegreesToRadians(45);
+        sun.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sun.Type)]);
+        Spheres.Add(sun);
+        ImGuiElementContainer.celestialBodies.Add(sun);
+        
+        
+        var earth = new Sphere(
+            "Earth",
+            new Vector3(20, 0, 0),
+            Vector3.Zero,
+            new Vector3(1f, 1f, 1f),
+            new System.Numerics.Vector3(0f, 0.5f, 0.5f),
+            1.2f,
+            20f,
+            (2 * MathF.PI) / 36.5f,
             Constants.planetTypes[0]
         );
-
-        sphere.RotationSpeed = MathHelper.DegreesToRadians(45);
-        sphere.TextureID =
-            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sphere.Type)]);
-        Spheres.Add(sphere);
-        ImGuiElementContainer.celestialBodies.Add(sphere);
-
-
+        
+        earth.RotationSpeed = MathHelper.DegreesToRadians(45);
+        earth.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, earth.Type)]);
+        Spheres.Add(earth);
+        ImGuiElementContainer.celestialBodies.Add(earth);
+        
+        
+        var moon = new Sphere(
+            "Moon",
+            new Vector3(25, 0, 0),
+            Vector3.Zero,
+            new Vector3(.5f, .5f, .5f),
+            new System.Numerics.Vector3(0f, 0.5f, 0.5f),
+            1.2f,
+            5f,
+            12 * (2 * MathF.PI) / 36.5f,
+            Constants.planetTypes[3]
+        );
+        
+        moon.Parent = earth;
+        moon.RotationSpeed = MathHelper.DegreesToRadians(45);
+        moon.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, moon.Type)]);
+        Spheres.Add(moon);
+        ImGuiElementContainer.celestialBodies.Add(moon);
+        
         (float[] Vertices, uint[] Indices) sphereData = Spheres.ElementAt(Spheres.Count - 1)
             .GenerateSphere(Constants.SPHERE_SECTOR_COUNT, Constants.SPHERE_STACK_COUNT);
 
@@ -375,36 +413,78 @@ internal static class Renderer
 
     public static void ResetSimulation()
     {
+        
+        WindowManager.globalTime = 0;
+        
         // Clear all existing objects from both lists
         Spheres.Clear();
         ImGuiElementContainer.celestialBodies.Clear();
 
-        // Re-initialize with default sphere
-        AddDefaultSphere();
+        // Re-initialize with default constelation
+        AddDefaultConstellation();
 
         // Reset UI state (name/mass buffers, selected indices, etc.)
         ImGuiElementContainer.ResetUI();
     }
 
-    public static void AddDefaultSphere()
+    private static void AddDefaultConstellation()
     {
-        var sphere = new Sphere(
-            "Default Planet",
-            new Vector3(4, 0, 0),
+        var sun = new Sphere(
+            "Sun",
+            new Vector3(0, 0, 0),
             Vector3.Zero,
-            new Vector3(.3f, .3f, .3f),
+            new Vector3(10f, 10f, 10f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
-            0.1f,
-            2.0f,
-            0.5f,
+            1.2f,
+            0.0f,
+            0.0f,
+            Constants.planetTypes[1]
+        );
+        
+        sun.RotationSpeed = MathHelper.DegreesToRadians(45);
+        sun.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sun.Type)]);
+        Spheres.Add(sun);
+        ImGuiElementContainer.celestialBodies.Add(sun);
+        
+        
+        var earth = new Sphere(
+            "Earth",
+            new Vector3(20, 0, 0),
+            Vector3.Zero,
+            new Vector3(1f, 1f, 1f),
+            new System.Numerics.Vector3(0f, 0.5f, 0.5f),
+            1.2f,
+            20f,
+            (2 * MathF.PI) / 36.5f,
             Constants.planetTypes[0]
         );
-
-        sphere.RotationSpeed = MathHelper.DegreesToRadians(45);
-        sphere.TextureID =
-            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sphere.Type)]);
-        Spheres.Add(sphere);
-        ImGuiElementContainer.celestialBodies.Add(sphere);
+        
+        earth.RotationSpeed = MathHelper.DegreesToRadians(45);
+        earth.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, earth.Type)]);
+        Spheres.Add(earth);
+        ImGuiElementContainer.celestialBodies.Add(earth);
+        
+        
+        var moon = new Sphere(
+            "Moon",
+            new Vector3(25, 0, 0),
+            Vector3.Zero,
+            new Vector3(.5f, .5f, .5f),
+            new System.Numerics.Vector3(0f, 0.5f, 0.5f),
+            1.2f,
+            5f,
+            12 * (2 * MathF.PI) / 36.5f,
+            Constants.planetTypes[3]
+        );
+        
+        moon.Parent = earth;
+        moon.RotationSpeed = MathHelper.DegreesToRadians(45);
+        moon.TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, moon.Type)]);
+        Spheres.Add(moon);
+        ImGuiElementContainer.celestialBodies.Add(moon);
     }
 
     public static void AddObject(Sphere obj)

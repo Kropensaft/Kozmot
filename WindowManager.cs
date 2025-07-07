@@ -14,7 +14,7 @@ namespace OpenGL;
 internal static class WindowManager
 {
     private static GameWindow? _window;
-
+    public static float globalTime = 0;
     public static void Initialize(GameWindow window)
     {
         _window = window;

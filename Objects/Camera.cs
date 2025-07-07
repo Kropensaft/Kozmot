@@ -10,7 +10,7 @@ public class Camera
     public static Vector3 _pivot = Vector3.Zero; // Central point to orbit around
 
     // Distance from the pivot
-    private float _distance = 5.0f;
+    private float _distance = 100.0f;
 
     // Camera direction vectors
 

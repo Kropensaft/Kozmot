@@ -35,11 +35,10 @@ public abstract class Object // Make abstract if never instantiated directly
 
 // Add this property if not already present
     public Vector3 AngularVelocity { get; set; } = new(0, 1f, 0); // Default Y-axis rotation
-
     // Public properties for external access
-    public Vector3 Position { get; protected set; } // OpenTK Position
-    public Vector3 Rotation { get; protected set; }
-    public Vector3 Scale { get; protected set; }
+    public Vector3 Position { get;  set; } // OpenTK Position
+    public Vector3 Rotation { get; set; }
+    public Vector3 Scale { get; set; }
     public System.Numerics.Vector3 Color { get; set; } // System.Numerics Color
     public string Name { get; set; }
     public string Type { get; set; } // Public getter for Type
@@ -49,8 +48,8 @@ public abstract class Object // Make abstract if never instantiated directly
     public float RotationSpeed { get; set; } = 1.0f; // Radians per second
 
     // Protected or private for internal physics state
-    protected Vector3 Velocity { get; set; }
-    protected Vector3 Acceleration { get; set; }
+    public Vector3 Velocity { get; set; }
+    public Vector3 Acceleration { get; set; }
 
     public virtual void Update(double deltaTime)
     {
@@ -85,7 +84,7 @@ public class Sphere : Object
         Vector3 rotation,
         Vector3 scale,
         System.Numerics.Vector3 color,
-        float mass,
+        float mass, // TODO : Delete 
         float orbitRadius,
         float angularSpeed,
         string planetTypeName,
@@ -109,14 +108,14 @@ public class Sphere : Object
         OrbitRadius = orbitRadius;
         AngularSpeed = angularSpeed;
         Parent = parent;
-        if (Parent != null && OrbitRadius > 0.001f)
+        /*if (Parent != null && OrbitRadius > 0.001f)
         {
             // Set initial position relative to parent
             Position = Parent.Position + new Vector3(OrbitRadius, 0, 0);
             // Calculate initial tangential velocity for orbit
             float orbitalSpeed = MathF.Sqrt(Constants.GRAVITATIONAL_CONSTANT * Parent.Mass / OrbitRadius);
             Velocity = new Vector3(0, 0, orbitalSpeed); // Adjust direction as needed
-        }
+        }*/
     }
 
     // Properties specific to orbiting spheres
@@ -125,33 +124,57 @@ public class Sphere : Object
     public float AngularSpeed { get; } // Typically constant once set
     private float Angle { get; set; } // Current angle in the orbit
     public Object? Parent { get; set; } // The object this sphere orbits
-
+    
+    
     public override void Update(double deltaTime)
     {
-        // Apply gravitational forces
-        foreach (var other in Renderer.Spheres.OfType<Sphere>())
-            if (other != this)
-                ApplyGravity(other, deltaTime);
+        WindowManager.globalTime += (float)deltaTime;
+        
+        // Calculate parent 
+        foreach (var sphere in Renderer.Spheres.OfType<Sphere>())
+        {
+            if(sphere.Parent != null) continue;
+            float angle = sphere.AngularSpeed * WindowManager.globalTime;
+            
+            sphere.Position = new Vector3(MathF.Cos(angle) * sphere.OrbitRadius,
+            0,
+            MathF.Sin(angle) * sphere.OrbitRadius);
+        }
+        
+        //Calculate children 
+        foreach (var sphere in Renderer.Spheres.OfType<Sphere>())
+        {
+            if(sphere.Parent == null) continue;
+            float angle = sphere.AngularSpeed * WindowManager.globalTime;
+            
+            sphere.Position = new Vector3(sphere.Parent.Position.X + MathF.Cos(angle) * sphere.OrbitRadius,
+                0,
+                sphere.Parent.Position.Z + MathF.Sin(angle) * sphere.OrbitRadius);
+        }
 
         // Update position via physics
         base.Update(deltaTime);
     }
 
-    private void ApplyGravity(Sphere other, double deltaTime)
+    // ? Remnant of previous gravity implementations
+    /*
+    private void ApplyGravity(Sphere other, double deltaTime = 0.0)
     {
-        var direction = other.Position - Position; // Corrected direction
+        var direction = other.Position - Position; 
         float distanceSq = direction.LengthSquared;
 
         if (distanceSq < 0.01f) return;
-
+        
         float distance = MathF.Sqrt(distanceSq);
         var forceDir = direction / distance;
 
         float forceMagnitude = Constants.GRAVITATIONAL_CONSTANT * (Mass * other.Mass) / distanceSq;
         var acceleration = forceDir * (forceMagnitude / Mass);
+        
 
         Acceleration += acceleration;
     }
+    */
 
 
     // Instance method to generate mesh data based on instance properties
@@ -172,8 +195,8 @@ public class Sphere : Object
         for (int i = 0; i <= stacks; ++i)
         {
             stackAngle = MathF.PI / 2 - i * stackStep; // Starting from pi/2 to -pi/2
-            float xy = radius * MathF.Cos(stackAngle); // r * cos(u)
-            float z = radius * MathF.Sin(stackAngle); // r * sin(u)
+            float xy = MathF.Cos(stackAngle); // r * cos(u)
+            float z = MathF.Sin(stackAngle); // r * sin(u)
 
             // Add (sectorCount+1) vertices per stack
             for (int j = 0; j <= sectors; ++j)
@@ -182,7 +205,7 @@ public class Sphere : Object
 
                 // Vertex position (x, y, z)
                 float x = xy * MathF.Cos(sectorAngle); // r * cos(u) * cos(v)
-                float y = xy * MathF.Sin(sectorAngle); // r * cos(u) * sin(v)
+                float y = xy  * MathF.Sin(sectorAngle); // r * cos(u) * sin(v)
                 vertices.Add(x);
                 vertices.Add(y);
                 vertices.Add(z);
@@ -224,4 +247,6 @@ public class Sphere : Object
         // Logger.WriteLine($"Generated mesh for sphere '{Name}'"); // Optional logging
         return (vertices.ToArray(), indices.ToArray());
     }
+    
+    
 }

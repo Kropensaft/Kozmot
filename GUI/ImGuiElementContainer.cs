@@ -7,7 +7,7 @@ namespace OpenGL.GUI;
 
 internal abstract class ImGuiElementContainer : IDisposable
 {
-    private const float DEFAULT_ANGULAR_SPEED = 0.3f;
+    private const float DEFAULT_ANGULAR_SPEED = 0.2f;
     private static readonly string[] planetTypes = Constants.planetTypes;
     private static string massBuffer = Constants.DEFAULT_MASS_BUFFER; // Initialize from Constants
     private static string nameBuffer = Constants.DEFAULT_NAME_BUFFER; // Initialize from Constants
@@ -18,7 +18,7 @@ internal abstract class ImGuiElementContainer : IDisposable
     private static int selectedParentIndex;
     private static int selectedRemovalIndex;
     public static int selectedPivotIndex; // Separate index for camera pivot
-
+    public static float angularSpeed = DEFAULT_ANGULAR_SPEED;
     private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
     public static Vector3 color = Constants.ROCKY_PLANET_COLOR; // Use System.Numerics for ImGui
     public static List<Object> celestialBodies = new();
@@ -81,9 +81,10 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Text("=== Planet Creator Guide ===");
                         ImGui.BulletText("1. Enter Name and Select Type.");
                         ImGui.BulletText("2. Set Position (relative to parent for moons, else origin).");
-                        ImGui.BulletText("3. For Moons: Select Parent from 'Orbits around' dropdown.");
-                        ImGui.BulletText("4. For 'Custom' select color, and scale");
-                        ImGui.BulletText("5. Click 'Create'.");
+                        ImGui.BulletText("3. Set angular speed (time it takes to complete a full rotation). ");
+                        ImGui.BulletText("4. For Moons: Select Parent from 'Orbits around' dropdown.");
+                        ImGui.BulletText("5. For 'Custom' select color, and scale");
+                        ImGui.BulletText("6. Click 'Create'.");
                         ImGui.Separator();
                         ImGui.Text("=== Camera Controls ===");
                         ImGui.BulletText("Mouse Wheel / Up/Down Arrows: Zoom");
@@ -93,11 +94,10 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Separator();
                         ImGui.Text("=== Keyboard Shortcuts ===");
                         ImGui.BulletText("ESC: Quit Application");
-                        ImGui.BulletText("C: Remove Last Added Object");
                         ImGui.Separator();
                         ImGui.Text("=== Notes ===");
                         ImGui.BulletText("Keyboard input inactive when GUI has focus.");
-                        ImGui.BulletText("Green sphere indicates position during creation.");
+                        ImGui.BulletText("Green sphere indicates position of the planet you're creating.");
                     }
                     finally
                     {
@@ -107,7 +107,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                 if (ImGui.BeginTabItem("Planet Creator"))
                     try
                     {
-                        // Name Input
+                        // Name Input (required for identification)
                         ImGui.Text("Name:");
                         AddToolTip("Unique name for the celestial body");
                         ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
@@ -127,86 +127,54 @@ internal abstract class ImGuiElementContainer : IDisposable
                             ResetUI();
                             Renderer.ResetSimulation();
                         }
+                        
+                        //Display the time elapsed
+                        ImGui.SameLine(ImGui.GetWindowWidth() -
+                                       (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH*2 - Constants.BESPOKE_TEXTEDIT_WIDTH));
+                        ImGui.Text($"Time : {WindowManager.globalTime}");
 
                         // Planet Type
                         ImGui.Text("Type:");
-                        AddToolTip("Determines physical properties and behavior");
-                        if (ImGui.Combo("##PlanetType", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length))
-                        {
-                            emissive = defaultPlanetTypeIndex == 1;
-                            mass = defaultPlanetTypeIndex switch
-                            {
-                                0 => Constants.ROCKY_PLANET_MASS,
-                                1 => Constants.STAR_MASS,
-                                2 => Constants.GAS_GIANT_MASS,
-                                3 => Constants.MOON_MASS,
-                                4 => Constants.DESERT_MASS,
-                                5 => Constants.ICE_GIANT_MASS,
-                                6 => Constants.FLOAT_ONE,
-                                _ => Constants.ROCKY_PLANET_MASS
-                            };
-                            massBuffer = mass.ToString(CultureInfo.InvariantCulture);
+                        AddToolTip("Determines visual appearance");
+                        ImGui.Combo("##PlanetType", ref defaultPlanetTypeIndex, planetTypes, planetTypes.Length);
 
-                            color = defaultPlanetTypeIndex switch
-                            {
-                                0 => Constants.ROCKY_PLANET_COLOR,
-                                1 => Constants.STAR_COLOR,
-                                2 => Constants.GAS_GIANT_COLOR,
-                                3 => Constants.MOON_COLOR,
-                                4 => Constants.DESERT_PLANET_COLOR,
-                                5 => Constants.ICE_GIANT_COLOR,
-                                6 => Constants.MOON_COLOR,
-                                _ => Constants.ROCKY_PLANET_COLOR
-                            };
+                        // Orbit Settings
+                        ImGui.Text("Orbit Radius:");
+                        AddToolTip("Distance from the parent body or center");
+                        ImGui.DragFloat("##OrbitRadius", ref position.X, 0.2f, 0.1f, Constants.GRID_SIZE);
+
+                        ImGui.Text("Angular Speed:");
+                        AddToolTip("How fast the object orbits (in radians per second)");
+                        ImGui.DragFloat("##AngularSpeed", ref angularSpeed, 0.3f, 0.0f, 4.0f);
+
+                        // Parent Selection for Moons
+                        ImGui.Text("Parent Body:");
+                        AddToolTip("Select a parent body to orbit around (optional)");
+                         parentNames = celestialBodies
+                            .OfType<Sphere>()
+                            .Where(s => s.Parent == null)
+                            .Select(s => s.Name)
+                            .ToArray();
+                        
+                        if (parentNames.Length > 0)
+                        {
+                            ImGui.Combo("##Parent", ref selectedParentIndex, parentNames, parentNames.Length);
+                        }
+                        else
+                        {
+                            ImGui.Text("No available parent bodies");
+                            selectedParentIndex = -1;
                         }
 
-                        // Custom Settings
-                        if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1)
+                        // Visual Settings
+                        if (defaultPlanetTypeIndex == Constants.planetTypes.Length - 1) // Custom type
                         {
-                            ImGui.Text("Radius:");
-                            AddToolTip("Visual size only (doesn't affect physics)");
-
+                            ImGui.Text("Visual Size:");
+                            AddToolTip("Visual size of the body");
                             ImGui.SliderFloat("##CustomRadius", ref Constants.CUSTOM_RADIUS, 0.05f, 2f);
-
-                            ImGui.Text("Color:");
-                            AddToolTip("Visual size only (doesn't affect physics");
-
-                            ImGui.ColorEdit3("##Color", ref color);
                         }
 
-                        // Moon Parent Selection
-                        if (defaultPlanetTypeIndex == 3)
-                        {
-                            ImGui.Text("Parent:");
-                            AddToolTip("Select a parent body for a stable orbit right out of the box");
-                            if (parentNames.Length > 0)
-                            {
-                                ImGui.Combo("##MoonParent", ref selectedParentIndex, parentNames, parentNames.Length);
-                            }
-                            else
-                            {
-                                ImGui.Text("No available parent bodies");
-                                selectedParentIndex = -1;
-                            }
-                        }
-
-                        // Position
-                        ImGui.Text("Position:");
-                        AddToolTip("Position relative to the X,Y intersection (red & blue lines)");
-                        ImGui.DragFloat3("##Position", ref position, 0.2f, -Constants.GRID_SIZE, Constants.GRID_SIZE);
-
-                        ImGui.Text("Velocity:");
-                        AddToolTip(
-                            "Velocity is calculated as the Norm of said vector and is applied to the object, ex: (0,10,10) => velocity = new Vec(sqrt(0^2 + 10^2 + 10^2)) ~ 14.4");
-                        ImGui.DragFloat3("##Velocity", ref Velocity, 0.2f, -10f, 10f);
-
-                        // Mass
-                        ImGui.Text("Mass:");
-                        AddToolTip("Mass in solar units ex. 1.4 ~ Star");
-                        ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDTH);
-                        ImGui.InputText("##Mass", ref massBuffer, 15);
-
-                        // Pause Toggle
+                        // Simulation Control
                         ImGui.Checkbox("Pause Simulation", ref Renderer.IsSimulationPaused);
                         AddToolTip("Freezes the physics simulation while turned on");
 
@@ -224,30 +192,36 @@ internal abstract class ImGuiElementContainer : IDisposable
                             }
                         }
 
-                        // Removal Section
+                        // Object Management
                         ImGui.SameLine();
-                        string[] removalNames = celestialBodies.Select(b => b.Name).ToArray();
+                        // Get list of removable objects (excluding suns)
+                        var removableObjects = celestialBodies
+                            .Select((body, index) => new { Body = body, Index = index })
+                            .Where(item => item.Body.Type != Constants.planetTypes[1])
+                            .ToList();
 
-                        ImGui.Text("Remove:");
-                        AddToolTip("Removes the selected celestial body");
-                        if (removalNames.Length > 1)
+                        string[] removalNames = removableObjects.Select(item => item.Body.Name).ToArray();
+
+                        if (removalNames.Length > 0)
                         {
                             if (selectedRemovalIndex >= removalNames.Length)
                                 selectedRemovalIndex = removalNames.Length - 1;
 
                             ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
-                            ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames,
-                                removalNames.Length);
+                            ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames, removalNames.Length);
                             ImGui.SameLine();
+                            
                             if (ImGui.Button("Remove Selected", Constants.BESPOKE_BUTTON_SIZE))
-                                if (selectedRemovalIndex >= 0 && selectedRemovalIndex < celestialBodies.Count)
+                            {
+                                if (selectedRemovalIndex >= 0 && selectedRemovalIndex < removableObjects.Count)
                                 {
-                                    celestialBodies.RemoveAt(selectedRemovalIndex);
-                                    Renderer.Spheres.RemoveAt(selectedRemovalIndex);
+                                    int actualIndex = removableObjects[selectedRemovalIndex].Index;
+                                    celestialBodies.RemoveAt(actualIndex);
+                                    Renderer.Spheres.RemoveAt(actualIndex);
                                     selectedPivotIndex = celestialBodies.Count - 1;
-                                    selectedRemovalIndex =
-                                        Math.Clamp(selectedRemovalIndex, 0, celestialBodies.Count - 1);
+                                    selectedRemovalIndex = Math.Clamp(selectedRemovalIndex, 0, removalNames.Length - 1);
                                 }
+                            }
                         }
                         else
                         {
@@ -258,7 +232,19 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Separator();
                         ImGui.Text("Created objects:");
                         foreach (var body in celestialBodies)
-                            ImGui.Text($"{body.Name} ({body.Type})");
+                            if (body is Sphere sphere)
+                            {
+                                float rotationPeriod = sphere.AngularSpeed > 0 ? 
+                                    MathF.Round(2 * MathF.PI / sphere.AngularSpeed, 2) : 
+                                    float.PositiveInfinity;
+            
+                                string periodInfo = rotationPeriod == float.PositiveInfinity ? 
+                                    "∞" : // Display infinity symbol for zero angular speed
+                                    rotationPeriod.ToString("F2");
+            
+                                ImGui.Text($"{body.Name} (Type: {body.Type}), (Rotation period: {periodInfo} seconds)");
+                            }
+
                     }
                     finally
                     {
@@ -280,6 +266,10 @@ internal abstract class ImGuiElementContainer : IDisposable
                         {
                             ImGui.Text("No objects created");
                         }
+                        
+                        ImGui.Text("Zoom Sensitivity");
+                        AddToolTip("How fast the camera zooms in/out (default 1.5)");
+                        if(ImGui.SliderFloat(" ", ref Constants.CAMERA_ZOOM_SENSITIVITY, 0.1f, 10f))
 
                         ImGui.Separator();
                         ImGui.Text("=== Indicator Settings ===");
@@ -465,7 +455,7 @@ internal abstract class ImGuiElementContainer : IDisposable
 #if DEBUG
             Logger.WriteLine($"\n" +
                              $"Creating new Sphere : {nameBuffer} \n " +
-                             $"World pos :{worldPosition}\n" +
+                             $"World pos :{worldPosition + Constants.DEFAULT_INDICATOR_POSITION}\n" +
                              $"Rotation : {sphereRotation}\n" +
                              $"Scale :{sphereScale}\n" +
                              $"Color : {sphereColor}\n" +
@@ -479,7 +469,7 @@ internal abstract class ImGuiElementContainer : IDisposable
 
             return new Sphere(
                 nameBuffer,
-                worldPosition,
+                worldPosition+ Constants.DEFAULT_INDICATOR_POSITION,
                 sphereRotation,
                 sphereScale,
                 sphereColor,
@@ -489,7 +479,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                 planetTypeName,
                 emissive,
                 parent,
-                new OpenTK.Mathematics.Vector3(Velocity.X, Velocity.Y, Velocity.Z)
+                new OpenTK.Mathematics.Vector3(0, 0, 0)
             );
         }
         catch (Exception ex)

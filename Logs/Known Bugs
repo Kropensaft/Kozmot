@@ -7,16 +7,17 @@ fix scaling issue with indicator
 Add Indicator arrow atop the indicator which will display the direction of the movement 
 
 $UI CORE    
-
+Refactor the UI to accomodate the new mathematics based model instead of the old newtonian one
 
 $UI
-fix Textures inverted in Y-axis
+remove velocity, mass fields, add : angular speed (time needed per one rotation)
 
 
 
 ######################
 ####### FIXED ########
 ######################
+# fix Textures inverted in Y-axis - Fixed (22.4.25)
 # Add Angular velocity field to ImGuiElementContainer - Fixed (22.4.25)
 # Add Direction vector field to ImGuiElementContainer - Fixed (22.4.25)
 # Add RESET button - Fixed (19.4.25)

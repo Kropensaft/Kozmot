@@ -16,7 +16,7 @@ public class Grid
     public static uint[]? _indices;
     public static bool RenderGrid = true;
 
-    public Grid(int size = 200, float step = 1.0f)
+    public Grid(int size = 100, float step = 1f)
     {
         GenerateGridGeometry(size, step);
         InitializeBuffers();

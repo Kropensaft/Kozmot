@@ -47,7 +47,7 @@ internal static class Shader
         return program;
     }
 
-    private static int CompileShader(ShaderType type, string source)
+    public static int CompileShader(ShaderType type, string source)
     {
         int shader = GL.CreateShader(type);
         GL.ShaderSource(shader, source);
