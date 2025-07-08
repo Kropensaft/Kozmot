@@ -8,15 +8,18 @@ using Vector2 = OpenTK.Mathematics.Vector2;
 
 namespace OpenGL;
 
+/// <summary>
+///     Event based subscriber for inputs
+/// </summary>
 internal static class InputHandler
 {
     private static Camera? _camera;
     private static Vector2 _lastMousePosition;
     private static DateTime _lastWheelLog = DateTime.MinValue;
     private static readonly float mousePosDiv = 2f;
-    private static bool ? _isRightMouseDown { get; set; }
     private static bool _isOrbitEnabled;
-    
+    private static bool? _isRightMouseDown { get; set; }
+
 
     public static void InitializeInputs(GameWindow window, Camera camera)
     {
@@ -49,8 +52,8 @@ internal static class InputHandler
 
     private static void OnMouseWheel(MouseWheelEventArgs e)
     {
-        TimeSpan logInterval = TimeSpan.FromMilliseconds(Constants.LOG_INTERVAL_MS);
-        
+        var logInterval = TimeSpan.FromMilliseconds(Constants.LOG_INTERVAL_MS);
+
         if (e.OffsetY > 0)
         {
             if (DateTime.Now - _lastWheelLog > logInterval)
@@ -58,7 +61,7 @@ internal static class InputHandler
                 Logger.WriteLine("Mouse wheel scrolled UP");
                 _lastWheelLog = DateTime.Now;
             }
-                
+
             _camera!.Distance -= Constants.CAMERA_ZOOM_SENSITIVITY;
         }
         else if (e.OffsetY < 0)
@@ -68,7 +71,7 @@ internal static class InputHandler
                 Logger.WriteLine("Mouse wheel scrolled UP");
                 _lastWheelLog = DateTime.Now;
             }
-                
+
             _camera!.Distance += Constants.CAMERA_ZOOM_SENSITIVITY;
         }
     }

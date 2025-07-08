@@ -7,8 +7,6 @@ namespace OpenGL.Objects;
 ///     Separated class for the "infinite grid", has its own vbo,ebo,vao so that the main buffer isn't polluted by the
 ///     unchanging grid vertices
 /// </summary>
-
-// TODO : Should probably be IDisposable since there is no need to keep it in memory 
 public class Grid
 {
     public static int _vao, _vbo, _ebo;

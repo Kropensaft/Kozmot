@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Numerics;
 using ImGuiNET;
 using OpenGL.Objects;
@@ -7,39 +6,50 @@ namespace OpenGL.GUI;
 
 internal abstract class ImGuiElementContainer : IDisposable
 {
+    //floats
     private const float DEFAULT_ANGULAR_SPEED = 0.2f;
-    private static readonly string[] planetTypes = Constants.planetTypes;
-    private static string massBuffer = Constants.DEFAULT_MASS_BUFFER; // Initialize from Constants
-    private static string nameBuffer = Constants.DEFAULT_NAME_BUFFER; // Initialize from Constants
-    private static bool emissive;
-    private static float scale = 1f; 
-    public static Vector3 position = new(Constants.DEFAULT_INDICATOR_POSITION.X,Constants.DEFAULT_INDICATOR_POSITION.Y, Constants.DEFAULT_INDICATOR_POSITION.Z) ; // Use System.Numerics for ImGui
-    public static Vector3 Velocity = new(0f, 0f, 0f);
+
+    //Bool
+    private static bool IsGUITransparent;
+
+    // (U)Int
     private static int defaultPlanetTypeIndex;
     private static int selectedParentIndex;
     private static int selectedRemovalIndex;
     public static int selectedPivotIndex; // Separate index for camera pivot
-    public static float angularSpeed = DEFAULT_ANGULAR_SPEED;
-    private static float mass = Constants.ROCKY_PLANET_MASS; // Initialize mass
-    public static Vector3 color = Constants.ROCKY_PLANET_COLOR; // Use System.Numerics for ImGui
-    public static List<Object> celestialBodies = new();
 
-    // Use System.Numerics.Vector3 for ImGui ColorEdit3
+    //String
+    private static string nameBuffer = Constants.DEFAULT_NAME_BUFFER; // Initialize from Constants
+    private static readonly string[] planetTypes = Constants.planetTypes;
+
+    //Vec3
+    public static Vector3 position = new(
+        Constants.DEFAULT_INDICATOR_POSITION.X,
+        Constants.DEFAULT_INDICATOR_POSITION.Y,
+        Constants.DEFAULT_INDICATOR_POSITION.Z); // Convert to system.numerics for ImGuI
+
+    public static Vector3 Velocity = new(0f, 0f, 0f);
     private static Vector3 IndicatorColor = Constants.INDICATOR_COLOR;
+    private static Vector3 color = Constants.ROCKY_PLANET_COLOR;
     private static readonly OpenTK.Mathematics.Vector3 DEFAULT_ROTATION = OpenTK.Mathematics.Vector3.Zero;
     private static readonly OpenTK.Mathematics.Vector3 DEFAULT_SCALE = OpenTK.Mathematics.Vector3.One;
-    private static bool IsGUITransparent;
 
-    public static uint selectedPlanetTypeRef => (uint)defaultPlanetTypeIndex;
+    //Lists
+    public static List<Object> celestialBodies = new();
+    private static float scale = 1f;
+    private static float angularSpeed = DEFAULT_ANGULAR_SPEED;
 
     public static bool IsEditing =>
         !string.IsNullOrEmpty(nameBuffer) || // Check nameBuffer directly
         ImGui.IsAnyItemActive(); // Simplified check
 
+    public static uint selectedPlanetTypeRef => (uint)defaultPlanetTypeIndex;
+
+
     public void Dispose()
     {
         celestialBodies.Clear();
-        GC.SuppressFinalize(this); // Standard Dispose pattern
+        GC.SuppressFinalize(this);
     }
 
     public static void SubmitUI()
@@ -128,11 +138,12 @@ internal abstract class ImGuiElementContainer : IDisposable
                             ResetUI();
                             Renderer.ResetSimulation();
                         }
-                        
+
                         //Display the time elapsed
                         ImGui.SameLine(ImGui.GetWindowWidth() -
-                                       (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH*2 - Constants.BESPOKE_TEXTEDIT_WIDTH));
-                        ImGui.TextColored(new(Constants.DESERT_PLANET_COLOR , 1f),$"Time : {WindowManager.globalTime}");
+                                       (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH * 2 - Constants.BESPOKE_TEXTEDIT_WIDTH));
+                        ImGui.TextColored(new Vector4(Constants.DESERT_PLANET_COLOR, 1f),
+                            $"Time : {WindowManager.GlobalTime}");
 
                         // Planet Type
                         ImGui.Text("Type:");
@@ -147,31 +158,27 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Text("Angular Speed:");
                         AddToolTip("How fast the object orbits (in radians per second)");
                         ImGui.DragFloat("##AngularSpeed", ref angularSpeed, 0.3f, 0.0f, 4.0f);
-                        
-                        
+
+
                         ImGui.Text("Scale:");
                         AddToolTip("Size in celestial units (1 unit = 1 grid field)");
                         ImGui.DragFloat("##Scale", ref scale, 0.05f, 0.05f, 20f);
-                        
+
                         // Parent Selection for Moons
                         ImGui.Text("Parent Body:");
                         AddToolTip("Select a parent body to orbit around");
-                         parentNames = celestialBodies
+                        parentNames = celestialBodies
                             .OfType<Sphere>()
                             .Where(s => s.Parent == null)
                             .Select(s => s.Name)
                             .ToArray();
-                        
+
                         if (parentNames.Length > 0)
-                        {
                             ImGui.Combo("##Parent", ref selectedParentIndex, parentNames, parentNames.Length);
-                        }
                         else
-                        {
                             //Sun is always present
                             selectedParentIndex = 0;
-                        }
-                        
+
 
                         // Simulation Control
                         ImGui.Checkbox("Pause Simulation", ref Renderer.IsSimulationPaused);
@@ -207,11 +214,11 @@ internal abstract class ImGuiElementContainer : IDisposable
                                 selectedRemovalIndex = removalNames.Length - 1;
 
                             ImGui.SetNextItemWidth(Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH);
-                            ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames, removalNames.Length);
+                            ImGui.Combo("##SelectToRemove", ref selectedRemovalIndex, removalNames,
+                                removalNames.Length);
                             ImGui.SameLine();
-                            
+
                             if (ImGui.Button("Remove Selected", Constants.BESPOKE_BUTTON_SIZE))
-                            {
                                 if (selectedRemovalIndex >= 0 && selectedRemovalIndex < removableObjects.Count)
                                 {
                                     int actualIndex = removableObjects[selectedRemovalIndex].Index;
@@ -220,7 +227,6 @@ internal abstract class ImGuiElementContainer : IDisposable
                                     selectedPivotIndex = celestialBodies.Count - 1;
                                     selectedRemovalIndex = Math.Clamp(selectedRemovalIndex, 0, removalNames.Length - 1);
                                 }
-                            }
                         }
                         else
                         {
@@ -233,17 +239,17 @@ internal abstract class ImGuiElementContainer : IDisposable
                         foreach (var body in celestialBodies)
                             if (body is Sphere sphere)
                             {
-                                float rotationPeriod = sphere.AngularSpeed > 0 ? 
-                                    MathF.Round(2 * MathF.PI / sphere.AngularSpeed, 2) : 
-                                    float.PositiveInfinity;
-            
-                                string periodInfo = rotationPeriod == float.PositiveInfinity ? 
-                                    "∞" : // Display infinity symbol for zero angular speed
+                                float rotationPeriod = sphere.AngularSpeed > 0
+                                    ? MathF.Round(2 * MathF.PI / sphere.AngularSpeed, 2)
+                                    : float.PositiveInfinity;
+
+                                string periodInfo = rotationPeriod == float.PositiveInfinity
+                                    ? "∞"
+                                    : // Display infinity symbol for zero angular speed
                                     rotationPeriod.ToString("F2");
-            
+
                                 ImGui.Text($"{body.Name} (Type: {body.Type}), (Rotation period: {periodInfo} seconds)");
                             }
-
                     }
                     finally
                     {
@@ -265,12 +271,12 @@ internal abstract class ImGuiElementContainer : IDisposable
                         {
                             ImGui.Text("No objects created");
                         }
-                        
+
                         ImGui.Text("Zoom Sensitivity");
                         AddToolTip("How fast the camera zooms in/out (default 1.5)");
-                        if(ImGui.SliderFloat(" ", ref Constants.CAMERA_ZOOM_SENSITIVITY, 0.1f, 10f))
+                        if (ImGui.SliderFloat(" ", ref Constants.CAMERA_ZOOM_SENSITIVITY, 0.1f, 10f))
 
-                        ImGui.Separator();
+                            ImGui.Separator();
                         ImGui.Text("=== Indicator Settings ===");
 
                         ImGui.Checkbox("Render Grid", ref Grid.RenderGrid);
@@ -352,11 +358,6 @@ internal abstract class ImGuiElementContainer : IDisposable
             return null;
         }
 
-        if (!float.TryParse(massBuffer, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedMass))
-        {
-            Logger.WriteLine("Error: Invalid mass value: " + massBuffer);
-            return null;
-        }
 
         string planetTypeName = planetTypes[defaultPlanetTypeIndex];
 
@@ -458,11 +459,9 @@ internal abstract class ImGuiElementContainer : IDisposable
                              $"Rotation : {sphereRotation}\n" +
                              $"Scale :{sphereScale}\n" +
                              $"Color : {sphereColor}\n" +
-                             $"Mass :{parsedMass}\n" +
                              $"Orbit radius: {orbitRadius}\n" +
                              $"Speed: {angularSpeed}\n" +
                              $"Type: {planetTypeName}\n" +
-                             $"Emissive? :{emissive}\n" +
                              $"Parent ? :{parent}");
 #endif
 
@@ -472,11 +471,9 @@ internal abstract class ImGuiElementContainer : IDisposable
                 sphereRotation,
                 sphereScale,
                 sphereColor,
-                parsedMass,
                 orbitRadius,
                 angularSpeed,
                 planetTypeName,
-                emissive,
                 parent,
                 new OpenTK.Mathematics.Vector3(0, 0, 0)
             );
@@ -491,10 +488,9 @@ internal abstract class ImGuiElementContainer : IDisposable
     public static void ResetUI()
     {
         nameBuffer = Constants.DEFAULT_NAME_BUFFER;
-        massBuffer = Constants.DEFAULT_MASS_BUFFER;
-        mass = Constants.ROCKY_PLANET_MASS;
         color = Constants.ROCKY_PLANET_COLOR;
-        position = new Vector3(Constants.DEFAULT_INDICATOR_POSITION.X, Constants.DEFAULT_INDICATOR_POSITION.Y, Constants.DEFAULT_INDICATOR_POSITION.Z);
+        position = new Vector3(Constants.DEFAULT_INDICATOR_POSITION.X, Constants.DEFAULT_INDICATOR_POSITION.Y,
+            Constants.DEFAULT_INDICATOR_POSITION.Z);
         defaultPlanetTypeIndex = 0;
         selectedParentIndex = -1; // Reset to invalid/none
         Velocity = Vector3.Zero;

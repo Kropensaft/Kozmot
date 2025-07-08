@@ -16,7 +16,7 @@ internal static class Program
     ///     Entry-point of the program, used for setting up the window parameters a camera and calling all main functions of
     ///     scripts
     /// </summary>
-    private static void Main()
+    public static void Main()
     {
         var windowSettings = GameWindowSettings.Default;
         var nativeWindowSettings = NativeWindowSettings.Default;

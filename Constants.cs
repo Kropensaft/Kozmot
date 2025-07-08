@@ -11,7 +11,7 @@ public static class Constants
     ///     Gravitational constant for simulation (6.67430 × 10^-11 in real world)
     /// </summary>
     public const float GRAVITATIONAL_CONSTANT = 0.1f; // Adjusted for simulation scale
-    
+
     /// <summary>
     ///     Window Constants
     /// </summary>
@@ -25,12 +25,9 @@ public static class Constants
     ///     Sphere Data
     /// </summary>
     public static readonly float INITIAL_SPHERE_RADIUS = .3f;
-    
-    public static readonly float INITIAL_SPHERE_VELOCITY = .4f;
-    public static readonly float DEFAULT_ORBIT_RADIUS = .2f;
+
     public static readonly int SPHERE_STACK_COUNT = 18;
     public static readonly int SPHERE_SECTOR_COUNT = 36;
-    public static readonly float DEFAULT_SPHERE_MASS = 1.0f;
 
 
     /// <summary>
@@ -46,20 +43,13 @@ public static class Constants
         "./ImageDependencies/Skybox/front.jpg",
         "./ImageDependencies/Skybox/back.jpg"
     };
-    
+
 
     /// <summary>
     ///     Basic values depending on planet type
     /// </summary>
-    public static readonly float STAR_MASS = 100.0f;
-
-    public static readonly float GAS_GIANT_MASS = 15.0f;
-    public static readonly float ROCKY_PLANET_MASS = 1.2f;
-    public static readonly float MOON_MASS = 0.1f;
-    public static readonly float DESERT_MASS = 0.8f;
-    public static readonly float ICE_GIANT_MASS = 20f;
-
     public static readonly float STAR_RADIUS = 1.39f;
+
     public static readonly float GAS_GIANT_RADIUS = 0.74f;
     public static readonly float ROCKY_PLANET_RADIUS = 0.32f;
     public static readonly float MOON_RADIUS = 0.14f;
@@ -93,8 +83,8 @@ public static class Constants
     public static System.Numerics.Vector3 INDICATOR_COLOR = new(0.0f, 1.0f, 0.0f);
     public static float INDICATOR_ALPHA = 0.0f; // Semi-transparency
     public static float DIRECTION_INDICATOR_ALPHA = 1.0f;
-    
-    
+
+
     public static Vector3 DEFAULT_INDICATOR_POSITION = new(20, 0, 0);
 
     /// <summary>
@@ -126,6 +116,7 @@ public static class Constants
     ///     Miscellaneous
     /// </summary>
     public static readonly float FLOAT_ZERO = 0.0f;
+
     public static readonly float TOO_FAR_POSITION = 300f;
     public static readonly float FLOAT_ONE = 1.0f;
     public static readonly int LOG_INTERVAL_MS = 500;
@@ -135,6 +126,7 @@ public static class Constants
     ///     Camera values
     /// </summary>
     public static readonly float CAMERA_ANGLE_CLAMP = 89f;
+
     public static readonly float CAMERA_SPEED = 2.5f;
     public static readonly float CAMERA_SENSITIVITY = .2f;
     public static float CAMERA_ZOOM_SENSITIVITY = 1.5f;
@@ -155,7 +147,6 @@ public static class Constants
     public static readonly uint BESPOKE_TEXTEDIT_WIDTH = 50;
     public static readonly uint BESPOKE_TEXTEDIT_WIDE_WIDTH = 120;
 
-    public static readonly string DEFAULT_MASS_BUFFER = "1.2";
     public static readonly string DEFAULT_NAME_BUFFER = "Name me!";
 
     public static readonly float SLIDER_CLAMP_MIN = -2f;
@@ -177,7 +168,7 @@ public static class Constants
 
     public static readonly string dirIndicatorFragmentPath = "Shaders/directionIndicator.frag";
     public static readonly string dirIndicatorVertexPath = "Shaders/directionIndicator.vert";
-    
+
 
     /// <summary>
     ///     Texture atlas values

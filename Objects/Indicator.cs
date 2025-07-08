@@ -47,10 +47,10 @@ internal class Indicator
 
         // Avoid regenerating mesh if radius hasn't changed
         if (Math.Abs(newRadius - _currentRadius) < 0.000001f && _vertices != null &&
-            _indices != null) return; 
-        
+            _indices != null) return;
+
         _currentRadius = newRadius;
-        
+
         if (_currentRadius <= 0)
         {
             Logger.WriteLine($"Warning: Indicator radius is non-positive ({_currentRadius}). Using fallback.");
@@ -60,11 +60,10 @@ internal class Indicator
 
         // Generate sphere mesh
         var sphere = new Sphere("Indicator_Internal",
-            Constants.DEFAULT_INDICATOR_POSITION, 
-            Vector3.Zero, 
-            new Vector3(_currentRadius, _currentRadius, _currentRadius), 
-            System.Numerics.Vector3.One, 
-            0f, // Mass
+            Constants.DEFAULT_INDICATOR_POSITION,
+            Vector3.Zero,
+            new Vector3(_currentRadius, _currentRadius, _currentRadius),
+            System.Numerics.Vector3.One,
             0f, // orbitRadius
             0f, // velocity
             ""); // emissive
@@ -219,10 +218,8 @@ internal class Indicator
             ImGuiElementContainer.position.Y,
             ImGuiElementContainer.position.Z
         );
-       
-        
-        
-        
+
+
         var model = Matrix4.CreateTranslation(position);
         int modelLoc = GL.GetUniformLocation(_shaderProgram, "model");
         int viewLoc = GL.GetUniformLocation(_shaderProgram, "view");

@@ -14,7 +14,9 @@ namespace OpenGL;
 internal static class WindowManager
 {
     private static GameWindow? _window;
-    public static float globalTime = 0;
+    public static float GlobalTime = 0;
+    public static bool IsTestEnvironment { get; set; } = false;
+
     public static void Initialize(GameWindow window)
     {
         _window = window;
@@ -27,7 +29,7 @@ internal static class WindowManager
 
     private static void
         OnWindowClosing(
-            CancelEventArgs e) //CancelEventArgs is unused but is present simply so we can subscribe to the event
+            CancelEventArgs e) //CancelEventArgs is unused but is present simply so that we can subscribe to the event
     {
         Renderer.ResourceCleanup();
     }

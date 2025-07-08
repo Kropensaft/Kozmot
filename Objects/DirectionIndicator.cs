@@ -12,8 +12,10 @@ using Quaternion = OpenTK.Mathematics.Quaternion;
 using Vector3 = OpenTK.Mathematics.Vector3;
 using Vector4 = OpenTK.Mathematics.Vector4;
 
-namespace OpenGL.Objects; // Assuming Sphere is in this namespace
+namespace OpenGL.Objects;
+// Assuming Sphere is in this namespace
 
+[Obsolete("In the current implementation is not used, usable only when simulating on multiple planes")]
 internal class DirectionIndicator : IDisposable
 {
     // Constants for arrow geometry
