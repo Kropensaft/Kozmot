@@ -40,7 +40,7 @@ public class Logger
         Console.WriteLine(str);
         LoggerSingleton.SW?.WriteLine(str);
     }
-    
+
     private void InstantiateStreamWriter()
     {
         string filePath = Path.Combine(LogDirPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")) + ".txt";

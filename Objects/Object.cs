@@ -2,6 +2,8 @@ using OpenTK.Mathematics;
 
 namespace OpenGL;
 
+
+//TODO : sjednodit do jednoho objektu Sphere / Object
 public abstract class Object // Make abstract if never instantiated directly
 {
     // Protected constructor for base class
@@ -29,7 +31,11 @@ public abstract class Object // Make abstract if never instantiated directly
         Acceleration = Vector3.Zero;
     }
 
-// Add this property if not already present
+    protected Object()
+    {
+    }
+
+    // Add this property if not already present
     public Vector3 AngularVelocity { get; set; } = new(0, 1f, 0); // Default Y-axis rotation
 
     // Public properties for external access
@@ -41,22 +47,17 @@ public abstract class Object // Make abstract if never instantiated directly
     public string Type { get; set; } // Public getter for Type
 
 
-    public float RotationSpeed { get; set; } = 1.0f; // Radians per second
+    public float RotationSpeed { get; set; } = 0f; // Radians per second
 
     // Protected or private for internal physics state
     public Vector3 Velocity { get; set; }
     public Vector3 Acceleration { get; set; }
 
-    public virtual void Update(double deltaTime)
+    public virtual void Update(float deltaTime)
     {
-        // Basic Euler integration
-        Velocity += Acceleration * (float)deltaTime;
-        Position += Velocity * (float)deltaTime;
-        Acceleration = Vector3.Zero; // Reset acceleration for next frame
-
         Rotation += new Vector3(
             0,
-            RotationSpeed * (float)deltaTime,
+            RotationSpeed * deltaTime,
             0
         );
     }
@@ -84,24 +85,33 @@ public class Sphere : Object
         float angularSpeed,
         string planetTypeName,
         Object? parent = null,
-        Vector3 initialVelocity = default, // New parameter
-        Vector3 initialAngularVelocity = default) // New parameter
-        : base(
-            name,
-            position,
-            rotation,
-            scale,
-            color,
-            planetTypeName,
-            initialVelocity, // Pass to base
-            initialAngularVelocity // Pass to base
+        Vector3 initialVelocity = default,
+        Vector3 initialAngularVelocity = default,
+        float rotationSpeed = 0f
         )
+        
     {
+        Name = name;
+        Position = position;
+        Rotation = rotation;
+        Scale = scale;
+        Color = color;
+        Type = planetTypeName;
+        Velocity = initialVelocity;
+        AngularVelocity = initialAngularVelocity;
+        Acceleration = Vector3.Zero;
         OrbitRadius = orbitRadius;
         AngularSpeed = angularSpeed;
         Parent = parent;
+        RotationSpeed = rotationSpeed;
+        
+        //Indicator is without type
+        if(Type != "")
+         TextureID =
+            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, Type)]);
     }
 
+    
     // Properties specific to orbiting spheres
     public float OrbitRadius { get; set; }
     public int TextureID { get; set; }
@@ -110,12 +120,11 @@ public class Sphere : Object
     public Object? Parent { get; set; } // The object this sphere orbits
 
 
-    public override void Update(double deltaTime)
+    public override void Update(float time)
     {
         // Increment global time in the simulation
-        if (!WindowManager.IsTestEnvironment) WindowManager.GlobalTime += (float)deltaTime;
 
-        float angle = AngularSpeed * WindowManager.GlobalTime;
+        float angle = AngularSpeed * time;
 
         if (Parent == null)
             Position = new Vector3(
@@ -131,14 +140,10 @@ public class Sphere : Object
                 MathF.Sin(angle) * OrbitRadius
             );
 
-        // Apply physics and rotation
-        Velocity += Acceleration * (float)deltaTime;
-        Acceleration = Vector3.Zero; // Reset acceleration for next frame
-
         // Update rotation
-        Rotation += new Vector3(
+        Rotation = new Vector3(
             0,
-            RotationSpeed * (float)deltaTime,
+            RotationSpeed * time,
             0
         );
     }

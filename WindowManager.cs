@@ -14,7 +14,6 @@ namespace OpenGL;
 internal static class WindowManager
 {
     private static GameWindow? _window;
-    public static float GlobalTime = 0;
     public static bool IsTestEnvironment { get; set; } = false;
 
     public static void Initialize(GameWindow window)

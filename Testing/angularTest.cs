@@ -9,9 +9,6 @@ public class SphereTests
     [SetUp]
     public void Setup()
     {
-        WindowManager.IsTestEnvironment = true;
-        WindowManager.GlobalTime = 0; // Reset global time at start of each test
-
         _parentSphere = new Sphere(
             "Sun",
             Vector3.Zero,
@@ -39,7 +36,6 @@ public class SphereTests
     [TearDown]
     public void TearDown()
     {
-        WindowManager.IsTestEnvironment = false;
     }
 
     private Sphere _parentSphere;
@@ -62,9 +58,6 @@ public class SphereTests
     public void Update_CalculatesCorrectOrbitPosition_ForChildSphere(double time, float expectedX, float expectedY,
         float expectedZ)
     {
-        // Arrange
-        WindowManager.GlobalTime = 0; // Reset time
-
         var parentSphere = new Sphere(
             "Parent",
             Vector3.Zero, // Parent at origin
@@ -87,11 +80,9 @@ public class SphereTests
             "ChildType",
             parentSphere // Set the parent reference
         );
-
-        // Set time and update
-        WindowManager.GlobalTime = (float)time;
-        parentSphere.Update(0.016f);
-        childSphere.Update(0.016f);
+        
+        parentSphere.Update((float)time);
+        childSphere.Update((float)time);
 
         // Assert
         Assert.Multiple(() =>
@@ -105,12 +96,10 @@ public class SphereTests
     [Test]
     public void Update_ChildPosition_RelativeToParent()
     {
-        // Arrange
-        WindowManager.GlobalTime = 0;
 
         // Act
-        _parentSphere.Update(0.016);
-        _childSphere.Update(0.016);
+        _parentSphere.Update(0);
+        _childSphere.Update(0);
 
         // Assert
         float expectedDistance = _childSphere.OrbitRadius;

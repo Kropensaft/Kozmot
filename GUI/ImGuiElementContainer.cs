@@ -8,6 +8,7 @@ internal abstract class ImGuiElementContainer : IDisposable
 {
     //floats
     private const float DEFAULT_ANGULAR_SPEED = 0.2f;
+    private static float rotationSpeed = 0f;
 
     //Bool
     private static bool IsGUITransparent;
@@ -143,7 +144,7 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.SameLine(ImGui.GetWindowWidth() -
                                        (Constants.BESPOKE_TEXTEDIT_WIDE_WIDTH * 2 - Constants.BESPOKE_TEXTEDIT_WIDTH));
                         ImGui.TextColored(new Vector4(Constants.DESERT_PLANET_COLOR, 1f),
-                            $"Time : {WindowManager.GlobalTime}");
+                            $"Time : {Renderer.Time}");
 
                         // Planet Type
                         ImGui.Text("Type:");
@@ -163,7 +164,11 @@ internal abstract class ImGuiElementContainer : IDisposable
                         ImGui.Text("Scale:");
                         AddToolTip("Size in celestial units (1 unit = 1 grid field)");
                         ImGui.DragFloat("##Scale", ref scale, 0.05f, 0.05f, 20f);
-
+                        
+                        ImGui.Text("Rotation Speed:");
+                        AddToolTip("How fast the object rotates on its own axis");
+                        ImGui.DragFloat("##RotationSpeed", ref rotationSpeed, 0.01f, 0.0f, 4.0f);
+                        
                         // Parent Selection for Moons
                         ImGui.Text("Parent Body:");
                         AddToolTip("Select a parent body to orbit around");
@@ -475,7 +480,8 @@ internal abstract class ImGuiElementContainer : IDisposable
                 angularSpeed,
                 planetTypeName,
                 parent,
-                new OpenTK.Mathematics.Vector3(0, 0, 0)
+                new OpenTK.Mathematics.Vector3(0, 0, 0),
+                rotationSpeed: rotationSpeed
             );
         }
         catch (Exception ex)
@@ -494,5 +500,6 @@ internal abstract class ImGuiElementContainer : IDisposable
         defaultPlanetTypeIndex = 0;
         selectedParentIndex = -1; // Reset to invalid/none
         Velocity = Vector3.Zero;
+        rotationSpeed = 0f;
     }
 }

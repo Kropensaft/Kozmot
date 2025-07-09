@@ -15,6 +15,8 @@ namespace OpenGL;
 /// </summary>
 internal static class Renderer
 {
+    public static float Time = 0;
+
     //virtual array object, virtual buffer object, element buffer object, ---//---
     public static int _vao, _vbo, _ebo;
 
@@ -100,6 +102,12 @@ internal static class Renderer
 
     private static void AddDefaultConstellation()
     {
+        float year = 365f;
+        float month = year / 12;
+        float day = year / 365;
+
+        float full_rotation = 2 * MathF.PI;
+
         var sun = new Sphere(
             "Sun",
             new Vector3(0, 0, 0),
@@ -108,12 +116,11 @@ internal static class Renderer
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
             0.0f,
             0.0f,
-            Constants.planetTypes[1]
+            Constants.planetTypes[1],
+            null,
+            rotationSpeed: full_rotation / (25 * day)
         );
-
-        sun.RotationSpeed = MathHelper.DegreesToRadians(45);
-        sun.TextureID =
-            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, sun.Type)]);
+        
         Spheres.Add(sun);
         ImGuiElementContainer.celestialBodies.Add(sun);
 
@@ -125,13 +132,12 @@ internal static class Renderer
             new Vector3(1f, 1f, 1f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
             20f,
-            2 * MathF.PI / 36.5f,
-            Constants.planetTypes[0]
+            full_rotation / year,
+            Constants.planetTypes[0],
+            null,
+            rotationSpeed: full_rotation / day
         );
 
-        earth.RotationSpeed = MathHelper.DegreesToRadians(45);
-        earth.TextureID =
-            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, earth.Type)]);
         Spheres.Add(earth);
         ImGuiElementContainer.celestialBodies.Add(earth);
 
@@ -143,14 +149,14 @@ internal static class Renderer
             new Vector3(.5f, .5f, .5f),
             new System.Numerics.Vector3(0f, 0.5f, 0.5f),
             5f,
-            12 * (2 * MathF.PI) / 36.5f,
-            Constants.planetTypes[3]
+            full_rotation / month,
+            Constants.planetTypes[3],
+            earth,
+            rotationSpeed: -(full_rotation / month)
         );
-
-        moon.Parent = earth;
-        moon.RotationSpeed = MathHelper.DegreesToRadians(45);
-        moon.TextureID =
-            TextureLoader.LoadTexture(Constants._TexturePaths[Array.IndexOf(Constants.planetTypes, moon.Type)]);
+        
+       
+        
         Spheres.Add(moon);
         ImGuiElementContainer.celestialBodies.Add(moon);
     }
@@ -250,6 +256,8 @@ internal static class Renderer
     // ? Called each frame
     public static void OnUpdate(FrameEventArgs args)
     {
+        if (!IsSimulationPaused) Time += (float)args.Time;
+
         // 1. Update ImGui input state (needs to happen early)
         _controller!.Update(_window!, (float)args.Time);
 
@@ -293,10 +301,7 @@ internal static class Renderer
         // ! Spheres.ToList is crucial since we need the original List only as a reference of objects 
         foreach (var obj in Spheres.ToList())
         {
-            // Object-specific updates
-            if (!IsSimulationPaused) obj.Update(args.Time); // Assuming this doesn't change GL state
-
-            // Set object-specific uniforms
+            if (!IsSimulationPaused) obj.Update(Time);
 
             var model = obj.GetModelMatrix();
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderPrograms["default"], "model_matrix"), false, ref model);
@@ -417,7 +422,7 @@ internal static class Renderer
 
     public static void ResetSimulation()
     {
-        WindowManager.GlobalTime = 0;
+        Time = 0;
 
         // Clear all existing objects from both lists
         Spheres.Clear();
